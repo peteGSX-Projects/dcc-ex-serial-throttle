@@ -70,3 +70,42 @@ void setLocoFunction(uint16_t locoAddress, uint8_t function, bool state) {
   Serial.print(state);
   Serial.print(F(">"));
 }
+
+void accActivateLinear(uint16_t linearAddress, bool state) {
+  if (linearAddress > 2044) {
+    return;
+  }
+  Serial.print(F("<a "));
+  Serial.print(linearAddress);
+  Serial.print(F(" "));
+  Serial.print(state);
+  Serial.print(F(">"));
+}
+
+void accActivateAddr(uint16_t address, uint8_t subaddress, bool state) {
+  if (address > 511 || subaddress > 3) {
+    return;
+  }
+  Serial.print(F("<a "));
+  Serial.print(address);
+  Serial.print(F(" "));
+  Serial.print(subaddress);
+  Serial.print(F(" "));
+  Serial.print(state);
+  Serial.print(F(">"));
+}
+
+void getTurnouts() {
+  Serial.print(F("<T>"));
+}
+
+void setTurnout(uint16_t turnoutID, bool position) {
+  if (turnoutID > 32767) {
+    return;
+  }
+  Serial.print(F("<T "));
+  Serial.print(turnoutID);
+  Serial.print(F(" "));
+  Serial.print(position);
+  Serial.print(F(">"));
+}
