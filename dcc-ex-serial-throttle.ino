@@ -5,7 +5,7 @@
 #include <Arduino.h>
 
 void setup() {
-
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -53,4 +53,20 @@ void forgetLoco(uint16_t locoAddress) {
 
 void eStopAll() {
   Serial.print(F("<!>"));
+}
+
+void setLocoFunction(uint16_t locoAddress, uint8_t function, bool state) {
+  if (locoAddress < 1 || locoAddress > 10293) {
+    return;
+  }
+  if (function > 68) {
+    return;
+  }
+  Serial.print(F("<F "));
+  Serial.print(locoAddress);
+  Serial.print(F(" "));
+  Serial.print(function);
+  Serial.print(F(" "));
+  Serial.print(state);
+  Serial.print(F(">"));
 }
