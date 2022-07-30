@@ -230,3 +230,30 @@ routeID = 1 to 32767
   Serial.print(routeID);
   Serial.print(F(">"));
 }
+
+void getRosterEntries() {
+/*
+This function returns an array/struct? of all defined roster entries.
+*/
+  Serial.print(F("<JR>"));
+  /* Returns <jR id1 id2 id3 ...> THIS WILL NOT WORK RIGHT NOW
+  for (uint8_t i; i < numIDs; i++) {
+    getRoster(i);
+    // Returns <jR id type "[description]">
+  }
+  */
+};
+
+void getRoster(uint16_t rosterID) {
+/*
+This functionreturns the ID, description, and function map of the specified roster entry.
+<jR id "description" "function1/function2/function3/...">
+rosterID = 1 to 32767
+*/
+  if (rosterID == 0 || rosterID > 32767) {
+    return;
+  }
+  Serial.print(F("<JR "));
+  Serial.print(rosterID);
+  Serial.print(F(">"));
+};

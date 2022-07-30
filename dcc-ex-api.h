@@ -35,5 +35,7 @@ void setTurnout(uint16_t turnoutID, bool position);
 void getAllRoutes();
 void getRoute(uint16_t routeID);
 void setStartRoute(uint16_t locoAddress, uint16_t routeID);
+void getRosterEntries();
+void getRoster(uint16_t rosterID);
 
 #endif
