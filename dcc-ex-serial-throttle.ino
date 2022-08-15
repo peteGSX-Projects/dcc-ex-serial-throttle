@@ -14,7 +14,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with Turntable-EX.  If not, see <https://www.gnu.org/licenses/>.
+ *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 // Include the required libraries
@@ -23,6 +23,7 @@
 #include "Rotary.h"
 #include "avdweb_Switch.h"
 #include "version.h"
+#include "AnalogueAverage.h"
 
 // If we haven't got a custom config.h, use the example
 #if __has_include ( "config.h")
