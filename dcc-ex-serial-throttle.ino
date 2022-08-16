@@ -40,6 +40,9 @@
 SSD1306AsciiAvrI2c oled;
 #endif
 
+AnalogueAverage pot1(A0, 20);
+AnalogueAverage pot2(A1, 20);
+
 // Define our pins in use
 #define ROTARY_BTN 2
 #define ROTARY_DT 5

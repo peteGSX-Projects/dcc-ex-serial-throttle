@@ -24,6 +24,10 @@ AnalogueAverage::AnalogueAverage(uint8_t pin, uint8_t samples) {
 
 }
 
-uint16_t averageInput() {
+void averageInput() {
+  
+}
+
+uint16_t getAverage() {
   
 }
