@@ -20,7 +20,6 @@
 // Include the required libraries
 #include <Arduino.h>
 #include "dcc-ex-api.h"
-#include "Rotary.h"
 #include "avdweb_Switch.h"
 #include "version.h"
 #include "AnalogueAverage.h"
@@ -40,20 +39,20 @@
 SSD1306AsciiAvrI2c oled;
 #endif
 
-AnalogueAverage pot1(A0, 20);
-AnalogueAverage pot2(A1, 20);
-
-// Define our pins in use
-#define ROTARY_BTN 2
-#define ROTARY_DT 5
-#define ROTARY_CLK 6
+AnalogueAverage pot1(A0);
+AnalogueAverage pot2(A1);
 
 void setup() {
   Serial.begin(115200);
 }
 
 void loop() {
-
+  pot1.averageInput();
+  pot2.averageInput();
+  Serial.print(F("Pot 1/2 average: "));
+  Serial.print(pot1.getAverage());
+  Serial.print(F("/"));
+  Serial.println(pot2.getAverage());
 }
 
 #ifdef USE_OLED

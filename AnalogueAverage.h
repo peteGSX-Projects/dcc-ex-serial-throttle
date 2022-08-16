@@ -22,15 +22,23 @@
 
 #include "Arduino.h"
 
+#ifndef SAMPLES
+#define SAMPLES 20
+#endif
+
 class AnalogueAverage {
   public:
-    AnalogueAverage(uint8_t pin, uint8_t samples);
+    AnalogueAverage(uint8_t pin);
     void averageInput();
     uint16_t getAverage();
 
   private:
     uint8_t _pin;
-    uint8_t _samples;
+    uint8_t _currentIndex = 0;
+    uint8_t _valueCount = 0;
+    uint16_t _sum = 0;
+    uint16_t _values[SAMPLES];
+    uint16_t _rollingAverage = 0;
 
 };
 
