@@ -50,6 +50,11 @@ bool loco2Direction = 1;
 
 void setup() {
   Serial.begin(115200);
+  Serial.print(F("DCC-EX Serial Throttle "));
+  Serial.println(VERSION);
+  Serial.print(F("Averaging inputs over "));
+  Serial.print(SAMPLES);
+  Serial.println(F(" samples"));
   oled.begin(&SH1106_128x64, CS_PIN, DC_PIN);
   oled.setFont(Callibri11);
   oled.clear();
