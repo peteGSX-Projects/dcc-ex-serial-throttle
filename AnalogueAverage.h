@@ -59,7 +59,7 @@
 #include "Arduino.h"
 
 #ifndef SAMPLES
-#define SAMPLES 20
+#define SAMPLES 10
 #endif
 
 class AnalogueAverage {
