@@ -47,28 +47,35 @@ SSD1306AsciiSpi oled;
 SSD1306Ascii oled;
 #endif
 
-// Set up keypad
+// Set up our keypad with key map and instantiate it
 char keys[4][3] = {
  {'1', '2', '3'},
  {'4', '5', '6'},
  {'7', '8', '9'},
  {'*', '0', '#'}
 };
-// byte pin_rows[4]      = {19, 18, 17, 16}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
-// byte pin_column[3] = { 4, 0, 2};   // GIOP16, GIOP4, GIOP0 connect to the column pins
-// Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, 4, 3);
+byte pin_rows[4]      = {KEYPAD_ROW1_PIN, KEYPAD_ROW2_PIN, KEYPAD_ROW3_PIN, KEYPAD_ROW4_PIN};
+byte pin_column[3] = {KEYPAD_COL1_PIN, KEYPAD_COL2_PIN, KEYPAD_COL3_PIN};
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
-AnalogueAverage pot1(A0);
-AnalogueAverage pot2(A1);
-AnalogueAverage pot3(A2);
+// Set up our ESTOP button
+Switch eStopButton(ESTOP_PIN, INPUT_PULLUP, ESTOP_POLARITY, ESTOP_DEBOUNCE);
 
+// Set up our averaging inputs for the potentiometers
+AnalogueAverage pot1(POT1_PIN);
+AnalogueAverage pot2(POT2_PIN);
+AnalogueAverage pot3(POT3_PIN);
+
+// Set global variables with initial values
 int8_t loco1Speed = 0;
 int8_t loco2Speed = 0;
 int8_t loco3Speed = 0;
 bool loco1Direction = 1;
 bool loco2Direction = 1;
 bool loco3Direction = 1;
+bool eStop = false;
 
+// Placeholder of static loco addresses until roster functions added
 uint16_t loco1Address = 2004;
 uint16_t loco2Address = 2006;
 uint16_t loco3Address = 2010;
@@ -93,26 +100,42 @@ void setup() {
 }
 
 void loop() {
+  eStopButton.poll();
+  if (eStopButton.pushed()) {
+    setEstopAll();
+    eStop = true;
+    displayEStop();
+  }
+  processSerialInput();
+  if (eStop == false) {
+    processSliders();
+  } else {
 
-  processSliders();
+  }
   
 }
 
 /*
-Throttle input functions here
+Function to receive any serial input and process it.
 */
+void processSerialInput() {
+
+}
 
 /*
 Function to process the potentiometer inputs to control speed
-This is a HORRENDOUS function and needs to be optimised.
+This is a HORRENDOUS function and needs to be optimised
+
+NOTE: Pot2 temporarily disabled until one is available
 */
 void processSliders() {
   pot1.averageInput();
-  pot2.averageInput();
+  // pot2.averageInput();
   pot3.averageInput();
   bool updateDisplay = false;
   uint16_t newPot1 = pot1.getAverage();
-  uint16_t newPot2 = pot2.getAverage();
+  // uint16_t newPot2 = pot2.getAverage();
+  uint16_t newPot2 = 510;
   uint16_t newPot3 = pot3.getAverage();
   int8_t newL1Speed;
   int8_t newL2Speed;
@@ -178,6 +201,7 @@ void processSliders() {
     setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
   }
   if (updateDisplay) {
+#ifdef DEBUG
     Serial.print(F("Loco 1/2/3 speed/direction: "));
     Serial.print(loco1Speed);
     Serial.print(F("/"));
@@ -190,6 +214,7 @@ void processSliders() {
     Serial.print(loco3Speed);
     Serial.print(F("/"));
     Serial.println(loco3Direction);
+#endif
     displaySpeeds();
     displayLocos();
   }
@@ -241,5 +266,20 @@ void displayLocos() {
   oled.clearToEOL();
   oled.setCursor(89, 5);
   oled.print(loco3Address);
+  oled.clearToEOL();
+}
+
+void displayEStop() {
+  oled.setCursor(0, 0);
+  oled.clearToEOL();
+  oled.setCursor(4, 1);
+  oled.set1X();
+  oled.print("ESTOP");
+  oled.clearToEOL();
+  oled.setCursor(46, 1);
+  oled.print("ESTOP");
+  oled.clearToEOL();
+  oled.setCursor(88, 1);
+  oled.print("ESTOP");
   oled.clearToEOL();
 }
