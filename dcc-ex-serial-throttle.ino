@@ -54,8 +54,8 @@ char keys[4][3] = {
  {'7', '8', '9'},
  {'*', '0', '#'}
 };
-byte pin_rows[4]      = {KEYPAD_ROW1_PIN, KEYPAD_ROW2_PIN, KEYPAD_ROW3_PIN, KEYPAD_ROW4_PIN};
-byte pin_column[3] = {KEYPAD_COL1_PIN, KEYPAD_COL2_PIN, KEYPAD_COL3_PIN};
+byte pin_rows[4]      = {KEYPAD_PIN2, KEYPAD_PIN7, KEYPAD_PIN6, KEYPAD_PIN4};
+byte pin_column[3] = {KEYPAD_PIN3, KEYPAD_PIN1, KEYPAD_PIN5};
 Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
 // Set up our ESTOP button
