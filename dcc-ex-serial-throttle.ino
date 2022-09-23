@@ -125,17 +125,14 @@ void processSerialInput() {
 /*
 Function to process the potentiometer inputs to control speed
 This is a HORRENDOUS function and needs to be optimised
-
-NOTE: Pot2 temporarily disabled until one is available
 */
 void processSliders() {
   pot1.averageInput();
-  // pot2.averageInput();
+  pot2.averageInput();
   pot3.averageInput();
   bool updateDisplay = false;
   uint16_t newPot1 = pot1.getAverage();
-  // uint16_t newPot2 = pot2.getAverage();
-  uint16_t newPot2 = 510;
+  uint16_t newPot2 = pot2.getAverage();
   uint16_t newPot3 = pot3.getAverage();
   int8_t newL1Speed;
   int8_t newL2Speed;
