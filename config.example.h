@@ -17,14 +17,25 @@
 //  OLED configuration.
 //  Use this section for SPI, and the section further down for I2C.
 //  Comment out the section not in use.
+// 
+// Uncomment from the line below for SPI
 #define USE_OLED_SPI
 #define CS_PIN  7
 #define DC_PIN  9
 #define OLED_FONT Callibri11
 
-// Below here is the I2C definition
+// Comment out above and uncomment from the line below for I2C
 // #define USE_OLED_I2C
 // #define OLED_ADDRESS 0x3C
+// I2C definition ends here, don't uncomment this line
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  Keypad configuration.
+// 
+#define KEYPAD_DEBOUNCE = 10;
+#define KEYPAD_HOLD = 200;
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer tuning.

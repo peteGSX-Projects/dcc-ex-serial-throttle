@@ -20,10 +20,11 @@
 // Include the required libraries
 #include <Arduino.h>
 #include "dcc-ex-api.h"
-#include "libs/avdweb_Switch.h"
+#include "avdweb_Switch.h"
 #include "version.h"
 #include "AnalogueAverage.h"
-#include "libs/avdweb_Switch.h"
+#include "avdweb_Switch.h"
+#include "Keypad.h"
 
 // If we haven't got a custom config.h, use the example
 #if __has_include ( "config.h")
@@ -33,18 +34,29 @@
   #include "config.example.h"
 #endif
 
-// If using OLED, include the libraries and instantiate the object
+// Set up OLED, either SPI or I2C
 #ifdef USE_OLED_SPI
 #include <SPI.h>
-#include "libs/SSD1306Ascii.h"
-#include "libs/SSD1306AsciiSpi.h"
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiSpi.h"
 SSD1306AsciiSpi oled;
 #endif
 #ifdef USE_OLED_I2C
-#include "libs/SSD1306Ascii.h"
-#include "libs/SSD1306AsciiAvrI2c.h"
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
 SSD1306Ascii oled;
 #endif
+
+// Set up keypad
+char keys[4][3] = {
+ {'1', '2', '3'},
+ {'4', '5', '6'},
+ {'7', '8', '9'},
+ {'*', '0', '#'}
+};
+// byte pin_rows[4]      = {19, 18, 17, 16}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
+// byte pin_column[3] = { 4, 0, 2};   // GIOP16, GIOP4, GIOP0 connect to the column pins
+// Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
 AnalogueAverage pot1(A0);
 AnalogueAverage pot2(A1);
@@ -76,6 +88,8 @@ void setup() {
 #endif
   oled.setFont(OLED_FONT);
   oled.clear();
+  displaySpeeds();
+  displayLocos();
 }
 
 void loop() {
