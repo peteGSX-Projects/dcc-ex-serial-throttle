@@ -49,7 +49,7 @@
 //  Keypad configuration.
 // 
 #define KEYPAD_DEBOUNCE 10
-#define KEYPAD_HOLD 200
+#define KEYPAD_HOLD 500
 #define KEYPAD_PIN1 3
 #define KEYPAD_PIN2 4
 #define KEYPAD_PIN3 5

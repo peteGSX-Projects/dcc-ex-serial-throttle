@@ -81,12 +81,14 @@ uint16_t loco2Address = 2006;
 uint16_t loco3Address = 2010;
 
 void setup() {
+  // Set up serial and display basic config
   Serial.begin(115200);
   Serial.print(F("DCC-EX Serial Throttle "));
   Serial.println(VERSION);
   Serial.print(F("Averaging inputs over "));
   Serial.print(SAMPLES);
   Serial.println(F(" samples"));
+  // Set up OLED
 #ifdef USE_OLED_SPI
   oled.begin(&SH1106_128x64, CS_PIN, DC_PIN);
 #endif
@@ -95,8 +97,13 @@ void setup() {
 #endif
   oled.setFont(OLED_FONT);
   oled.clear();
+  // Set initial display
   displaySpeeds();
   displayLocos();
+  // Configure keypad
+  keypad.addEventListener(keypadEvent);
+  keypad.setDebounceTime(KEYPAD_DEBOUNCE);
+  keypad.setHoldTime(KEYPAD_HOLD);
 }
 
 void loop() {
@@ -112,7 +119,7 @@ void loop() {
   } else {
 
   }
-  
+  keypad.getKey();
 }
 
 /*
@@ -120,6 +127,30 @@ Function to receive any serial input and process it.
 */
 void processSerialInput() {
 
+}
+
+/*
+Function for a keypad event handler
+*/
+void keypadEvent(KeypadEvent key) {
+  switch (keypad.getState()) {
+    case PRESSED:
+      Serial.print(key);
+      Serial.println(F(" pressed"));
+      break;
+    case RELEASED:
+      Serial.print(key);
+      Serial.println(F(" released"));
+      break;
+    case HOLD:
+      Serial.print(key);
+      Serial.println(F(" held"));
+      break;
+    case IDLE:
+      break;
+    default:
+      break;
+  }
 }
 
 /*
