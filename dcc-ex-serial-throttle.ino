@@ -113,7 +113,7 @@ void loop() {
     eStop = true;
     displayEStop();
   }
-  processSerialInput();
+  getSerialInput();
   if (eStop == false) {
     processSliders();
   } else {
@@ -124,8 +124,28 @@ void loop() {
 
 /*
 Function to receive any serial input and process it.
+
+All commands start with <, end with >
+< should reset and start again
+
+This needs to respond to anything global (eg. eStop, turnout changes) and
+anything related to a selected loco
+
+Might be simpler to have two separate functions/routines here:
+
+getBroadcasts() {}
+getLoco(locoAddress) {}
+
+This function should probably just get anything between <> and pass it on
+
+The actual parser should probably just look for the first character and discard
+anything that's not either a broadcast, or doesn't have the possibility of being
+locally relevant
+
+Should it flag for changes to locos from other throttles? Pots will always override
+digital throttles, maybe * in front of speed/dir?
 */
-void processSerialInput() {
+void getSerialInput() {
 
 }
 
