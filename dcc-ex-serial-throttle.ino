@@ -73,6 +73,7 @@ bool loco1Light = 0;
 bool loco2Light = 0;
 bool loco3Light = 0;
 bool eStop = false;
+bool trackPower = 0;
 
 // Placeholder of static loco addresses until roster functions added
 uint16_t loco1Address = 2004;
@@ -163,6 +164,10 @@ Function to process individual key presses
 */
 void keyPressed(char key) {
   switch(key) {
+    case '0':
+      trackPower = !trackPower;
+      setTrackPower(trackPower);
+      break;
     case '1':
       if (loco1Speed == 0) {
         loco1Direction = !loco1Direction;
