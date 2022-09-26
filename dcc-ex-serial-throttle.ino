@@ -17,7 +17,9 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Include the required libraries
+/***********************************************************************************
+Include the required libraries
+***********************************************************************************/
 #include <Arduino.h>
 #include "dcc-ex-api.h"
 #include "avdweb_Switch.h"
@@ -25,7 +27,9 @@
 #include "AnalogueAverage.h"
 #include "Keypad.h"
 
-// If we haven't got a custom config.h, use the example
+/***********************************************************************************
+If we haven't got a custom config.h, use the example
+***********************************************************************************/
 #if __has_include ( "config.h")
   #include "config.h"
 #else
@@ -33,7 +37,9 @@
   #include "config.example.h"
 #endif
 
-// Set up OLED, either SPI or I2C
+/***********************************************************************************
+Set up OLED libraries and object
+***********************************************************************************/
 #ifdef USE_OLED_SPI
 #include <SPI.h>
 #include "SSD1306Ascii.h"
@@ -46,7 +52,9 @@ SSD1306AsciiSpi oled;
 SSD1306Ascii oled;
 #endif
 
-// Set up our keypad with key map and instantiate it
+/***********************************************************************************
+Set up our keypad
+***********************************************************************************/
 char keys[4][3] = {
  {'1', '2', '3'},
  {'4', '5', '6'},
@@ -57,12 +65,16 @@ byte pin_rows[4]      = {KEYPAD_PIN2, KEYPAD_PIN7, KEYPAD_PIN6, KEYPAD_PIN4};
 byte pin_column[3] = {KEYPAD_PIN3, KEYPAD_PIN1, KEYPAD_PIN5};
 Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
-// Set up our averaging inputs for the potentiometers
+/***********************************************************************************
+Set up our pot objects
+***********************************************************************************/
 AnalogueAverage pot1(POT1_PIN);
 AnalogueAverage pot2(POT2_PIN);
 AnalogueAverage pot3(POT3_PIN);
 
-// Set global variables with initial values
+/***********************************************************************************
+Define global variables
+***********************************************************************************/
 int8_t loco1Speed = 0;
 int8_t loco2Speed = 0;
 int8_t loco3Speed = 0;
@@ -74,12 +86,18 @@ bool loco2Light = 0;
 bool loco3Light = 0;
 bool eStop = false;
 bool trackPower = 0;
+const byte numChars = 20;                           // Maximum number of serial characters to accept for input.
+char serialInputChars[numChars];                    // Char array for serial characters received.
+bool newSerialData = false;                         // Flag for new serial data being received.
 
 // Placeholder of static loco addresses until roster functions added
 uint16_t loco1Address = 2004;
 uint16_t loco2Address = 2006;
 uint16_t loco3Address = 2010;
 
+/***********************************************************************************
+Main setup function
+***********************************************************************************/
 void setup() {
   // Set up serial and display basic config
   Serial.begin(115200);
@@ -90,10 +108,10 @@ void setup() {
   Serial.println(F(" samples"));
   // Set up OLED
 #ifdef USE_OLED_SPI
-  oled.begin(&SH1106_128x64, CS_PIN, DC_PIN);
+  oled.begin(OLED_TYPE, CS_PIN, DC_PIN);
 #endif
 #ifdef USE_OLED_I2C
-  oled.begin(&Adafruit128x64, OLED_ADDRESS);
+  oled.begin(OLED_TYPE, OLED_ADDRESS);
 #endif
   oled.setFont(OLED_FONT);
   oled.clear();
@@ -106,12 +124,18 @@ void setup() {
   keypad.setHoldTime(KEYPAD_HOLD);
 }
 
+/***********************************************************************************
+Main loop
+***********************************************************************************/
 void loop() {
   getSerialInput();
   keypad.getKey();
   processSliders();
 }
 
+/***********************************************************************************
+Serial monitoring/processing functions
+***********************************************************************************/
 /*
 Function to receive any serial input and process it.
 
@@ -136,9 +160,35 @@ Should it flag for changes to locos from other throttles? Pots will always overr
 digital throttles, maybe * in front of speed/dir?
 */
 void getSerialInput() {
-
+  // static bool serialInProgress = false;
+  // static byte serialIndex = 0;
+  // char startMarker = '<';
+  // char endMarker = '>';
+  // char serialChar;
+  // while (Serial.available() > 0 && newSerialData == false) {
+  //   serialChar = Serial.read();
+  //   if (serialInProgress == true) {
+  //     if (serialChar != endMarker) {
+  //       serialInputChars[serialIndex] = serialChar;
+  //       serialIndex++;
+  //       if (serialIndex >= numChars) {
+  //         serialIndex = numChars - 1;
+  //       }
+  //     } else {
+  //       serialInputChars[serialIndex] = '\0';
+  //       serialInProgress = false;
+  //       serialIndex = 0;
+  //       newSerialData = true;
+  //     }
+  //   } else if (serialChar == startMarker) {
+  //     serialInProgress = true;
+  //   }
+  // }
 }
 
+/***********************************************************************************
+Keypad functions
+***********************************************************************************/
 /*
 Function for a keypad event handler
 */
@@ -220,6 +270,9 @@ void keyHeld(char key) {
   }
 }
 
+/***********************************************************************************
+Potentiometer processing functions
+***********************************************************************************/
 /*
 Function to process the potentiometer inputs to control speed
 This is a HORRENDOUS function and needs to be optimised
@@ -274,8 +327,11 @@ void processSliders() {
   }
 }
 
+/***********************************************************************************
+Display functions
+***********************************************************************************/
 /*
-OLED Functions below
+Display speeds
 */
 void displaySpeeds() {
   oled.setCursor(4, 0);
@@ -311,6 +367,13 @@ void displaySpeeds() {
   }
 }
 
+/*
+Display directions
+*/
+
+/*
+Display locos
+*/
 void displayLocos() {
   oled.setCursor(5, 5);
   oled.print(loco1Address);
@@ -323,6 +386,9 @@ void displayLocos() {
   oled.clearToEOL();
 }
 
+/*
+Display EStop status
+*/
 void displayEStop() {
   oled.setCursor(0, 0);
   oled.clearToEOL();

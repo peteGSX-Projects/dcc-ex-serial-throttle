@@ -30,11 +30,13 @@
 
 // Uncomment from the line below for SPI
 #define USE_OLED_SPI
+#define OLED_TYPE &SH1106_128x64
 #define CS_PIN  10
 #define DC_PIN  9
 
 // Comment out above and uncomment from the line below for I2C
 // #define USE_OLED_I2C
+// #define OLED_TYPE &Adafruit128x64
 // #define OLED_ADDRESS 0x3C
 // I2C definition ends here, don't uncomment this line
 
