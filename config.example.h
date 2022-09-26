@@ -60,17 +60,11 @@
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer tuning.
-//  Note reverse is... reversed. A higher value is closer to the centre of the slider
-//  and therefore closer to 0.
+//  Set the minimum and maximum voltages for the ADC.
+//  Allows zero and full to stay away from potentially twitching end points of the pot.
 // 
-//  A neutral area around the centre is recommended to provide a positive stop area.
-//  Set DIR_SWAP to be the point at which direction changes within this neutral area.
-// 
-#define FWD_MIN 525
-#define FWD_MAX 1020
-#define REV_MIN 495
-#define REV_MAX 3
-#define DIR_SWAP 510
+#define POT_MIN 0
+#define POT_MAX 1020
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Debug options

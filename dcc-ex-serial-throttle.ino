@@ -73,6 +73,9 @@ int8_t loco3Speed = 0;
 bool loco1Direction = 1;
 bool loco2Direction = 1;
 bool loco3Direction = 1;
+bool loco1Light = 0;
+bool loco2Light = 0;
+bool loco3Light = 0;
 bool eStop = false;
 
 // Placeholder of static loco addresses until roster functions added
@@ -155,20 +158,56 @@ Function for a keypad event handler
 void keypadEvent(KeypadEvent key) {
   switch (keypad.getState()) {
     case PRESSED:
-      Serial.print(key);
-      Serial.println(F(" pressed"));
+      keyPress(key);
       break;
     case RELEASED:
-      Serial.print(key);
-      Serial.println(F(" released"));
       break;
     case HOLD:
-      Serial.print(key);
-      Serial.println(F(" held"));
       break;
     case IDLE:
       break;
     default:
+      break;
+  }
+}
+
+/*
+Function to process individual key presses
+*/
+void keyPress(char key) {
+  switch(key) {
+    case '1':
+      if (loco1Speed == 0) {
+        loco1Direction = !loco1Direction;
+        setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
+        displaySpeeds();
+      }
+      break;
+    case '2':
+      if (loco2Speed == 0) {
+        loco2Direction = !loco2Direction;
+        setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
+        displaySpeeds();
+      }
+      break;
+    case '3':
+      if (loco3Speed == 0) {
+        loco3Direction = !loco3Direction;
+        setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
+        displaySpeeds();
+      }
+      break;
+    case '4':
+      loco1Light = !loco1Light;
+      setLocoFunction(loco1Address, 0, loco1Light);
+      break;
+    case '5':
+      loco2Light = !loco2Light;
+      setLocoFunction(loco2Address, 0, loco2Light);
+      break;
+    case '6':
+      loco3Light = !loco3Light;
+      setLocoFunction(loco3Address, 0, loco3Light);
       break;
   }
 }
@@ -182,69 +221,21 @@ void processSliders() {
   pot2.averageInput();
   pot3.averageInput();
   bool updateDisplay = false;
-  uint16_t newPot1 = pot1.getAverage();
-  uint16_t newPot2 = pot2.getAverage();
-  uint16_t newPot3 = pot3.getAverage();
-  int8_t newL1Speed;
-  int8_t newL2Speed;
-  int8_t newL3Speed;
-  bool newL1Direction;
-  bool newL2Direction;
-  bool newL3Direction;
-  if (newPot1 >= FWD_MIN) {
-    newL1Speed = map(pot1.getAverage(), FWD_MIN, FWD_MAX, 0, 126);
-    newL1Direction = 1;
-  } else if (newPot1 <= REV_MIN) {
-    newL1Speed = map(pot1.getAverage(), REV_MIN, REV_MAX, 0, 126);
-    newL1Direction = 0;
-  } else if (newPot1 >= DIR_SWAP) {
-    newL1Speed = 0;
-    newL1Direction = 1;
-  } else if (newPot1 < DIR_SWAP) {
-    newL1Speed = 0;
-    newL1Direction = 0;
-  }
-  if (newPot2 > 520) {
-    newL2Speed = map(pot2.getAverage(), 521, 1020, 0, 126);
-    newL2Direction = 1;
-  } else if (newPot2 < 500) {
-    newL2Speed = map(pot2.getAverage(), 499, 3, 0, 126);
-    newL2Direction = 0;
-  } else if (newPot2 >= 510) {
-    newL2Speed = 0;
-    newL2Direction = 1;
-  } else if (newPot2 < 510) {
-    newL2Direction = 0;
-    newL2Speed = 0;
-  }
-  if (newPot3 > 520) {
-    newL3Speed = map(pot3.getAverage(), 521, 1020, 0, 126);
-    newL3Direction = 1;
-  } else if (newPot3 < 500) {
-    newL3Speed = map(pot3.getAverage(), 499, 3, 0, 126);
-    newL3Direction = 0;
-  } else if (newPot3 >= 510) {
-    newL3Speed = 0;
-    newL3Direction = 1;
-  } else if (newPot3 < 510) {
-    newL3Direction = 0;
-    newL3Speed = 0;
-  }
-  if (newL1Speed != loco1Speed || newL1Direction != loco1Direction) {
+  int8_t newL1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  int8_t newL2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  int8_t newL3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  if (newL1Speed != loco1Speed) {
     loco1Speed = newL1Speed;
-    loco1Direction = newL1Direction;
     updateDisplay = true;
     setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
   }
-  if (newL2Speed != loco2Speed || newL2Direction != loco2Direction) {
+  if (newL2Speed != loco2Speed) {
     loco2Speed = newL2Speed;
-    loco2Direction = newL2Direction;
     updateDisplay = true;
     setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
   }
-  if (newL3Speed != loco3Speed || newL3Direction != loco3Direction) {
+  if (newL3Speed != loco3Speed) {
     loco3Speed = newL3Speed;
-    loco3Direction = newL3Direction;
     updateDisplay = true;
     setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
   }
