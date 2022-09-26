@@ -23,7 +23,6 @@
 #include "avdweb_Switch.h"
 #include "version.h"
 #include "AnalogueAverage.h"
-#include "avdweb_Switch.h"
 #include "Keypad.h"
 
 // If we haven't got a custom config.h, use the example
@@ -57,9 +56,6 @@ char keys[4][3] = {
 byte pin_rows[4]      = {KEYPAD_PIN2, KEYPAD_PIN7, KEYPAD_PIN6, KEYPAD_PIN4};
 byte pin_column[3] = {KEYPAD_PIN3, KEYPAD_PIN1, KEYPAD_PIN5};
 Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
-
-// Set up our ESTOP button
-Switch eStopButton(ESTOP_PIN, INPUT_PULLUP, ESTOP_POLARITY, ESTOP_DEBOUNCE);
 
 // Set up our averaging inputs for the potentiometers
 AnalogueAverage pot1(POT1_PIN);
@@ -110,19 +106,9 @@ void setup() {
 }
 
 void loop() {
-  eStopButton.poll();
-  if (eStopButton.pushed()) {
-    setEstopAll();
-    eStop = true;
-    displayEStop();
-  }
   getSerialInput();
-  if (eStop == false) {
-    processSliders();
-  } else {
-
-  }
   keypad.getKey();
+  processSliders();
 }
 
 /*
@@ -158,11 +144,12 @@ Function for a keypad event handler
 void keypadEvent(KeypadEvent key) {
   switch (keypad.getState()) {
     case PRESSED:
-      keyPress(key);
+      keyPressed(key);
       break;
     case RELEASED:
       break;
     case HOLD:
+      keyHeld(key);
       break;
     case IDLE:
       break;
@@ -174,7 +161,7 @@ void keypadEvent(KeypadEvent key) {
 /*
 Function to process individual key presses
 */
-void keyPress(char key) {
+void keyPressed(char key) {
   switch(key) {
     case '1':
       if (loco1Speed == 0) {
@@ -209,6 +196,22 @@ void keyPress(char key) {
       loco3Light = !loco3Light;
       setLocoFunction(loco3Address, 0, loco3Light);
       break;
+    default:
+      break;
+  }
+}
+
+/*
+Function to process individual key presses
+*/
+void keyHeld(char key) {
+  switch(key) {
+    case '0':
+      setEstopAll();
+      eStop = true;
+      break;
+    default:
+      break;
   }
 }
 
@@ -220,42 +223,49 @@ void processSliders() {
   pot1.averageInput();
   pot2.averageInput();
   pot3.averageInput();
-  bool updateDisplay = false;
   int8_t newL1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
   int8_t newL2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
   int8_t newL3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  if (newL1Speed != loco1Speed) {
-    loco1Speed = newL1Speed;
-    updateDisplay = true;
-    setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
-  }
-  if (newL2Speed != loco2Speed) {
-    loco2Speed = newL2Speed;
-    updateDisplay = true;
-    setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
-  }
-  if (newL3Speed != loco3Speed) {
-    loco3Speed = newL3Speed;
-    updateDisplay = true;
-    setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
-  }
-  if (updateDisplay) {
-#ifdef DEBUG
-    Serial.print(F("Loco 1/2/3 speed/direction: "));
-    Serial.print(loco1Speed);
-    Serial.print(F("/"));
-    Serial.print(loco1Direction);
-    Serial.print(F("/"));
-    Serial.print(loco2Speed);
-    Serial.print(F("/"));
-    Serial.print(loco2Direction);
-    Serial.print(F("/"));
-    Serial.print(loco3Speed);
-    Serial.print(F("/"));
-    Serial.println(loco3Direction);
-#endif
-    displaySpeeds();
-    displayLocos();
+  if (eStop == true) {
+    displayEStop();
+    if (newL1Speed == 0 && newL2Speed == 0 && newL3Speed == 0) {
+      eStop = false;
+    }
+  } else {
+    bool updateDisplay = false;
+    if (newL1Speed != loco1Speed) {
+      loco1Speed = newL1Speed;
+      updateDisplay = true;
+      setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
+    }
+    if (newL2Speed != loco2Speed) {
+      loco2Speed = newL2Speed;
+      updateDisplay = true;
+      setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
+    }
+    if (newL3Speed != loco3Speed) {
+      loco3Speed = newL3Speed;
+      updateDisplay = true;
+      setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
+    }
+    if (updateDisplay) {
+  #ifdef DEBUG
+      Serial.print(F("Loco 1/2/3 speed/direction: "));
+      Serial.print(loco1Speed);
+      Serial.print(F("/"));
+      Serial.print(loco1Direction);
+      Serial.print(F("/"));
+      Serial.print(loco2Speed);
+      Serial.print(F("/"));
+      Serial.print(loco2Direction);
+      Serial.print(F("/"));
+      Serial.print(loco3Speed);
+      Serial.print(F("/"));
+      Serial.println(loco3Direction);
+  #endif
+      displaySpeeds();
+      displayLocos();
+    }
   }
 }
 
