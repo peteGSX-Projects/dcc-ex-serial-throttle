@@ -307,20 +307,6 @@ void processSliders() {
       setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
     }
     if (updateDisplay) {
-  #ifdef DEBUG
-      Serial.print(F("Loco 1/2/3 speed/direction: "));
-      Serial.print(loco1Speed);
-      Serial.print(F("/"));
-      Serial.print(loco1Direction);
-      Serial.print(F("/"));
-      Serial.print(loco2Speed);
-      Serial.print(F("/"));
-      Serial.print(loco2Direction);
-      Serial.print(F("/"));
-      Serial.print(loco3Speed);
-      Serial.print(F("/"));
-      Serial.println(loco3Direction);
-  #endif
       displaySpeeds();
       displayLocos();
     }
