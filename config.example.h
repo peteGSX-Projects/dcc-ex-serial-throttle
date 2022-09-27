@@ -45,13 +45,13 @@
 // 
 #define KEYPAD_DEBOUNCE 10
 #define KEYPAD_HOLD 500
-#define KEYPAD_PIN1 3
-#define KEYPAD_PIN2 4
-#define KEYPAD_PIN3 5
-#define KEYPAD_PIN4 6
-#define KEYPAD_PIN5 7
-#define KEYPAD_PIN6 8
-#define KEYPAD_PIN7 12
+#define KEYPAD_PIN1 2
+#define KEYPAD_PIN2 3
+#define KEYPAD_PIN3 4
+#define KEYPAD_PIN4 5
+#define KEYPAD_PIN5 6
+#define KEYPAD_PIN6 7
+#define KEYPAD_PIN7 8
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer tuning.
