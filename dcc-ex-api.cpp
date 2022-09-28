@@ -257,3 +257,7 @@ rosterID = 1 to 32767
   Serial.print(rosterID);
   Serial.print(F(">"));
 };
+
+void parseAPICommand(char* serialInput, uint8_t arraySize) {
+
+};

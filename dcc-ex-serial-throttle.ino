@@ -88,7 +88,7 @@ bool loco2Stop = false;
 bool loco3Stop = false;
 bool eStop = false;                       // Flag when 0 held for EStop
 bool trackPower = 0;                      // Flag for track power
-const byte numChars = 20;                 // Maximum number of serial characters to accept for input.
+const uint8_t numChars = 50;              // Maximum number of serial characters to accept for input.
 char serialInputChars[numChars];          // Char array for serial characters received.
 bool newSerialData = false;               // Flag for new serial data being received.
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
@@ -161,30 +161,33 @@ Should it flag for changes to locos from other throttles? Pots will always overr
 digital throttles, maybe * in front of speed/dir?
 */
 void getSerialInput() {
-  // static bool serialInProgress = false;
-  // static byte serialIndex = 0;
-  // char startMarker = '<';
-  // char endMarker = '>';
-  // char serialChar;
-  // while (Serial.available() > 0 && newSerialData == false) {
-  //   serialChar = Serial.read();
-  //   if (serialInProgress == true) {
-  //     if (serialChar != endMarker) {
-  //       serialInputChars[serialIndex] = serialChar;
-  //       serialIndex++;
-  //       if (serialIndex >= numChars) {
-  //         serialIndex = numChars - 1;
-  //       }
-  //     } else {
-  //       serialInputChars[serialIndex] = '\0';
-  //       serialInProgress = false;
-  //       serialIndex = 0;
-  //       newSerialData = true;
-  //     }
-  //   } else if (serialChar == startMarker) {
-  //     serialInProgress = true;
-  //   }
-  // }
+  static bool serialInProgress = false;
+  static uint8_t serialIndex = 0;
+  char startMarker = '<';
+  char endMarker = '>';
+  char serialChar;
+  while (Serial.available() > 0 && newSerialData == false) {
+    serialChar = Serial.read();
+    if (serialInProgress == true) {
+      if (serialChar != endMarker) {
+        serialInputChars[serialIndex] = serialChar;
+        serialIndex++;
+        if (serialIndex >= numChars) {
+          serialIndex = numChars - 1;
+        }
+      } else {
+        serialInputChars[serialIndex] = '\0';
+        serialInProgress = false;
+        serialIndex = 0;
+        newSerialData = true;
+      }
+    } else if (serialChar == startMarker) {
+      serialInProgress = true;
+    }
+  }
+  if (newSerialData == true) {
+    parseAPICommand(serialInputChars, serialIndex + 1);
+  }
 }
 
 /***********************************************************************************
