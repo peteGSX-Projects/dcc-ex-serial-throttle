@@ -22,7 +22,6 @@ Include the required libraries
 ***********************************************************************************/
 #include <Arduino.h>
 #include "dcc-ex-api.h"
-#include "avdweb_Switch.h"
 #include "version.h"
 #include "AnalogueAverage.h"
 #include "Keypad.h"
@@ -84,16 +83,18 @@ bool loco3Direction = 1;
 bool loco1Light = 0;
 bool loco2Light = 0;
 bool loco3Light = 0;
-bool eStop = false;
-bool trackPower = 0;
-const byte numChars = 20;                           // Maximum number of serial characters to accept for input.
-char serialInputChars[numChars];                    // Char array for serial characters received.
-bool newSerialData = false;                         // Flag for new serial data being received.
-
-// Placeholder of static loco addresses until roster functions added
-uint16_t loco1Address = 2004;
-uint16_t loco2Address = 2006;
-uint16_t loco3Address = 2010;
+bool loco1Stop = false;                   // Flag to temporarily stop loco when button held
+bool loco2Stop = false;
+bool loco3Stop = false;
+bool eStop = false;                       // Flag when 0 held for EStop
+bool trackPower = 0;                      // Flag for track power
+const byte numChars = 20;                 // Maximum number of serial characters to accept for input.
+char serialInputChars[numChars];          // Char array for serial characters received.
+bool newSerialData = false;               // Flag for new serial data being received.
+bool keyPress = false;                    // Flag for when a key is pressed rather than held
+uint16_t loco1Address = 0;
+uint16_t loco2Address = 0;
+uint16_t loco3Address = 0;
 
 /***********************************************************************************
 Main setup function
@@ -195,12 +196,18 @@ Function for a keypad event handler
 void keypadEvent(KeypadEvent key) {
   switch (keypad.getState()) {
     case PRESSED:
-      keyPressed(key);
-      break;
-    case RELEASED:
+      keyPress = true;
       break;
     case HOLD:
+      keyPress = false;
       keyHeld(key);
+      break;
+    case RELEASED:
+      if (keyPress == true) {
+        keyPressed(key);
+      } else {
+        keyReleased(key);
+      }
       break;
     case IDLE:
       break;
@@ -219,37 +226,43 @@ void keyPressed(char key) {
       setTrackPower(trackPower);
       break;
     case '1':
-      if (loco1Speed == 0) {
+      if (loco1Address > 0 && loco1Speed == 0) {
         loco1Direction = !loco1Direction;
         setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
         displaySpeeds();
       }
       break;
     case '2':
-      if (loco2Speed == 0) {
+      if (loco2Address > 0 && loco2Speed == 0) {
         loco2Direction = !loco2Direction;
         setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
         displaySpeeds();
       }
       break;
     case '3':
-      if (loco3Speed == 0) {
+      if (loco3Address > 0 && loco3Speed == 0) {
         loco3Direction = !loco3Direction;
         setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
         displaySpeeds();
       }
       break;
     case '4':
-      loco1Light = !loco1Light;
-      setLocoFunction(loco1Address, 0, loco1Light);
+      if (loco1Address > 0) {
+        loco1Light = !loco1Light;
+        setLocoFunction(loco1Address, 0, loco1Light);
+      }
       break;
     case '5':
-      loco2Light = !loco2Light;
-      setLocoFunction(loco2Address, 0, loco2Light);
+      if (loco2Address > 0) {
+        loco2Light = !loco2Light;
+        setLocoFunction(loco2Address, 0, loco2Light);
+      }
       break;
     case '6':
-      loco3Light = !loco3Light;
-      setLocoFunction(loco3Address, 0, loco3Light);
+      if (loco3Address > 0) {
+        loco3Light = !loco3Light;
+        setLocoFunction(loco3Address, 0, loco3Light);
+      }
       break;
     default:
       break;
@@ -257,13 +270,47 @@ void keyPressed(char key) {
 }
 
 /*
-Function to process individual key presses
+Function to process held keys
 */
 void keyHeld(char key) {
   switch(key) {
     case '0':
       setEstopAll();
       eStop = true;
+      break;
+    case '7':
+      if (loco1Address > 0) {
+        loco1Stop = true;
+      }
+      break;
+    case '8':
+      if (loco2Address > 0) {
+        loco2Stop = true;
+      }
+      break;
+    case '9':
+      if (loco3Address > 0) {
+        loco3Stop = true;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+/*
+Function to process held keys when released
+*/
+void keyReleased(char key) {
+  switch(key) {
+    case '7':
+      loco1Stop = false;
+      break;
+    case '8':
+      loco2Stop = false;
+      break;
+    case '9':
+      loco3Stop = false;
       break;
     default:
       break;
@@ -281,9 +328,24 @@ void processSliders() {
   pot1.averageInput();
   pot2.averageInput();
   pot3.averageInput();
-  int8_t newL1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  int8_t newL2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  int8_t newL3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  int8_t newL1Speed;
+  int8_t newL2Speed;
+  int8_t newL3Speed;
+  if (loco1Stop == true) {
+    newL1Speed = 0;
+  } else {
+    newL1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  };
+  if (loco2Stop == true) {
+    newL2Speed = 0;
+  } else {
+    newL2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  };
+  if (loco3Stop == true) {
+    newL3Speed = 0;
+  } else {
+    newL3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  };
   if (eStop == true) {
     displayEStop();
     if (newL1Speed == 0 && newL2Speed == 0 && newL3Speed == 0) {
