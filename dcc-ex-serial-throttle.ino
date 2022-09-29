@@ -88,8 +88,8 @@ bool loco2Stop = false;
 bool loco3Stop = false;
 bool eStop = false;                       // Flag when 0 held for EStop
 bool trackPower = 0;                      // Flag for track power
-const uint8_t numChars = 50;              // Maximum number of serial characters to accept for input.
-char serialInputChars[numChars];          // Char array for serial characters received.
+const uint8_t numBytes = 50;              // Maximum number of serial bytes to accept for input.
+byte serialInputBytes[numBytes];          // Byte array for serial bytes received.
 bool newSerialData = false;               // Flag for new serial data being received.
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
 uint16_t loco1Address = 0;
@@ -153,7 +153,7 @@ getLoco(locoAddress) {}
 
 This function should probably just get anything between <> and pass it on
 
-The actual parser should probably just look for the first character and discard
+The actual parser should probably just look for the first byte and discard
 anything that's not either a broadcast, or doesn't have the possibility of being
 locally relevant
 
@@ -163,30 +163,30 @@ digital throttles, maybe * in front of speed/dir?
 void getSerialInput() {
   static bool serialInProgress = false;
   static uint8_t serialIndex = 0;
-  char startMarker = '<';
-  char endMarker = '>';
-  char serialChar;
+  byte startMarker = '<';
+  byte endMarker = '>';
+  byte serialByte;
   while (Serial.available() > 0 && newSerialData == false) {
-    serialChar = Serial.read();
+    serialByte = Serial.read();
     if (serialInProgress == true) {
-      if (serialChar != endMarker) {
-        serialInputChars[serialIndex] = serialChar;
+      if (serialByte != endMarker) {
+        serialInputBytes[serialIndex] = serialByte;
         serialIndex++;
-        if (serialIndex >= numChars) {
-          serialIndex = numChars - 1;
+        if (serialIndex >= numBytes) {
+          serialIndex = numBytes - 1;
         }
       } else {
-        serialInputChars[serialIndex] = '\0';
+        serialInputBytes[serialIndex] = '\0';
         serialInProgress = false;
         serialIndex = 0;
         newSerialData = true;
       }
-    } else if (serialChar == startMarker) {
+    } else if (serialByte == startMarker) {
       serialInProgress = true;
     }
   }
   if (newSerialData == true) {
-    parseAPICommand(serialInputChars, serialIndex + 1);
+    parseAPIResponse(serialInputBytes, serialIndex + 1);
   }
 }
 

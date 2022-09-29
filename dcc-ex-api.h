@@ -37,6 +37,6 @@ void getRoute(uint16_t routeID);
 void setStartRoute(uint16_t locoAddress, uint16_t routeID);
 void getRosterEntries();
 void getRoster(uint16_t rosterID);
-void parseAPICommand(char* serialInput, uint8_t arraySize);
+void parseAPIResponse(byte* responseBytes, uint8_t arraySize);
 
 #endif
