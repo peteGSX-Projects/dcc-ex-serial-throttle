@@ -20,6 +20,12 @@
 #ifndef DCC_EX_API_H
 #define DCC_EX_API_H
 
+// Maximum number of objects to retrieve from API responses, also limits the
+// number of parameters to parse.
+#ifndef MAX_OBJECTS
+#define MAX_OBJECTS 10
+#endif
+
 void setTrackPower(bool powerState);
 void setJoin();
 void setLocoThrottle(uint16_t locoAddress, int8_t speed, bool direction);

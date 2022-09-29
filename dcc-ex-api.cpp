@@ -265,66 +265,44 @@ This function parses input received in array of chars according to the API refer
 commandChars[0] = OPCODE
 commandChars[1] onwards are parameters, each separated by a space, first parameter is non-blank
 */
-  const uint8_t maxParams = 10;
-  char opcode = responseBytes[0];
-  int16_t params[maxParams];
+  byte opcode = responseBytes[0];
+  uint8_t maxObjects = MAX_OBJECTS;
+  if (MAX_OBJECTS < 10) {
+    maxObjects = 10;
+  }
+  int16_t params[maxObjects];
   byte state = 1;
   byte parameterCount = 0;
   int16_t runningValue = 0;
-  const byte *remainingParams = responseBytes + 1;
-  bool signNegative = false;
+  const byte *remainingParams = responseBytes + 1;  // Skip OPCODE
 
-  for (int16_t i = 0; i < maxParams; i++) {
+  for (int16_t i = 0; i < maxObjects; i++) {
     params[i] = 0;
   }
 
-  while (parameterCount < maxParams) {
-    byte hot = *remainingParams;
-    // switch (state) {
-    //   case 1: // skipping spaces before a param
-    //         if (hot == ' ')
-    //             break;
-    //         if (hot == '\0' || hot == '>')
-    //             // return parameterCount;
-    //             break;
-    //         state = 2;
-    //         continue;
-
-    //     case 2: // checking sign
-    //         signNegative = false;
-    //         runningValue = 0;
-    //         state = 3;
-    //         if (hot != '-')
-    //             continue;
-    //         signNegative = true;
-    //         break;
-    //     case 3: // building a parameter
-    //         if (hot >= '0' && hot <= '9')
-    //         {
-    //             runningValue = (usehex?16:10) * runningValue + (hot - '0');
-    //             break;
-    //         }
-    //         if (hot >= 'a' && hot <= 'z') hot=hot-'a'+'A'; // uppercase a..z
-    //         if (usehex && hot>='A' && hot<='F') {
-    //             // treat A..F as hex not keyword
-    //             runningValue = 16 * runningValue + (hot - 'A' + 10);
-    //             break;
-    //         }
-    //         if (hot=='_' || (hot >= 'A' && hot <= 'Z'))
-    //         {
-    //             // Since JMRI got modified to send keywords in some rare cases, we need this
-    //             // Super Kluge to turn keywords into a hash value that can be recognised later
-    //             runningValue = ((runningValue << 5) + runningValue) ^ hot;
-    //             break;
-    //         }
-    //         responseBytes[parameterCount] = runningValue * (signNegative ? -1 : 1);
-    //         parameterCount++;
-    //         state = 1;
-    //         continue;
-    //     }
-    //     remainingParams++;
-
-    // }
+  while (parameterCount < maxObjects) {
+    byte nextByte = *remainingParams;
+    switch (state) {
+      case 1:
+        // If it's a space, skip it
+        if (nextByte == ' ') {
+          break;
+        }
+        // If it's the termination character, end parsing
+        if (nextByte == '\0') {
+          // This needs to flag the end of our parsing
+          break;
+        }
+        state = 2;
+        continue;
+      case 2:
+        // Append our parameter
+        responseBytes[parameterCount] = runningValue;
+        parameterCount++;
+        state = 1;
+        continue;
+      remainingParams++;
+    }
   }
 
   // switch(opcode) {

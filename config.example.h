@@ -9,6 +9,15 @@
 #define CONFIG_H
 
 /////////////////////////////////////////////////////////////////////////////////////
+//  Maximum number of objects to retrieve, minimum of 10.
+//  This applies to:
+//    - Roster entries
+//    - Turnouts
+//    - Routes and automation sequences
+// 
+#define MAX_OBJECTS 10
+
+/////////////////////////////////////////////////////////////////////////////////////
 //  Number of times to sample the analogue input to average out twitchy sliders.
 // 
 #define SAMPLES 10
