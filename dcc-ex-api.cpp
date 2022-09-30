@@ -274,44 +274,47 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
   byte state = 1;
   byte parameterCount = 0;
   int16_t runningValue = 0;
+  bool terminated = false;
   const byte *remainingParams = responseBytes + 1;  // Skip OPCODE
 
   for (int16_t i = 0; i < maxObjects; i++) {
     params[i] = 0;
   }
 
-  while (parameterCount < maxObjects) {
+  while (parameterCount < maxObjects && terminated == false) {
     byte nextByte = *remainingParams;
     switch (state) {
       case 1:
         // If it's a space, skip it
         if (nextByte == ' ') {
+          runningValue = 0;
           break;
         }
         // If it's the termination character, end parsing
         if (nextByte == '\0') {
-          // This needs to flag the end of our parsing
+          terminated = true;
           break;
         }
         state = 2;
         continue;
       case 2:
         // Append our parameter
-        responseBytes[parameterCount] = runningValue;
+        runningValue = runningValue + nextByte;
+        params[parameterCount] = runningValue;
         parameterCount++;
         state = 1;
         continue;
-      remainingParams++;
     }
+    remainingParams++;
   }
 
-  // switch(opcode) {
-  //   case 'j':
-  //     Serial.println(F("Throttle response"));
-  //     break;
-  //   default:
-  //     break;
-  // }
+  switch(opcode) {
+    case 'j':
+      Serial.println(F("Throttle response"));
+      break;
+    default:
+      break;
+  }
 };
 
 /*
