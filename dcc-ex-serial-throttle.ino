@@ -88,7 +88,7 @@ bool loco2Stop = false;
 bool loco3Stop = false;
 bool eStop = false;                       // Flag when 0 held for EStop
 bool trackPower = 0;                      // Flag for track power
-const uint8_t numBytes = 50;              // Maximum number of serial bytes to accept for input.
+const uint8_t numBytes = 100;             // Maximum number of serial bytes to accept for input.
 byte serialInputBytes[numBytes];          // Byte array for serial bytes received.
 bool newSerialData = false;               // Flag for new serial data being received.
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
@@ -187,6 +187,7 @@ void getSerialInput() {
   }
   if (newSerialData == true) {
     parseAPIResponse(serialInputBytes, serialIndex + 1);
+    newSerialData = false;
   }
 }
 

@@ -265,28 +265,61 @@ This function parses input received in array of chars according to the API refer
 commandChars[0] = OPCODE
 commandChars[1] onwards are parameters, each separated by a space, first parameter is non-blank
 */
-  byte opcode = responseBytes[0];
+  // Set our parameter type flags for easy reference
+  const uint8_t NUMBER = 0;
+  const uint8_t TEXT = 1;
+  const uint8_t STRING = 2;
+  
+  // Ensure we accept at least 10 params/objects, and set the limit
   uint8_t maxObjects = MAX_OBJECTS;
   if (MAX_OBJECTS < 10) {
     maxObjects = 10;
   }
-  int16_t params[maxObjects];
-  byte state = 1;
-  byte parameterCount = 0;
-  int16_t runningValue = 0;
-  bool terminated = false;
+
+  // Struct for our parameters, they can be different types
+  struct {
+    uint8_t type;
+    int16_t number;
+    byte text;
+    String string;
+  } params[maxObjects];
+
+  byte opcode = responseBytes[0];   // Our OPCODE is the always the first parameter
+  byte state = 1;                   // This lets us progress through splitting the params
+  bool buildString = false;         // Flag for building string params "..."
+  byte parameterCount = 0;          // Count of params
+  byte runningValue;                // Placeholder to build the param
+  bool terminated = false;          // Flag for when we receive the terminator '\0'
   const byte *remainingParams = responseBytes + 1;  // Skip OPCODE
 
-  for (int16_t i = 0; i < maxObjects; i++) {
-    params[i] = 0;
-  }
+/*
+If ' ' skip it (space delimited)
+If '\0' that's the end, exit switch and loop
+If '"' it's the start of a string, everything until the next '"' is the same string including ' '
+Everything else forms part of the parameter
+eg. 
 
+<JR>:
+<jR 2004 2006 2010>
+
+<JR 2004>:
+<jR 2004 "QR 2004" "Light/Horn/Bell/F4">
+
+Throttle broadcast:
+<l 2004 0 179 0>
+
+<JT>:
+<jT 101 102>
+
+<JT 101>:
+<jT 101 C "Turnout 1">
+*/
   while (parameterCount < maxObjects && terminated == false) {
     byte nextByte = *remainingParams;
     switch (state) {
       case 1:
         // If it's a space, skip it
-        if (nextByte == ' ') {
+        if (nextByte == ' ' && buildString == false) {
           runningValue = 0;
           break;
         }
@@ -298,7 +331,18 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
         state = 2;
         continue;
       case 2:
-        // Append our parameter
+        // Build our parameter
+        // If ", it's either the start or end of a string, skip for now
+        if (nextByte == '"' && buildString == false) {
+          buildString = true;
+          state = 1;
+          break;
+        }
+        if (nextByte == '"' && buildString == true) {
+          buildString = false;
+          state = 1;
+          break;
+        }
         runningValue = runningValue + nextByte;
         params[parameterCount] = runningValue;
         parameterCount++;
@@ -311,6 +355,9 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
   switch(opcode) {
     case 'j':
       Serial.println(F("Throttle response"));
+      for (uint16_t i = 0; i < sizeof(params); i++) {
+        Serial.println(params[i]);
+      }
       break;
     default:
       break;
@@ -323,4 +370,6 @@ p - track power
 r - read loco on programming track
 l - cab broadcast
 j - throttle commands
+H - turnout throw/close
+q/Q - defined sensor changes
 */
