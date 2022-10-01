@@ -267,7 +267,7 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
 */
   // Set our parameter type flags for easy reference
   const uint8_t TBD = 0;
-  const uint8_t NUMBER = 1;
+  const uint8_t INTEGER = 1;
   const uint8_t TEXT = 2;
   const uint8_t STRING = 3;
   
@@ -280,7 +280,7 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
   // Struct for our parameters, they can be different types
   struct {
     uint8_t type;
-    int16_t number;
+    int16_t integer;
     byte text;
     String string;
   } params[maxObjects];
@@ -288,7 +288,7 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
   byte opcode = responseBytes[0];   // Our OPCODE is always the first parameter
   byte state = 1;                   // This lets us progress through splitting stages
   bool buildString = false;         // Flag for building string params "..."
-  byte parameterCount = 0;          // Count of params
+  uint8_t parameterCount = 0;       // Count of params
   byte runningValue = 0;            // Placeholder to build the param
   bool terminated = false;          // Flag for when we receive the terminator '\0'
   const byte *remainingParams = responseBytes + 1;  // Skip OPCODE
@@ -318,16 +318,22 @@ Throttle broadcast:
 */
   while (parameterCount < maxObjects && terminated == false) {
     byte nextByte = *remainingParams;
+    Serial.print(F("Building param "));
+    Serial.print(parameterCount);
+    Serial.print(F(" with byte value "));
+    Serial.println(nextByte);
     switch (state) {
       case 1:
         // If it's a space, skip it
         if (nextByte == ' ' && buildString == false) {
+          Serial.println("Space");
           runningValue = 0;
           paramType = TBD;
           break;
         }
         // If it's the termination character, end parsing
         if (nextByte == '\0') {
+          Serial.println(F("Terminated"));
           terminated = true;
           break;
         }
@@ -337,6 +343,7 @@ Throttle broadcast:
         // Build our parameter
         // If " and not building a string, flag to do so and get next byte
         if (nextByte == '"' && buildString == false) {
+          Serial.println(F("String start"));
           paramType = STRING;
           buildString = true;
           state = 1;
@@ -344,43 +351,43 @@ Throttle broadcast:
         }
         // If " and building a string, flag the end of the string
         if (nextByte == '"' && buildString == true) {
-          paramType = TBD;
+          Serial.println(F("String end"));
           buildString = false;
-          state = 1;
-          break;
         }
         if (paramType == STRING) {
+          Serial.print(F("String append: "));
           runningValue = runningValue + nextByte;
           params[parameterCount].type = STRING;
-          params[parameterCount].string = runningValue;
+          params[parameterCount].string = String(runningValue);
+          Serial.println((String) runningValue);
           state = 1;
           break;
         }
         if (paramType == TBD && nextByte == '-') {
-          paramType = NUMBER;
+          Serial.println(F("Negative number"));
+          paramType = INTEGER;
           runningValue = nextByte;
           state = 1;
           break;
         }
-        if (paramType == NUMBER || (paramType == TBD && (nextByte >= '0' || nextByte <= '9'))) {
-          paramType = NUMBER;
+        if (paramType == INTEGER || (paramType == TBD && nextByte >= '0' && nextByte <= '9')) {
+          Serial.print(F("Number: "));
+          paramType = INTEGER;
           runningValue = runningValue + nextByte;
-          params[parameterCount].type = NUMBER;
-          params[parameterCount].number = runningValue;
+          params[parameterCount].type = INTEGER;
+          params[parameterCount].integer = int(runningValue);
+          Serial.println(int(runningValue));
           state = 1;
           break;
         }
         if (paramType == TBD) {
-          paramType = TEXT;
-          runningValue = runningValue + nextByte;
+          Serial.print(F("Text: "));
           params[parameterCount].type = TEXT;
-          params[parameterCount].text = runningValue;
-          state = 1;
-          break;
+          params[parameterCount].text = nextByte;
+          Serial.println((char) nextByte);
         }
         parameterCount++;
         state = 1;
-        continue;
     }
     remainingParams++;
   }
@@ -388,16 +395,23 @@ Throttle broadcast:
   switch(opcode) {
     case 'j':
       Serial.println(F("Throttle response"));
-      for (uint16_t i = 0; i < sizeof(params); i++) {
+      Serial.print(F("Found "));
+      Serial.print(parameterCount);
+      Serial.println(" params");
+      for (uint16_t i = 0; i < parameterCount; i++) {
+        Serial.print(F("Param number "));
+        Serial.print(i);
+        Serial.print(F(" type is "));
+        Serial.println(params[i].type);
         switch (params[i].type) {
-          case NUMBER:
-            Serial.println(params[i].number);
+          case INTEGER:
+            Serial.println(int(params[i].integer));
             break;
           case TEXT:
             Serial.println(params[i].text);
             break;
           case STRING:
-            Serial.println(params[i].string);
+            Serial.println(String(params[i].string));
             break;
         }
       }
