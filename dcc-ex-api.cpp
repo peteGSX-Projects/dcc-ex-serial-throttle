@@ -266,9 +266,10 @@ commandChars[0] = OPCODE
 commandChars[1] onwards are parameters, each separated by a space, first parameter is non-blank
 */
   // Set our parameter type flags for easy reference
-  const uint8_t NUMBER = 0;
-  const uint8_t TEXT = 1;
-  const uint8_t STRING = 2;
+  const uint8_t TBD = 0;
+  const uint8_t NUMBER = 1;
+  const uint8_t TEXT = 2;
+  const uint8_t STRING = 3;
   
   // Ensure we accept at least 10 params/objects, and set the limit
   uint8_t maxObjects = MAX_OBJECTS;
@@ -284,13 +285,14 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
     String string;
   } params[maxObjects];
 
-  byte opcode = responseBytes[0];   // Our OPCODE is the always the first parameter
-  byte state = 1;                   // This lets us progress through splitting the params
+  byte opcode = responseBytes[0];   // Our OPCODE is always the first parameter
+  byte state = 1;                   // This lets us progress through splitting stages
   bool buildString = false;         // Flag for building string params "..."
   byte parameterCount = 0;          // Count of params
-  byte runningValue;                // Placeholder to build the param
+  byte runningValue = 0;            // Placeholder to build the param
   bool terminated = false;          // Flag for when we receive the terminator '\0'
   const byte *remainingParams = responseBytes + 1;  // Skip OPCODE
+  uint8_t paramType = TBD;          // Flag for the parameter type we're dealing with
 
 /*
 If ' ' skip it (space delimited)
@@ -321,6 +323,7 @@ Throttle broadcast:
         // If it's a space, skip it
         if (nextByte == ' ' && buildString == false) {
           runningValue = 0;
+          paramType = TBD;
           break;
         }
         // If it's the termination character, end parsing
@@ -332,19 +335,49 @@ Throttle broadcast:
         continue;
       case 2:
         // Build our parameter
-        // If ", it's either the start or end of a string, skip for now
+        // If " and not building a string, flag to do so and get next byte
         if (nextByte == '"' && buildString == false) {
+          paramType = STRING;
           buildString = true;
           state = 1;
           break;
         }
+        // If " and building a string, flag the end of the string
         if (nextByte == '"' && buildString == true) {
+          paramType = TBD;
           buildString = false;
           state = 1;
           break;
         }
-        runningValue = runningValue + nextByte;
-        params[parameterCount] = runningValue;
+        if (paramType == STRING) {
+          runningValue = runningValue + nextByte;
+          params[parameterCount].type = STRING;
+          params[parameterCount].string = runningValue;
+          state = 1;
+          break;
+        }
+        if (paramType == TBD && nextByte == '-') {
+          paramType = NUMBER;
+          runningValue = nextByte;
+          state = 1;
+          break;
+        }
+        if (paramType == NUMBER || (paramType == TBD && (nextByte >= '0' || nextByte <= '9'))) {
+          paramType = NUMBER;
+          runningValue = runningValue + nextByte;
+          params[parameterCount].type = NUMBER;
+          params[parameterCount].number = runningValue;
+          state = 1;
+          break;
+        }
+        if (paramType == TBD) {
+          paramType = TEXT;
+          runningValue = runningValue + nextByte;
+          params[parameterCount].type = TEXT;
+          params[parameterCount].text = runningValue;
+          state = 1;
+          break;
+        }
         parameterCount++;
         state = 1;
         continue;
@@ -356,7 +389,17 @@ Throttle broadcast:
     case 'j':
       Serial.println(F("Throttle response"));
       for (uint16_t i = 0; i < sizeof(params); i++) {
-        Serial.println(params[i]);
+        switch (params[i].type) {
+          case NUMBER:
+            Serial.println(params[i].number);
+            break;
+          case TEXT:
+            Serial.println(params[i].text);
+            break;
+          case STRING:
+            Serial.println(params[i].string);
+            break;
+        }
       }
       break;
     default:
