@@ -48,7 +48,7 @@ SSD1306AsciiSpi oled;
 #ifdef USE_OLED_I2C
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiAvrI2c.h"
-SSD1306Ascii oled;
+SSD1306AsciiAvrI2c oled;
 #endif
 
 /***********************************************************************************
@@ -92,7 +92,7 @@ const uint8_t numBytes = 100;             // Maximum number of serial bytes to a
 byte serialInputBytes[numBytes];          // Byte array for serial bytes received.
 bool newSerialData = false;               // Flag for new serial data being received.
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
-uint16_t loco1Address = 0;
+uint16_t loco1Address = 2010;
 uint16_t loco2Address = 0;
 uint16_t loco3Address = 0;
 

@@ -295,6 +295,26 @@ commandChars[1] onwards are parameters, each separated by a space, first paramet
   uint8_t paramType = TBD;          // Flag for the parameter type we're dealing with
 
 /*
+Flags/data:
+  data type
+  parameter number
+  how do we build a parameter across multiple bytes?
+
+-> byte
+Start while loop
+Is byte a space ' '?
+  Yes -> skip to next byte, it's a separator
+  No -> continue processing
+Is byte a terminator '\0'?
+  Yes -> end parsing
+  No -> continue processing
+
+
+
+
+
+
+
 If ' ' skip it (space delimited)
 If '\0' that's the end, exit switch and loop
 If '"' it's the start of a string, everything until the next '"' is the same string including ' '
