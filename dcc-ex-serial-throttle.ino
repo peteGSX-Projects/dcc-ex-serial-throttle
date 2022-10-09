@@ -93,8 +93,8 @@ byte serialInputBytes[numBytes];          // Byte array for serial bytes receive
 bool newSerialData = false;               // Flag for new serial data being received.
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
 uint16_t loco1Address = 2010;
-uint16_t loco2Address = 0;
-uint16_t loco3Address = 0;
+uint16_t loco2Address = 2004;
+uint16_t loco3Address = 2006;
 
 /***********************************************************************************
 Main setup function
