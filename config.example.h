@@ -30,17 +30,6 @@
 #define POT3_PIN A2
 
 /////////////////////////////////////////////////////////////////////////////////////
-//  Bluetooth setup, need to define the baud rate the HC-05 communicates at and both
-//  the TX and RX pins in use.
-//  Note the TX/RX pins are from the HC-05 perspective, and map to SoftwareSerial RX/TX.
-//  Baud rate must match the HC-05/06 connected to the CommandStation.
-// 
-// #define USE_BLUETOOTH
-// #define BT_BAUDRATE 115200
-// #define BT_TX 12
-// #define BT_RX A3
-
-/////////////////////////////////////////////////////////////////////////////////////
 //  OLED configuration.
 //  Use this section for SPI, and the section further down for I2C.
 //  Comment out the section not in use.

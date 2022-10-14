@@ -32,15 +32,6 @@ If we haven't got a custom config.h, use the example
   #include "config.example.h"
 #endif
 
-/***********************************************************************************
-Set up bluetooth serial if enabled
-***********************************************************************************/
-#ifdef USE_BLUETOOTH
-#include <SoftwareSerial.h>
-
-SoftwareSerial btSerial(BT_TX,BT_RX);
-#endif
-
 #include "dcc-ex-api.h"
 #include "version.h"
 #include "AnalogueAverage.h"
@@ -142,16 +133,6 @@ void loop() {
   getSerialInput();
   keypad.getKey();
   processSliders();
-}
-
-/***********************************************************************************
-Serial output function
-***********************************************************************************/
-void sendSerial(char *serialCommand) {
-  // Take a char array as input and send to serial
-#ifdef USE_BLUETOOTH
-  // If Bluetooth enabled, send to btSerial also
-#endif
 }
 
 /***********************************************************************************
