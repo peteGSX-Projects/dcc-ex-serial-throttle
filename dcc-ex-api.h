@@ -20,6 +20,8 @@
 #ifndef DCC_EX_API_H
 #define DCC_EX_API_H
 
+#define USE_BLUETOOTH
+
 // Maximum number of objects to retrieve from API responses, also limits the
 // number of parameters to parse.
 #ifndef MAX_OBJECTS

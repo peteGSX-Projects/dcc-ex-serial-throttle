@@ -35,10 +35,10 @@
 //  Note the TX/RX pins are from the HC-05 perspective, and map to SoftwareSerial RX/TX.
 //  Baud rate must match the HC-05/06 connected to the CommandStation.
 // 
-#define USE_BLUETOOTH
-#define BT_BAUDRATE 115200
-#define BT_TX 12
-#define BT_RX A3
+// #define USE_BLUETOOTH
+// #define BT_BAUDRATE 115200
+// #define BT_TX 12
+// #define BT_RX A3
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  OLED configuration.

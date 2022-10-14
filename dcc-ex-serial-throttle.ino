@@ -21,10 +21,6 @@
 Include the required libraries
 ***********************************************************************************/
 #include <Arduino.h>
-#include "dcc-ex-api.h"
-#include "version.h"
-#include "AnalogueAverage.h"
-#include "Keypad.h"
 
 /***********************************************************************************
 If we haven't got a custom config.h, use the example
@@ -35,6 +31,20 @@ If we haven't got a custom config.h, use the example
   #warning config.h not found. Using defaults from config.example.h
   #include "config.example.h"
 #endif
+
+/***********************************************************************************
+Set up bluetooth serial if enabled
+***********************************************************************************/
+#ifdef USE_BLUETOOTH
+#include <SoftwareSerial.h>
+
+SoftwareSerial btSerial(BT_TX,BT_RX);
+#endif
+
+#include "dcc-ex-api.h"
+#include "version.h"
+#include "AnalogueAverage.h"
+#include "Keypad.h"
 
 /***********************************************************************************
 Set up OLED libraries and object
@@ -49,15 +59,6 @@ SSD1306AsciiSpi oled;
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiAvrI2c.h"
 SSD1306AsciiAvrI2c oled;
-#endif
-
-/***********************************************************************************
-Set up bluetooth serial if enabled
-***********************************************************************************/
-#ifdef USE_BLUETOOTH
-#include <SoftwareSerial.h>
-
-SoftwareSerial btSerial(BT_TX,BT_RX);
 #endif
 
 /***********************************************************************************
