@@ -58,6 +58,15 @@ direction = 0 (reverse) or 1 (forward)
   Serial.print(F(" "));
   Serial.print(direction);
   Serial.print(F(">"));
+#ifdef USE_BLUETOOTH
+  btSerial.write(F("<t 1 "));
+  btSerial.write(locoAddress);
+  btSerial.write(F(" "));
+  btSerial.write(speed);
+  btSerial.write(F(" "));
+  btSerial.write(direction);
+  btSerial.write(F(">"));
+#endif
 }
 
 void setForgetAllLocos() {

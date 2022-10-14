@@ -144,6 +144,16 @@ void loop() {
 }
 
 /***********************************************************************************
+Serial output function
+***********************************************************************************/
+void sendSerial(char *serialCommand) {
+  // Take a char array as input and send to serial
+#ifdef USE_BLUETOOTH
+  // If Bluetooth enabled, send to btSerial also
+#endif
+}
+
+/***********************************************************************************
 Serial monitoring/processing functions
 ***********************************************************************************/
 /*
