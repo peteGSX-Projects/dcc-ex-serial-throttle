@@ -54,7 +54,7 @@ SSD1306AsciiAvrI2c oled;
 /***********************************************************************************
 Set up bluetooth serial if enabled
 ***********************************************************************************/
-#ifdef USE_BT
+#ifdef USE_BLUETOOTH
 #include <SoftwareSerial.h>
 
 SoftwareSerial btSerial(BT_TX,BT_RX);
