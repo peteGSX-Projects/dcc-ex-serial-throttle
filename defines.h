@@ -1,6 +1,5 @@
 /*
  *  © 2023 Peter Cole
- *  © 2022 Peter Cole
  *
  *  This file is for a serially connected throttle for a DCC-EX EX-CommandStation.
  *
@@ -18,31 +17,19 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/***********************************************************************************
-Include the required libraries
-***********************************************************************************/
-#include <Arduino.h>
-#include "defines.h"
-
-#include "DisplayFunctions.h"
-#include "KeypadFunctions.h"
-#include "SerialFunctions.h"
+#ifndef DEFINES_H
+#define DEFINES_H
 
 /***********************************************************************************
-Main setup function
+If we haven't got a custom config.h, use the example
 ***********************************************************************************/
-void setup() {
-  // Set up serial and display basic config
-  Serial.begin(115200);
-  displayStartupInfo();
-  setupKeypad();
-}
+#if __has_include ( "config.h")
+  #include "config.h"
+#else
+  #warning config.h not found. Using defaults from config.example.h
+  #include "config.example.h"
+#endif
 
-/***********************************************************************************
-Main loop
-***********************************************************************************/
-void loop() {
-  getSerialInput();
-  keypad.getKey();
-  // processSliders();
-}
+
+
+#endif
