@@ -44,5 +44,4 @@ Main loop
 void loop() {
   getSerialInput();
   keypad.getKey();
-  // processSliders();
 }

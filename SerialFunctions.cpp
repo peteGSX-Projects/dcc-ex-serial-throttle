@@ -52,12 +52,13 @@ void getSerialInput() {
     }
   }
   if (newSerialData == true) {
-    // parseAPIResponse(serialInputBytes, serialIndex + 1);
-    for (uint8_t i = 0; i < numBytes; i++) {
-      if (serialInputBytes[i] == '\0') break;
-      Serial.print((char)serialInputBytes[i]);
-    }
-    Serial.println(F(""));
+    // What to do with serial data here
+    // Just a way to dump received data here:
+    // for (uint8_t i = 0; i < numBytes; i++) {
+    //   if (serialInputBytes[i] == '\0') break;
+    //   Serial.print((char)serialInputBytes[i]);
+    // }
+    // Serial.println(F(""));
     newSerialData = false;
   }
 }

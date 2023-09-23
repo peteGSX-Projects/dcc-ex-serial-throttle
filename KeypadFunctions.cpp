@@ -53,13 +53,11 @@ void keypadEvent(KeypadEvent key) {
       break;
     case HOLD:
       keyPress = false;
-      Serial.print(key);
-      Serial.println(F(" held"));
+      // Hold function here
       break;
     case RELEASED:
       if (keyPress == true) {
-        Serial.print(key);
-        Serial.println(F(" released"));
+        // Press function here
       }
       break;
     case IDLE:
