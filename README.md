@@ -13,15 +13,11 @@ A serial throttle using three linear potentiometers, an OLED, and a 4 x 3 keypad
 
 ### SPI
 
-- SS - PA4
+- DC - PA3
+- CS - PA4
 - MOSI - PA7
 - MISO - PA6
 - SCK - PA5
-
-### I2C
-
-- SDA - PB7
-- SCL - PB6
 
 ### Serial
 
@@ -29,3 +25,13 @@ A serial throttle using three linear potentiometers, an OLED, and a 4 x 3 keypad
 - TX - PA9
 
 (Write to serial pins with Serial1)
+
+### Keypad
+
+- PIN1 - PB3
+- PIN2 - PB4
+- PIN3 - PB5
+- PIN4 - PB6
+- PIN5 - PB7
+- PIN6 - PB8
+- PIN7-  PB9

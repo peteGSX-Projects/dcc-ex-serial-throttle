@@ -30,6 +30,9 @@ If we haven't got a custom config.h, use the example
   #include "config.example.h"
 #endif
 
-
+#if MAX_OBJECTS < 10
+#undef MAX_OBJECTS
+#define MAX_OBJECTS 10
+#endif
 
 #endif

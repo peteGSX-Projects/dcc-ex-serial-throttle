@@ -25,9 +25,9 @@
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer analog pins.
 // 
-#define POT1_PIN A0
-#define POT2_PIN A1
-#define POT3_PIN A2
+#define POT1_PIN PA0
+#define POT2_PIN PA1
+#define POT3_PIN PA2
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  OLED configuration.
@@ -40,8 +40,11 @@
 // Uncomment from the line below for SPI
 #define USE_OLED_SPI
 #define OLED_TYPE &SH1106_128x64
-#define CS_PIN  10
-#define DC_PIN  9
+#define CS_PIN  PA4
+#define DC_PIN  PA3
+// SCK - PA5
+// MISO - PA6
+// MOSI - PA7
 
 // Comment out above and uncomment from the line below for I2C
 // #define USE_OLED_I2C
@@ -54,13 +57,13 @@
 // 
 #define KEYPAD_DEBOUNCE 10
 #define KEYPAD_HOLD 500
-#define KEYPAD_PIN1 2
-#define KEYPAD_PIN2 3
-#define KEYPAD_PIN3 4
-#define KEYPAD_PIN4 5
-#define KEYPAD_PIN5 6
-#define KEYPAD_PIN6 7
-#define KEYPAD_PIN7 8
+#define KEYPAD_PIN1 PB3
+#define KEYPAD_PIN2 PB4
+#define KEYPAD_PIN3 PB5
+#define KEYPAD_PIN4 PB6
+#define KEYPAD_PIN5 PB7
+#define KEYPAD_PIN6 PB8
+#define KEYPAD_PIN7 PB9
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer tuning.
