@@ -25,10 +25,9 @@
 #include "version.h"
 
 void displayStartupInfo();
+void displaySpeeds();
 
 
-
-// void displaySpeeds();
 // void displayLocos();
 // void displayEStop();
 

@@ -30,27 +30,27 @@
 /***********************************************************************************
 Set up our pot objects
 ***********************************************************************************/
-AnalogueAverage pot1(POT1_PIN);
-AnalogueAverage pot2(POT2_PIN);
-AnalogueAverage pot3(POT3_PIN);
+// AnalogueAverage pot1(POT1_PIN);
+// AnalogueAverage pot2(POT2_PIN);
+// AnalogueAverage pot3(POT3_PIN);
 
-int8_t loco1Speed = 0;
-int8_t loco2Speed = 0;
-int8_t loco3Speed = 0;
-bool loco1Direction = 1;
-bool loco2Direction = 1;
-bool loco3Direction = 1;
-bool loco1Light = 0;
-bool loco2Light = 0;
-bool loco3Light = 0;
-bool loco1Stop = false;                   // Flag to temporarily stop loco when button held
-bool loco2Stop = false;
-bool loco3Stop = false;
-bool eStop = false;                       // Flag when 0 held for EStop
-bool trackPower = 0;                      // Flag for track power
-uint16_t loco1Address = 2010;
-uint16_t loco2Address = 2004;
-uint16_t loco3Address = 2006;
+// int8_t loco1Speed = 0;
+// int8_t loco2Speed = 0;
+// int8_t loco3Speed = 0;
+// bool loco1Direction = 1;
+// bool loco2Direction = 1;
+// bool loco3Direction = 1;
+// bool loco1Light = 0;
+// bool loco2Light = 0;
+// bool loco3Light = 0;
+// bool loco1Stop = false;                   // Flag to temporarily stop loco when button held
+// bool loco2Stop = false;
+// bool loco3Stop = false;
+// bool eStop = false;                       // Flag when 0 held for EStop
+// bool trackPower = 0;                      // Flag for track power
+// uint16_t loco1Address = 2010;
+// uint16_t loco2Address = 2004;
+// uint16_t loco3Address = 2006;
 
 
 

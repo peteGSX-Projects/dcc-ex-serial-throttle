@@ -34,6 +34,13 @@ SSD1306AsciiSpi oled;
 SSD1306AsciiAvrI2c oled;
 #endif
 
+uint8_t loco1Speed = 0;
+uint8_t loco2Speed = 0;
+uint8_t loco3Speed = 0;
+bool loco1Direction = 1;
+bool loco2Direction = 0;
+bool loco3Direction = 1;
+
 void displayStartupInfo() {
   // Set up serial and display basic config
   Serial.print(F("DCC-EX Serial Throttle "));
@@ -52,45 +59,51 @@ void displayStartupInfo() {
   oled.clear();
   oled.setCursor(0, 0);
   oled.set1X();
-  oled.print("Serial throttle");
+  oled.print("DCC-EX");
+  oled.setCursor(0, 2);
+  oled.print("Serial Throttle");
+  oled.setCursor(0, 4);
+  oled.print(VERSION);
+  delay(2000);
+  oled.clear();
 }
 
 /*
 Display speeds
 */
-// void displaySpeeds() {
-//   oled.setCursor(4, 0);
-//   oled.set2X();
-//   oled.print(loco1Speed);
-//   oled.clearToEOL();
-//   oled.setCursor(46, 0);
-//   oled.print(loco2Speed);
-//   oled.clearToEOL();
-//   oled.setCursor(88, 0);
-//   oled.print(loco3Speed);
-//   oled.clearToEOL();
-//   oled.set1X();
-//   oled.setCursor(10, 3);
-//   if (loco1Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-//   oled.clearToEOL();
-//   oled.setCursor(52, 3);
-//   if (loco2Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-//   oled.clearToEOL();
-//   oled.setCursor(94, 3);
-//   if (loco3Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-// }
+void displaySpeeds() {
+  oled.setCursor(4, 0);
+  oled.set2X();
+  oled.print(loco1Speed);
+  oled.clearToEOL();
+  oled.setCursor(46, 0);
+  oled.print(loco2Speed);
+  oled.clearToEOL();
+  oled.setCursor(88, 0);
+  oled.print(loco3Speed);
+  oled.clearToEOL();
+  oled.set1X();
+  oled.setCursor(10, 3);
+  if (loco1Direction) {
+    oled.print(F("Fwd"));
+  } else {
+    oled.print(F("Rev"));
+  }
+  oled.clearToEOL();
+  oled.setCursor(52, 3);
+  if (loco2Direction) {
+    oled.print(F("Fwd"));
+  } else {
+    oled.print(F("Rev"));
+  }
+  oled.clearToEOL();
+  oled.setCursor(94, 3);
+  if (loco3Direction) {
+    oled.print(F("Fwd"));
+  } else {
+    oled.print(F("Rev"));
+  }
+}
 
 /*
 Display directions
