@@ -50,6 +50,9 @@ void displayStartupInfo() {
 #endif
   oled.setFont(OLED_FONT);
   oled.clear();
+  oled.setCursor(0, 0);
+  oled.set1X();
+  oled.print("Serial throttle");
 }
 
 /*
