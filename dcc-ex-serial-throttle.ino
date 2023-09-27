@@ -46,6 +46,15 @@ void setup() {
 #endif
   displayStartupInfo();
   setupKeypad();
+  dccexProtocol.setLogStream(&CONSOLE);
+  dccexProtocol.setDelegate(&dccexCallbacks);
+  dccexProtocol.connect(&CLIENT);
+  CONSOLE.print(F("Connected to DCC-EX"));
+  dccexProtocol.sendServerDetailsRequest();
+  dccexProtocol.getRoster();
+  // dccexProtocol.getTurnouts();
+  // dccexProtocol.getTurntables();
+  // dccexProtocol.getRoutes();
   displaySpeeds();
 }
 
@@ -53,6 +62,7 @@ void setup() {
 Main loop
 ***********************************************************************************/
 void loop() {
+  dccexProtocol.check();
   keypad.getKey();
 }
 

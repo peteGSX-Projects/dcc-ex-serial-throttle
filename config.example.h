@@ -40,8 +40,13 @@
 // Uncomment from the line below for SPI
 #define USE_OLED_SPI
 #define OLED_TYPE &SH1106_128x64
+#if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #define CS_PIN  PA4
 #define DC_PIN  PA3
+#else
+#define CS_PIN  1
+#define DC_PIN  3
+#endif
 // SCK - PA5
 // MISO - PA6
 // MOSI - PA7

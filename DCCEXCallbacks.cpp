@@ -18,10 +18,11 @@
 */
 
 #include <Arduino.h>
+#include "defines.h"
 #include "DCCEXCallbacks.h"
 
 void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
-  Serial.print(uc);
-  Serial.print(F(" running version "));
-  Serial.println(version);
+  CONSOLE.print(uc);
+  CONSOLE.print(F(" running version "));
+  CONSOLE.println(version);
 }
