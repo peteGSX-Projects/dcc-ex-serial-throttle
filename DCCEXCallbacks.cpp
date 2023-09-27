@@ -17,34 +17,11 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#include <Arduino.h>
+#include "DCCEXCallbacks.h"
 
-/***********************************************************************************
-If we haven't got a custom config.h, use the example
-***********************************************************************************/
-#if __has_include ( "config.h")
-  #include "config.h"
-#else
-  #warning config.h not found. Using defaults from config.example.h
-  #include "config.example.h"
-#endif
-
-#if MAX_OBJECTS < 10
-#undef MAX_OBJECTS
-#define MAX_OBJECTS 10
-#endif
-
-#if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
-#undef CONSOLE
-#undef CLIENT
-#define CONSOLE Serial
-#define CLIENT Serial1
-#else
-#undef CONSOLE
-#undef CLIENT
-#define CONSOLE Serial
-#define CLIENT Serial
-#endif
-
-#endif
+void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
+  Serial.print(uc);
+  Serial.print(F(" running version "));
+  Serial.println(version);
+}

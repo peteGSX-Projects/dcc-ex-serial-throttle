@@ -17,34 +17,17 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef CALLBACKS_H
+#define CALLBACKS_H
 
-/***********************************************************************************
-If we haven't got a custom config.h, use the example
-***********************************************************************************/
-#if __has_include ( "config.h")
-  #include "config.h"
-#else
-  #warning config.h not found. Using defaults from config.example.h
-  #include "config.example.h"
-#endif
+#include <Arduino.h>
+#include <DCCEXProtocol.h>
 
-#if MAX_OBJECTS < 10
-#undef MAX_OBJECTS
-#define MAX_OBJECTS 10
-#endif
+class DCCEXCallbacks : public DCCEXProtocolDelegate {
 
-#if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
-#undef CONSOLE
-#undef CLIENT
-#define CONSOLE Serial
-#define CLIENT Serial1
-#else
-#undef CONSOLE
-#undef CLIENT
-#define CONSOLE Serial
-#define CLIENT Serial
-#endif
+public:
+  void receivedServerDescription(String uc, String version);
+
+};
 
 #endif

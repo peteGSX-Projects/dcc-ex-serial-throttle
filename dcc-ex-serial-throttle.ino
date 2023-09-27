@@ -27,7 +27,10 @@ Include the required libraries
 #include <DCCEXProtocol.h>
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "SerialFunctions.h"
+#include "DCCEXCallbacks.h"
+
+DCCEXProtocol dccexProtocol;
+DCCEXCallbacks dccexCallbacks;
 
 /***********************************************************************************
 Main setup function
@@ -37,7 +40,10 @@ void setup() {
   disableJTAG();
 #endif
   // Set up serial and display basic config
-  Serial.begin(115200);
+  CONSOLE.begin(115200);
+#if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
+  CLIENT.begin(115200);
+#endif
   displayStartupInfo();
   setupKeypad();
   displaySpeeds();
@@ -47,7 +53,6 @@ void setup() {
 Main loop
 ***********************************************************************************/
 void loop() {
-  getSerialInput();
   keypad.getKey();
 }
 

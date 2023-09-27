@@ -46,7 +46,7 @@ Key::Key(char userKeyChar) {
 }
 
 
-void Key::key_update (char userKeyChar, KeyState userState, boolean userStatus) {
+void Key::key_update (char userKeyChar, KeyState userState, bool userStatus) {
 	kchar = userKeyChar;
 	kstate = userState;
 	stateChanged = userStatus;

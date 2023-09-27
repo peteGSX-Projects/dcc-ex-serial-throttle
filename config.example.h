@@ -57,6 +57,8 @@
 // 
 #define KEYPAD_DEBOUNCE 10
 #define KEYPAD_HOLD 500
+
+#if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #define KEYPAD_PIN1 PB3
 #define KEYPAD_PIN2 PB4
 #define KEYPAD_PIN3 PB5
@@ -64,6 +66,15 @@
 #define KEYPAD_PIN5 PB7
 #define KEYPAD_PIN6 PB8
 #define KEYPAD_PIN7 PB9
+#else
+#define KEYPAD_PIN1 19
+#define KEYPAD_PIN2 18
+#define KEYPAD_PIN3 17
+#define KEYPAD_PIN4 16
+#define KEYPAD_PIN5 4
+#define KEYPAD_PIN6 0
+#define KEYPAD_PIN7 2
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer tuning.

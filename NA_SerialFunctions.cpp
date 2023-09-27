@@ -17,7 +17,7 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "SerialFunctions.h"
+#include "NA_SerialFunctions.h"
 
 const uint8_t numBytes = 100;             // Maximum number of serial bytes to accept for input.
 byte serialInputBytes[numBytes];          // Byte array for serial bytes received.
