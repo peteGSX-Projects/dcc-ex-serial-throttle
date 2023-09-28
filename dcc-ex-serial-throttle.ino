@@ -48,10 +48,18 @@ void setup() {
   setupKeypad();
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
+  uint8_t retries = 5;
   dccexProtocol.connect(&CLIENT);
   CONSOLE.print(F("Connected to DCC-EX"));
   dccexProtocol.sendServerDetailsRequest();
   dccexProtocol.getRoster();
+  while (!dccexProtocol.isRosterFullyReceived()) {
+    if (retries == 0) {
+      CONSOLE.println(F("Could not retrieve roster, aborting attempts"));
+      break;
+    }
+    retries--;
+  }
   // dccexProtocol.getTurnouts();
   // dccexProtocol.getTurntables();
   // dccexProtocol.getRoutes();
