@@ -24,6 +24,18 @@
 #include "defines.h"
 #include "version.h"
 
+#ifdef USE_OLED_SPI
+#include <SPI.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiSpi.h"
+extern SSD1306AsciiSpi oled;
+#endif
+#ifdef USE_OLED_I2C
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
+extern SSD1306AsciiAvrI2c oled;
+#endif
+
 void displayStartupInfo();
 void displaySpeeds();
 

@@ -23,14 +23,9 @@
 Set up OLED libraries and object
 ***********************************************************************************/
 #ifdef USE_OLED_SPI
-#include <SPI.h>
-#include "SSD1306Ascii.h"
-#include "SSD1306AsciiSpi.h"
 SSD1306AsciiSpi oled;
 #endif
 #ifdef USE_OLED_I2C
-#include "SSD1306Ascii.h"
-#include "SSD1306AsciiAvrI2c.h"
 SSD1306AsciiAvrI2c oled;
 #endif
 
@@ -64,14 +59,13 @@ void displayStartupInfo() {
   oled.print("Serial Throttle");
   oled.setCursor(0, 4);
   oled.print(VERSION);
-  delay(2000);
-  oled.clear();
 }
 
 /*
 Display speeds
 */
 void displaySpeeds() {
+  oled.clear();
   oled.setCursor(4, 0);
   oled.set2X();
   oled.print(loco1Speed);

@@ -28,9 +28,15 @@ Include the required libraries
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
 #include "DCCEXCallbacks.h"
+#include "NA_SerialFunctions.h"
 
 DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
+
+bool gotRoster = false;
+bool gotTurnouts = false;
+bool gotTurntables = false;
+bool gotRoutes = false;
 
 /***********************************************************************************
 Main setup function
@@ -45,24 +51,17 @@ void setup() {
   CLIENT.begin(115200);
 #endif
   displayStartupInfo();
+  delay(2000);
   setupKeypad();
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
-  uint8_t retries = 5;
   dccexProtocol.connect(&CLIENT);
   CONSOLE.print(F("Connected to DCC-EX"));
   dccexProtocol.sendServerDetailsRequest();
   dccexProtocol.getRoster();
-  while (!dccexProtocol.isRosterFullyReceived()) {
-    if (retries == 0) {
-      CONSOLE.println(F("Could not retrieve roster, aborting attempts"));
-      break;
-    }
-    retries--;
-  }
-  // dccexProtocol.getTurnouts();
-  // dccexProtocol.getTurntables();
-  // dccexProtocol.getRoutes();
+  dccexProtocol.getTurnouts();
+  dccexProtocol.getTurntables();
+  dccexProtocol.getRoutes();
   displaySpeeds();
 }
 
@@ -71,7 +70,32 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
+  if (!dccexProtocol.isRosterFullyReceived()  && !gotRoster) {
+    gotRoster = true;
+    CONSOLE.println("Got the roster");
+    oled.setCursor(0, 4);
+    oled.print("Roster");
+  }
+  if (!dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts) {
+    gotTurnouts = true;
+    CONSOLE.println("Got the turnouts");
+    oled.setCursor(0, 5);
+    oled.print("Turnouts");
+  }
+  if (!dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables) {
+    gotTurntables = true;
+    CONSOLE.println("Got the turntables");
+    oled.setCursor(0, 6);
+    oled.print("Turntables");
+  }
+  if (!dccexProtocol.isRouteListFullyReceived()  && !gotRoutes) {
+    gotRoutes = true;
+    CONSOLE.println("Got the routes");
+    oled.setCursor(0, 7);
+    oled.print("Routes");
+  }
   keypad.getKey();
+  getSerialInput();
 }
 
 /*

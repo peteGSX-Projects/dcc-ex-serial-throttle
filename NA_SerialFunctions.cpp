@@ -32,8 +32,8 @@ void getSerialInput() {
   byte startMarker = '<';
   byte endMarker = '>';
   byte serialByte;
-  while (Serial.available() > 0 && newSerialData == false) {
-    serialByte = Serial.read();
+  while (CONSOLE.available() > 0 && newSerialData == false) {
+    serialByte = CONSOLE.read();
     if (serialInProgress == true) {
       if (serialByte != endMarker) {
         serialInputBytes[serialIndex] = serialByte;
@@ -52,13 +52,15 @@ void getSerialInput() {
     }
   }
   if (newSerialData == true) {
-    // What to do with serial data here
-    // Just a way to dump received data here:
-    // for (uint8_t i = 0; i < numBytes; i++) {
-    //   if (serialInputBytes[i] == '\0') break;
-    //   Serial.print((char)serialInputBytes[i]);
-    // }
-    // Serial.println(F(""));
+    CONSOLE.println(F("Got serial command"));
+    CLIENT.print(F("<"));
+    for (uint8_t i = 0; i < numBytes; i++) {
+      if (serialInputBytes[i] == '\0') break;
+      CONSOLE.print((char)serialInputBytes[i]);
+      CLIENT.print((char)serialInputBytes[i]);
+    }
+    CONSOLE.println(F(""));
+    CLIENT.println(F(">"));
     newSerialData = false;
   }
 }
