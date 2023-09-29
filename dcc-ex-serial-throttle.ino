@@ -29,6 +29,9 @@ Include the required libraries
 #include "KeypadFunctions.h"
 #include "DCCEXCallbacks.h"
 #include "NA_SerialFunctions.h"
+#include "AnalogueAverage.h"
+
+AnalogueAverage pot1(POT1_PIN);
 
 DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
@@ -45,6 +48,7 @@ void setup() {
 #if defined(ARDUINO_BLUEPILL_F103C8)
   disableJTAG();
 #endif
+  pinMode(POT1_PIN, INPUT);
   // Set up serial and display basic config
   CONSOLE.begin(115200);
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
@@ -94,8 +98,13 @@ void loop() {
     oled.setCursor(0, 7);
     oled.print("Routes");
   }
+  pot1.averageInput();
+  if (pot1.getAverage() != loco1Speed) {
+    loco1Speed = pot1.getAverage();
+  }
   keypad.getKey();
   getSerialInput();
+  displaySpeeds();
 }
 
 /*
