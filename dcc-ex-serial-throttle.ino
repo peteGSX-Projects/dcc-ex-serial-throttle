@@ -24,22 +24,13 @@ Include the required libraries
 #include <Arduino.h>
 #include "defines.h"
 
-#include <DCCEXProtocol.h>
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "DCCEXCallbacks.h"
-#include "NA_SerialFunctions.h"
+#include "SerialFunctions.h"
 #include "AnalogueAverage.h"
+#include "DCCEXObjects.h"
 
 AnalogueAverage pot1(POT1_PIN);
-
-DCCEXProtocol dccexProtocol;
-DCCEXCallbacks dccexCallbacks;
-
-bool gotRoster = false;
-bool gotTurnouts = false;
-bool gotTurntables = false;
-bool gotRoutes = false;
 
 /***********************************************************************************
 Main setup function
@@ -60,12 +51,6 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  CONSOLE.print(F("Connected to DCC-EX"));
-  dccexProtocol.sendServerDetailsRequest();
-  dccexProtocol.getRoster();
-  dccexProtocol.getTurnouts();
-  dccexProtocol.getTurntables();
-  dccexProtocol.getRoutes();
   displaySpeeds();
 }
 
@@ -74,37 +59,19 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  if (!dccexProtocol.isRosterFullyReceived()  && !gotRoster) {
-    gotRoster = true;
-    CONSOLE.println("Got the roster");
-    oled.setCursor(0, 4);
-    oled.print("Roster");
-  }
-  if (!dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts) {
-    gotTurnouts = true;
-    CONSOLE.println("Got the turnouts");
-    oled.setCursor(0, 5);
-    oled.print("Turnouts");
-  }
-  if (!dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables) {
-    gotTurntables = true;
-    CONSOLE.println("Got the turntables");
-    oled.setCursor(0, 6);
-    oled.print("Turntables");
-  }
-  if (!dccexProtocol.isRouteListFullyReceived()  && !gotRoutes) {
-    gotRoutes = true;
-    CONSOLE.println("Got the routes");
-    oled.setCursor(0, 7);
-    oled.print("Routes");
-  }
-  pot1.averageInput();
-  if (pot1.getAverage() != loco1Speed) {
-    loco1Speed = pot1.getAverage();
-  }
-  keypad.getKey();
+  validateConnection();
+  updateRoster();
+  updateRoutes();
+  updateTurnouts();
+  updateTurntables();
+  // pot1.averageInput();
+  // if (pot1.getAverage() != loco1Speed) {
+  //   loco1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  //   displaySpeeds();
+  // }
+  // keypad.getKey();
+  processKeys();
   getSerialInput();
-  displaySpeeds();
 }
 
 /*

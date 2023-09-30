@@ -36,10 +36,11 @@ extern SSD1306AsciiSpi oled;
 extern SSD1306AsciiAvrI2c oled;
 #endif
 
-extern uint16_t loco1Speed;
+extern uint8_t loco1Speed;
 
 void displayStartupInfo();
 void displaySpeeds();
+void displayConnectionError();
 
 
 // void displayLocos();

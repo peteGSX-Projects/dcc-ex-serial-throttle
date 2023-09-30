@@ -29,7 +29,7 @@ SSD1306AsciiSpi oled;
 SSD1306AsciiAvrI2c oled;
 #endif
 
-uint16_t loco1Speed = 0;
+uint8_t loco1Speed = 0;
 uint8_t loco2Speed = 0;
 uint8_t loco3Speed = 0;
 bool loco1Direction = 1;
@@ -97,6 +97,13 @@ void displaySpeeds() {
   } else {
     oled.print(F("Rev"));
   }
+}
+
+void displayConnectionError() {
+  oled.clear();
+  oled.setCursor(0, 0);
+  oled.set1X();
+  oled.print("Connection error");
 }
 
 /*

@@ -43,6 +43,10 @@ void setupKeypad() {
   keypad.setHoldTime(KEYPAD_HOLD);
 }
 
+void processKeys() {
+  keypad.getKey();
+}
+
 /*
 Function for a keypad event handler
 */

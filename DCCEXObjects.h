@@ -17,20 +17,20 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef KEYPADFUNCTIONS_H
-#define KEYPADFUNCTIONS_H
+#ifndef DCCEXOBJECTS_H
+#define DCCEXOBJECTS_H
 
 #include <Arduino.h>
-#include "Keypad.h"
-#include "defines.h"
+#include <DCCEXProtocol.h>
+#include "DCCEXCallbacks.h"
 
-// extern Keypad keypad;
+extern DCCEXProtocol dccexProtocol;
+extern DCCEXCallbacks dccexCallbacks;
 
-void setupKeypad();
-void processKeys();
-void keypadEvent(KeypadEvent key);
-// void keyPressed(char key);
-// void keyHeld(char key);
-// void keyReleased(char key);
+void validateConnection();
+void updateRoster();
+void updateRoutes();
+void updateTurnouts();
+void updateTurntables();
 
 #endif
