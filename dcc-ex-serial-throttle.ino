@@ -29,6 +29,7 @@ Include the required libraries
 #include "SerialFunctions.h"
 #include "AnalogueAverage.h"
 #include "DCCEXObjects.h"
+#include "Menu.h"
 
 AnalogueAverage pot1(POT1_PIN);
 
@@ -52,6 +53,8 @@ void setup() {
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
   displaySpeeds();
+  createMenus();
+  mainMenu.display();
 }
 
 /***********************************************************************************
@@ -59,7 +62,7 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  validateConnection();
+  // validateConnection();
   updateRoster();
   updateRoutes();
   updateTurnouts();
@@ -67,11 +70,16 @@ void loop() {
   // pot1.averageInput();
   // if (pot1.getAverage() != loco1Speed) {
   //   loco1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  //   CONSOLE.println(loco1Speed);
   //   displaySpeeds();
   // }
   // keypad.getKey();
-  processKeys();
-  getSerialInput();
+  // processKeys();
+  // getSerialInput();
+  char key = keypad.getKey();
+  if (key) {
+    mainMenu.handleKeyPress(key);
+  }
 }
 
 /*

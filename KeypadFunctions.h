@@ -23,8 +23,9 @@
 #include <Arduino.h>
 #include "Keypad.h"
 #include "defines.h"
+#include "DisplayFunctions.h"
 
-// extern Keypad keypad;
+extern Keypad keypad;
 
 void setupKeypad();
 void processKeys();

@@ -40,6 +40,9 @@ bool gotTurnouts = false;
 bool requestedTurntables = false;
 bool gotTurntables = false;
 
+/*
+Function to validate a connection to the CS has been made
+*/
 void validateConnection() {
   if (!connected) {
     if (!connectionRequested) {
@@ -59,9 +62,11 @@ void validateConnection() {
   }
 }
 
+/*
+Function to update roster entries from the CS
+To trigger after startup, simply set requestedRoster to false
+*/
 void updateRoster() {
-  /* Function to update roster entries from the CS
-  To trigger after startup, simply set requestedRoster to false*/
   if (!requestedRoster) {
     requestedRoster = true;
     dccexProtocol.getRoster();
@@ -72,9 +77,11 @@ void updateRoster() {
   }
 }
 
+/*
+Function to update route entries from the CS
+To trigger after startup, simply set requestedRoutes to false
+*/
 void updateRoutes() {
-  /* Function to update route entries from the CS
-  To trigger after startup, simply set requestedRoutes to false*/
   if (!requestedRoutes) {
     requestedRoutes = true;
     dccexProtocol.getRoutes();
@@ -85,9 +92,11 @@ void updateRoutes() {
   }
 }
 
+/*
+Function to update turnout entries from the CS
+To trigger after startup, simply set requestedTurnouts to false
+*/
 void updateTurnouts() {
-  /* Function to update turnout entries from the CS
-  To trigger after startup, simply set requestedTurnouts to false*/
   if (!requestedTurnouts) {
     requestedTurnouts = true;
     dccexProtocol.getTurnouts();
@@ -98,9 +107,11 @@ void updateTurnouts() {
   }
 }
 
+/*
+Function to update turntable entries from the CS
+To trigger after startup, simply set requestedTurntables to false
+*/
 void updateTurntables() {
-  /* Function to update turntable entries from the CS
-  To trigger after startup, simply set requestedTurntables to false*/
   if (!requestedTurntables) {
     requestedTurntables = true;
     dccexProtocol.getTurntables();
