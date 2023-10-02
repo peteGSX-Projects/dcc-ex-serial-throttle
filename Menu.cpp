@@ -20,6 +20,8 @@
 #include <Arduino.h>
 #include "Menu.h"
 
+Menu* currentMenuPtr;
+
 /*
 Public functions
 */
@@ -37,6 +39,7 @@ void Menu::setParent(Menu* parent) {
 }
 
 void Menu::display() {
+  currentMenuPtr = this;
   displayMenu();
 }
 
@@ -66,13 +69,18 @@ void Menu::handleKeyPress(char key){
       }
       break;
     case '*':
-      if (parentMenu != nullptr) {
-        parentMenu->display();
+      if (currentMenuPtr->getParent() != nullptr) {
+        currentMenuPtr = currentMenuPtr->getParent();
+        currentMenuPtr->display();
       }
       break;
     default:
       break;
   }
+}
+
+Menu* Menu::getParent() {
+  return parentMenu;
 }
 
 /*
@@ -100,9 +108,29 @@ void Menu::displayMenu(){
 Menu mainMenu("Main Menu");
 Menu rosterMenu("Roster Menu");
 Menu trackManagerMenu("TrackManager Menu");
+Menu trackTestMenu("Testing");
 
 void createMenus() {
   rosterMenu.setParent(&mainMenu);
   trackManagerMenu.setParent(&mainMenu);
+  trackTestMenu.setParent(&trackManagerMenu);
   mainMenu.addItem("Roster", 0, []() { rosterMenu.display(); });
+  mainMenu.addItem("TrackManager", 0, []() { trackManagerMenu.display(); });
+  rosterMenu.addItem("Test 1", 1, dummy);
+  rosterMenu.addItem("Test 2", 1, dummy);
+  rosterMenu.addItem("Test 3", 1, dummy);
+  rosterMenu.addItem("Test 4", 1, dummy);
+  rosterMenu.addItem("Test 5", 1, dummy);
+  rosterMenu.addItem("Test 6", 1, dummy);
+  rosterMenu.addItem("Test 7", 1, dummy);
+  rosterMenu.addItem("Test 8", 1, dummy);
+  rosterMenu.addItem("Test 9", 1, dummy);
+  rosterMenu.addItem("Test 10", 1, dummy);
+  rosterMenu.addItem("Test 11", 1, dummy);
+  rosterMenu.addItem("Test 12", 1, dummy);
+  trackManagerMenu.addItem("Test Menu", 0, []() { trackTestMenu.display(); });
+}
+
+void dummy() {
+  CONSOLE.println("Dummy");
 }

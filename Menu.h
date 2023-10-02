@@ -54,6 +54,7 @@ public:
   void setParent(Menu* parent);
   void display();
   void handleKeyPress(char key);
+  Menu* getParent();
 
 private:
   // Private variables
@@ -69,10 +70,12 @@ private:
 
 };
 
+extern Menu* currentMenuPtr;
 extern Menu mainMenu;
 extern Menu trackManagerMenu;
 extern Menu rosterMenu;
 
 void createMenus();
+void dummy();
 
 #endif

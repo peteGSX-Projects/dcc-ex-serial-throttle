@@ -78,7 +78,8 @@ void loop() {
   // getSerialInput();
   char key = keypad.getKey();
   if (key) {
-    mainMenu.handleKeyPress(key);
+    // mainMenu.handleKeyPress(key);
+    currentMenuPtr->handleKeyPress(key);
   }
 }
 
