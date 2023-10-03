@@ -63,10 +63,11 @@ Main loop
 void loop() {
   dccexProtocol.check();
   // validateConnection();
-  updateRoster();
-  updateRoutes();
-  updateTurnouts();
-  updateTurntables();
+  updateObjects();
+  // updateRoster();
+  // updateRoutes();
+  // updateTurnouts();
+  // updateTurntables();
   // pot1.averageInput();
   // if (pot1.getAverage() != loco1Speed) {
   //   loco1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
