@@ -32,14 +32,14 @@ uint8_t connectionRetries = 5;
 unsigned long retryDelay = 500;
 unsigned long lastRetry = 0;
 bool objectsRequested = false;
-// bool requestedRoster = false;
-// bool gotRoster = false;
-// bool requestedRoutes = false;
-// bool gotRoutes = false;
-// bool requestedTurnouts = false;
-// bool gotTurnouts = false;
-// bool requestedTurntables = false;
-// bool gotTurntables = false;
+bool requestedRoster = false;
+bool gotRoster = false;
+bool requestedRoutes = false;
+bool gotRoutes = false;
+bool requestedTurnouts = false;
+bool gotTurnouts = false;
+bool requestedTurntables = false;
+bool gotTurntables = false;
 
 /*
 Function to validate a connection to the CS has been made
@@ -64,100 +64,61 @@ void validateConnection() {
 }
 
 /*
-Function to update all DCC-EX objects
-- roster entries
-- routes
-- turnouts
-- turntables
+Function to update roster entries from the CS
+To trigger after startup, simply set requestedRoster to false
 */
-void updateObjects() {
-  if (!objectsRequested && !dccexProtocol.isRosterFullyReceived()) {
-    objectsRequested = true;
+void updateRoster() {
+  if (!requestedRoster) {
+    requestedRoster = true;
     dccexProtocol.getRoster();
-  } else if (!objectsRequested && !dccexProtocol.isRouteListFullyReceived()) {
-    objectsRequested = true;
-    dccexProtocol.getTurnouts();
-  } else if (!objectsRequested && !dccexProtocol.isTurnoutListFullyReceived()) {
-    objectsRequested = true;
-    dccexProtocol.getTurnouts();
-  } else if (!objectsRequested && !dccexProtocol.isTurntableListFullyReceived()) {
-    objectsRequested = true;
-    dccexProtocol.getTurntables();
-  } else if (objectsRequested && dccexProtocol.isRosterFullyReceived()) {
-    objectsRequested = false;
+  } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
+    gotRoster = true;
     oled.setCursor(0, 4);
     oled.print("R");
-  } else if (objectsRequested && dccexProtocol.isRouteListFullyReceived()) {
-    objectsRequested = false;
-    oled.setCursor(1,4);
+  }
+}
+
+/*
+Function to update route entries from the CS
+To trigger after startup, simply set requestedRoutes to false
+*/
+void updateRoutes() {
+  if (!requestedRoutes && gotRoster) {
+    requestedRoutes = true;
+    dccexProtocol.getRoutes();
+  } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
+    gotRoutes = true;
+    oled.setCursor(6, 4);
     oled.print("R");
-  } else if (objectsRequested && dccexProtocol.isTurnoutListFullyReceived()) {
-    objectsRequested = false;
-    oled.setCursor(2, 4);
-    oled.print("T");
-  } else if (objectsRequested && dccexProtocol.isTurntableListFullyReceived()) {
-    objectsRequested = false;
-    oled.setCursor(3, 4);
+  }
+}
+
+/*
+Function to update turnout entries from the CS
+To trigger after startup, simply set requestedTurnouts to false
+*/
+void updateTurnouts() {
+  if (!requestedTurnouts && gotRoster && gotRoutes) {
+    requestedTurnouts = true;
+    dccexProtocol.getTurnouts();
+  } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
+    gotTurnouts = true;
+    oled.setCursor(12, 4);
     oled.print("T");
   }
 }
 
-// /*
-// Function to update roster entries from the CS
-// To trigger after startup, simply set requestedRoster to false
-// */
-// void updateRoster() {
-//   if (!requestedRoster) {
-//     requestedRoster = true;
-//     dccexProtocol.getRoster();
-//   } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
-//     gotRoster = true;
-//     oled.setCursor(0, 4);
-//     oled.print("Roster");
-//   }
-// }
-
-// /*
-// Function to update route entries from the CS
-// To trigger after startup, simply set requestedRoutes to false
-// */
-// void updateRoutes() {
-//   if (!requestedRoutes) {
-//     requestedRoutes = true;
-//     dccexProtocol.getRoutes();
-//   } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
-//     gotRoutes = true;
-//     oled.setCursor(0, 5);
-//     oled.print("Routes");
-//   }
-// }
-
-// /*
-// Function to update turnout entries from the CS
-// To trigger after startup, simply set requestedTurnouts to false
-// */
-// void updateTurnouts() {
-//   if (!requestedTurnouts) {
-//     requestedTurnouts = true;
-//     dccexProtocol.getTurnouts();
-//   } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
-//     gotTurnouts = true;
-//     oled.setCursor(0, 6);
-//     oled.print("Turnouts");
-//   }
-// }
-
-// /*
-// Function to update turntable entries from the CS
-// To trigger after startup, simply set requestedTurntables to false
-// */
-// void updateTurntables() {
-//   if (!requestedTurntables) {
-//     requestedTurntables = true;
-//     dccexProtocol.getTurntables();
-//   } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
-//     gotTurntables = true;
-//     oled.setCursor(0, 7);
-//     oled.print("Turntables");
-//   }
-// }
+/*
+Function to update turntable entries from the CS
+To trigger after startup, simply set requestedTurntables to false
+*/
+void updateTurntables() {
+  if (!requestedTurntables && gotRoster && gotRoutes && gotTurnouts) {
+    requestedTurntables = true;
+    dccexProtocol.getTurntables();
+  } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
+    gotTurntables = true;
+    oled.setCursor(18, 4);
+    oled.print("T");
+  }
+}

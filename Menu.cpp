@@ -20,6 +20,14 @@
 #include <Arduino.h>
 #include "Menu.h"
 
+Menu homeScreen("Home Screen");
+Menu mainMenu("Main Menu");
+Menu rosterMenu("Roster Menu");
+Menu trackManagerMenu("TrackManager Menu");
+Menu trackTestMenu("Testing Menu");
+
+Menu* currentMenuPtr = &homeScreen;
+
 /*
 Public functions
 */
@@ -70,18 +78,31 @@ void Menu::handleKeyPress(char key){
       displayMenu();
       break;
     case '*':
-      if (currentMenuPtr->getParent() != nullptr) {
+      if (currentMenuPtr->getParent() == nullptr) {
+        currentMenuPtr = &mainMenu;
+      } else if (currentMenuPtr->getParent() != nullptr) {
         currentMenuPtr = currentMenuPtr->getParent();
-        currentMenuPtr->display();
       }
+      currentMenuPtr->display();
       break;
     default:
       break;
   }
 }
 
+int Menu::getItemCount() {
+  return itemCount;
+}
+
 Menu* Menu::getParent() {
   return parentMenu;
+}
+
+MenuItem Menu::getItem(int index) {
+  if (index >= 0 && index < itemCount) {
+    return items[index];
+  }
+  return MenuItem{"", 0, nullptr};
 }
 
 /*
@@ -91,6 +112,7 @@ Private functions
 void Menu::displayMenu(){
   // The top most menu only displays the * key to access the menu system
   if (parentMenu == nullptr) {
+    displaySpeeds();
     oled.setCursor(0, 7);
     oled.clearToEOL();
     oled.print("* Menu");
@@ -101,8 +123,8 @@ void Menu::displayMenu(){
     oled.setCursor(0, 0);
     oled.print(label);
 
-    int startIdx = (currentPage - 1) * 9;
-    int endIdx = min(startIdx + 9, itemCount);
+    int startIdx = (currentPage - 1) * 10;
+    int endIdx = min(startIdx + 10, itemCount);
 
     // Display number keys 1 -> 0 (instead of 10) to select
     int key = 1;
@@ -111,7 +133,7 @@ void Menu::displayMenu(){
     for (int i = startIdx; i < endIdx; i++) {
       oled.setCursor(column, row);
       oled.print(key);
-      oled.print(". ");
+      oled.print(" ");
       oled.print(items[i].label);
       key++;
       // If next key would be 10, make it 0
@@ -120,27 +142,20 @@ void Menu::displayMenu(){
       }
       row++;
       // 6th row means row 1 in second column
-      if (row == 6) {
+      if (row > 5) {
         row = 1;
-        column = 10;
+        column = 60;
       }
     }
 
     oled.setCursor(0, 7);
     oled.print("* Back");
-    oled.setCursor(10, 7);
-    oled.print("# Next page");
-    // oled.print(currentPage);
+    if (getItemCount() > 10) {
+      oled.setCursor(60, 7);
+      oled.print("# Next page");
+    }
   }
 }
-
-Menu homeScreen("Home Screen");
-Menu mainMenu("Main Menu");
-Menu rosterMenu("Roster Menu");
-Menu trackManagerMenu("TrackManager Menu");
-Menu trackTestMenu("Testing Menu");
-
-Menu* currentMenuPtr = &homeScreen;
 
 void createMenus() {
   mainMenu.setParent(&homeScreen);
@@ -165,7 +180,7 @@ void createMenus() {
 }
 
 void dummy() {
-  // if (currentMenuPtr != nullptr && currentMenuPtr->itemCount > 0) {
+  // if (currentMenuPtr != nullptr && currentMenuPtr->getItemCount() > 0) {
   //   int16_t objectId = currentMenuPtr->items[0].objectId;
   //   CONSOLE.print("Dummy item ");
   //   CONSOLE.println(objectId);

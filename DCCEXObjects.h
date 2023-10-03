@@ -28,10 +28,9 @@ extern DCCEXProtocol dccexProtocol;
 extern DCCEXCallbacks dccexCallbacks;
 
 void validateConnection();
-void updateObjects();
-// void updateRoster();
-// void updateRoutes();
-// void updateTurnouts();
-// void updateTurntables();
+void updateRoster();
+void updateRoutes();
+void updateTurnouts();
+void updateTurntables();
 
 #endif

@@ -37,6 +37,11 @@ extern SSD1306AsciiAvrI2c oled;
 #endif
 
 extern uint8_t loco1Speed;
+extern uint8_t loco2Speed;
+extern uint8_t loco3Speed;
+extern uint8_t newLoco1Speed;
+extern uint8_t newLoco2Speed;
+extern uint8_t newLoco3Speed;
 
 void displayStartupInfo();
 void displaySpeeds();
