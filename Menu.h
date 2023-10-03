@@ -58,7 +58,7 @@ public:
 
 private:
   // Private variables
-  static const int MAX_ITEMS = 90;
+  static const int MAX_ITEMS = 40;
   const char* label;
   MenuItem items[MAX_ITEMS];
   int itemCount;
@@ -71,9 +71,9 @@ private:
 };
 
 extern Menu* currentMenuPtr;
-extern Menu mainMenu;
-extern Menu trackManagerMenu;
-extern Menu rosterMenu;
+// extern Menu mainMenu;
+// extern Menu trackManagerMenu;
+// extern Menu rosterMenu;
 
 void createMenus();
 void dummy();

@@ -54,7 +54,7 @@ void setup() {
   dccexProtocol.connect(&CLIENT);
   displaySpeeds();
   createMenus();
-  mainMenu.display();
+  currentMenuPtr->display();
 }
 
 /***********************************************************************************
