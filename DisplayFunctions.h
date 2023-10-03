@@ -42,12 +42,24 @@ extern uint8_t loco3Speed;
 extern uint8_t newLoco1Speed;
 extern uint8_t newLoco2Speed;
 extern uint8_t newLoco3Speed;
+extern int loco1Address;
+extern int loco2Address;
+extern int loco3Address;
 
 void displayStartupInfo();
-void displaySpeeds();
+void displayHomeScreen();
 void displayConnectionError();
+void updateLoco1Speed();
+void updateLoco1Direction();
+void updateLoco2Address();
+void updateLoco2Speed();
+void updateLoco2Direction();
+void updateLoco2Address();
+void updateLoco3Speed();
+void updateLoco3Direction();
+void updateLoco3Address();
 
-
+// void displaySpeeds();
 // void displayLocos();
 // void displayEStop();
 

@@ -117,10 +117,7 @@ Private functions
 void Menu::displayMenu(){
   // The top most menu only displays the * key to access the menu system
   if (parentMenu == nullptr) {
-    displaySpeeds();
-    oled.setCursor(0, 7);
-    oled.clearToEOL();
-    oled.print("* Menu");
+    displayHomeScreen();
   } else {
   // All other menus show 10 per page in two columns
     oled.clear();

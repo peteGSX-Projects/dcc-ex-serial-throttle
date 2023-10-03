@@ -38,6 +38,9 @@ uint8_t newLoco3Speed = 0;
 bool loco1Direction = 1;
 bool loco2Direction = 0;
 bool loco3Direction = 1;
+int loco1Address = 0;
+int loco2Address = 0;
+int loco3Address = 0;
 
 void displayStartupInfo() {
   // Set up serial and display basic config
@@ -67,40 +70,116 @@ void displayStartupInfo() {
 /*
 Display speeds
 */
-void displaySpeeds() {
-  oled.clear();
-  oled.setCursor(4, 0);
+// void displaySpeeds() {
+//   oled.clear();
+//   oled.setCursor(4, 0);
+//   oled.set2X();
+//   oled.print(loco1Speed);
+//   oled.clearToEOL();
+//   oled.setCursor(46, 0);
+//   oled.print(loco2Speed);
+//   oled.clearToEOL();
+//   oled.setCursor(88, 0);
+//   oled.print(loco3Speed);
+//   oled.clearToEOL();
+//   oled.set1X();
+//   oled.setCursor(10, 3);
+//   if (loco1Direction) {
+//     oled.print(F("Fwd"));
+//   } else {
+//     oled.print(F("Rev"));
+//   }
+//   oled.clearToEOL();
+//   oled.setCursor(52, 3);
+//   if (loco2Direction) {
+//     oled.print(F("Fwd"));
+//   } else {
+//     oled.print(F("Rev"));
+//   }
+//   oled.clearToEOL();
+//   oled.setCursor(94, 3);
+//   if (loco3Direction) {
+//     oled.print(F("Fwd"));
+//   } else {
+//     oled.print(F("Rev"));
+//   }
+// }
+
+void updateLocoSpeed(int startCol, int endCol, int textCol, int speed) {
   oled.set2X();
-  oled.print(loco1Speed);
-  oled.clearToEOL();
-  oled.setCursor(46, 0);
-  oled.print(loco2Speed);
-  oled.clearToEOL();
-  oled.setCursor(88, 0);
-  oled.print(loco3Speed);
-  oled.clearToEOL();
+  oled.clear(startCol, endCol, 0, 2);
+  oled.setCursor(textCol, 0);
+  oled.print(speed);
+}
+
+void updateLocoDirection(int startCol, int endCol, int textCol, bool direction) {
   oled.set1X();
-  oled.setCursor(10, 3);
-  if (loco1Direction) {
-    oled.print(F("Fwd"));
-  } else {
+  oled.clear(startCol, endCol, 3, 4);
+  oled.setCursor(textCol, 3);
+  if (direction) {
     oled.print(F("Rev"));
-  }
-  oled.clearToEOL();
-  oled.setCursor(52, 3);
-  if (loco2Direction) {
-    oled.print(F("Fwd"));
   } else {
-    oled.print(F("Rev"));
-  }
-  oled.clearToEOL();
-  oled.setCursor(94, 3);
-  if (loco3Direction) {
     oled.print(F("Fwd"));
-  } else {
-    oled.print(F("Rev"));
   }
 }
+
+void updateLocoAddress(int startCol, int endCol, int textCol, int address) {
+  oled.set1X();
+  oled.clear(startCol, endCol, 5, 5);
+  oled.setCursor(textCol, 5);
+  oled.print(address);
+}
+
+void updateLoco1Speed() {
+  updateLocoSpeed(0, 45, 4, loco1Speed);
+}
+
+void updateLoco2Speed() {
+  updateLocoSpeed(46, 87, 46, loco2Speed);
+}
+
+void updateLoco3Speed() {
+  updateLocoSpeed(88, 128, 88, loco3Speed);
+}
+
+void updateLoco1Direction() {
+  updateLocoDirection(0, 51, 10, loco1Direction);
+}
+
+void updateLoco2Direction() {
+  updateLocoDirection(52, 93, 52, loco2Direction);
+}
+
+void updateLoco3Direction() {
+  updateLocoDirection(94, 128, 94, loco3Direction);
+}
+
+void updateLoco1Address() {
+  updateLocoAddress(0, 46, 5, loco1Address);
+}
+
+void updateLoco2Address() {
+  updateLocoAddress(47, 88, 47, loco2Address);
+}
+
+void updateLoco3Address() {
+  updateLocoAddress(89, 128, 89, loco3Address);
+}
+
+void displayHomeScreen() {
+  oled.clear();
+  updateLoco1Speed();
+  updateLoco2Speed();
+  updateLoco3Speed();
+  updateLoco1Direction();
+  updateLoco2Direction();
+  updateLoco3Direction();
+  updateLoco1Address();
+  updateLoco2Address();
+  updateLoco3Address();
+  oled.setCursor(0, 7);
+  oled.print("* Menu");
+} 
 
 void displayConnectionError() {
   oled.clear();

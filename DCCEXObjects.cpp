@@ -21,7 +21,6 @@
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
-#include "HelperFunctions.h"
 
 DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
@@ -74,16 +73,11 @@ void updateRoster() {
     dccexProtocol.getRoster();
   } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
     gotRoster = true;
-    oled.setCursor(0, 4);
-    oled.print("R");
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
-      // const char* name = dccexProtocol.roster.get(i)->getLocoName().c_str();
-      // CONSOLE.println(name);
-      // char* locoName = new char[strlen(name) + 1];
-      // strcpy(locoName, name);
-      const char* name = nullTerminatedCharArray(dccexProtocol.roster.get(i)->getLocoName().c_str());
+      String name = dccexProtocol.roster.get(i)->getLocoName();
+      const char* locoName = name.c_str();
       int dccId = dccexProtocol.roster.get(i)->getLocoAddress();
-      rosterList.addItem(name, dccId, dummy);
+      rosterList.addItem(locoName, dccId, dummy);
     }
   }
 }
@@ -98,8 +92,12 @@ void updateRoutes() {
     dccexProtocol.getRoutes();
   } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
     gotRoutes = true;
-    oled.setCursor(6, 4);
-    oled.print("R");
+    for (int i = 0; i < dccexProtocol.routes.size(); i++) {
+      String name = dccexProtocol.routes.get(i)->getRouteName();
+      const char* routeName = name.c_str();
+      int routeId = dccexProtocol.routes.get(i)->getRouteId();
+      routeList.addItem(routeName, routeId, dummy);
+    }
   }
 }
 
@@ -113,8 +111,12 @@ void updateTurnouts() {
     dccexProtocol.getTurnouts();
   } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
     gotTurnouts = true;
-    oled.setCursor(12, 4);
-    oled.print("T");
+    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+      String name = dccexProtocol.turnouts.get(i)->getTurnoutName();
+      const char* turnoutName = name.c_str();
+      int turnoutId = dccexProtocol.turnouts.get(i)->getTurnoutId();
+      rosterList.addItem(turnoutName, turnoutId, dummy);
+    }
   }
 }
 
@@ -128,7 +130,11 @@ void updateTurntables() {
     dccexProtocol.getTurntables();
   } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
     gotTurntables = true;
-    oled.setCursor(18, 4);
-    oled.print("T");
+    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+      String name = dccexProtocol.turntables.get(i)->getTurntableName();
+      const char* turntableName = name.c_str();
+      int turntableId = dccexProtocol.turntables.get(i)->getTurntableId();
+      rosterList.addItem(turntableName, turntableId, dummy);
+    }
   }
 }

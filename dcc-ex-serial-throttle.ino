@@ -55,7 +55,6 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  displaySpeeds();
   createMenus();
   currentMenuPtr->display();
 }
