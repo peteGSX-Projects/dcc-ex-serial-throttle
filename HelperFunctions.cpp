@@ -17,21 +17,17 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DCCEXOBJECTS_H
-#define DCCEXOBJECTS_H
+#include "HelperFunctions.h"
 
-#include <Arduino.h>
-#include <DCCEXProtocol.h>
-#include "DCCEXCallbacks.h"
-#include "Menu.h"
-
-extern DCCEXProtocol dccexProtocol;
-extern DCCEXCallbacks dccexCallbacks;
-
-void validateConnection();
-void updateRoster();
-void updateRoutes();
-void updateTurnouts();
-void updateTurntables();
-
-#endif
+/*
+Function to check if provided char array is null-terminated and, if not, make it so
+*/
+const char* nullTerminatedCharArray(const char* checkArray) {
+  if (checkArray[strlen(checkArray) - 1] == '0') {
+    return checkArray;
+  } else {
+    char* checkArrayCopy = new char[strlen(checkArray) + 1];
+    strcpy(checkArrayCopy, checkArray);
+    return checkArrayCopy;
+  }
+}

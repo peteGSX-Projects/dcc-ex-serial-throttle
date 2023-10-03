@@ -17,21 +17,11 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DCCEXOBJECTS_H
-#define DCCEXOBJECTS_H
+#ifndef HELPERFUNCTIONS_H
+#define HELPERFUNCTIONS_H
 
 #include <Arduino.h>
-#include <DCCEXProtocol.h>
-#include "DCCEXCallbacks.h"
-#include "Menu.h"
 
-extern DCCEXProtocol dccexProtocol;
-extern DCCEXCallbacks dccexCallbacks;
-
-void validateConnection();
-void updateRoster();
-void updateRoutes();
-void updateTurnouts();
-void updateTurntables();
+const char* nullTerminatedCharArray(const char* checkArray);
 
 #endif

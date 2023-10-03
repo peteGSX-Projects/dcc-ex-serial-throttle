@@ -21,6 +21,7 @@
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
+#include "HelperFunctions.h"
 
 DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
@@ -75,6 +76,15 @@ void updateRoster() {
     gotRoster = true;
     oled.setCursor(0, 4);
     oled.print("R");
+    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+      // const char* name = dccexProtocol.roster.get(i)->getLocoName().c_str();
+      // CONSOLE.println(name);
+      // char* locoName = new char[strlen(name) + 1];
+      // strcpy(locoName, name);
+      const char* name = nullTerminatedCharArray(dccexProtocol.roster.get(i)->getLocoName().c_str());
+      int dccId = dccexProtocol.roster.get(i)->getLocoAddress();
+      rosterList.addItem(name, dccId, dummy);
+    }
   }
 }
 

@@ -20,11 +20,16 @@
 #include <Arduino.h>
 #include "Menu.h"
 
+// Create menus
 Menu homeScreen("Home Screen");
 Menu mainMenu("Main Menu");
 Menu rosterMenu("Roster Menu");
 Menu trackManagerMenu("TrackManager Menu");
 Menu trackTestMenu("Testing Menu");
+Menu rosterList("Roster List");
+Menu routeList("Route List");
+Menu turnoutList("Turnout List");
+Menu turntableList("Turntable List");
 
 Menu* currentMenuPtr = &homeScreen;
 
@@ -157,13 +162,25 @@ void Menu::displayMenu(){
   }
 }
 
+/*
+Function to create required menus including static list items
+*/
 void createMenus() {
+  // Create menu structure
   mainMenu.setParent(&homeScreen);
   rosterMenu.setParent(&mainMenu);
   trackManagerMenu.setParent(&mainMenu);
   trackTestMenu.setParent(&trackManagerMenu);
-  mainMenu.addItem("Roster", 0, []() { rosterMenu.display(); });
+  rosterList.setParent(&mainMenu);
+  routeList.setParent(&mainMenu);
+  turnoutList.setParent(&mainMenu);
+  turntableList.setParent(&mainMenu);
+
+  // Create static menu items
+  mainMenu.addItem("Testing", 0, []() { rosterMenu.display(); });
   mainMenu.addItem("TrackManager", 0, []() { trackManagerMenu.display(); });
+  mainMenu.addItem("Roster", 0, []() { rosterList.display(); });
+
   rosterMenu.addItem("Test 1", 1, dummy);
   rosterMenu.addItem("Test 2", 2, dummy);
   rosterMenu.addItem("Test 3", 3, dummy);

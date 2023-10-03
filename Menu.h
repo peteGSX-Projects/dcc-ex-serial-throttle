@@ -74,6 +74,11 @@ private:
 
 extern Menu* currentMenuPtr;
 
+extern Menu rosterList;
+extern Menu routeList;
+extern Menu turnoutList;
+extern Menu turntableList;
+
 void createMenus();
 void dummy();
 
