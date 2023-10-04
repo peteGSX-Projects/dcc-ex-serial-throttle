@@ -36,12 +36,13 @@ Menu* currentMenuPtr = &homeScreen;
 /*
 Public functions
 */
-void Menu::addItem(const char* label, int16_t objectId, void (*action)()) {
-  if (itemCount < MAX_ITEMS) {
-    items[itemCount].label = label;
-    items[itemCount].objectId = objectId;
-    items[itemCount].action = action;
-    itemCount++;
+void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
+  MenuItem* newItem = new MenuItem(index, label, objectId, action);
+  if (!head) {
+    head = newItem;
+  } else {
+    newItem->next = head;
+    head = newItem;
   }
 }
 
@@ -66,15 +67,15 @@ void Menu::handleKeyPress(char key){
     case '8':
     case '9':
     case '0':
-      if (itemCount > 0) {
+      if (getItemCount() > 0) {
         int index = key - '1' + (currentPage - 1) * 9;
-        if (index < itemCount) {
-          items[index].action();
+        if (index < getItemCount()) {
+          getItem(index).action();
         }
       }
       break;
     case '#':
-      if (currentPage < (itemCount / 9) + 1) {
+      if (currentPage < (getItemCount() / 9) + 1) {
         currentPage++;
         // displayMenu();
       } else {
@@ -96,7 +97,15 @@ void Menu::handleKeyPress(char key){
 }
 
 int Menu::getItemCount() {
-  return itemCount;
+  int count = 0;
+  MenuItem* current = head;
+  
+  while (current != nullptr) {
+    count++;
+    current = current->next;
+  }
+
+  return count;
 }
 
 Menu* Menu::getParent() {
@@ -104,10 +113,17 @@ Menu* Menu::getParent() {
 }
 
 MenuItem Menu::getItem(int index) {
-  if (index >= 0 && index < itemCount) {
-    return items[index];
+  int currentIndex = 0;
+  MenuItem* currentItem = head;
+
+  while (currentItem != nullptr) {
+    if (currentIndex == index) {
+      return *currentItem;
+    }
+    currentIndex++;
+    currentItem = currentItem->next;
   }
-  return MenuItem{"", 0, nullptr};
+  return MenuItem{0, "", 0, nullptr};
 }
 
 /*
@@ -126,7 +142,7 @@ void Menu::displayMenu(){
     oled.print(label);
 
     int startIdx = (currentPage - 1) * 10;
-    int endIdx = min(startIdx + 10, itemCount);
+    int endIdx = min(startIdx + 10, getItemCount());
 
     // Display number keys 1 -> 0 (instead of 10) to select
     int key = 1;
@@ -136,7 +152,7 @@ void Menu::displayMenu(){
       oled.setCursor(column, row);
       oled.print(key);
       oled.print(" ");
-      oled.print(items[i].label);
+      oled.print(getItem(i).label);
       key++;
       // If next key would be 10, make it 0
       if (key > 9) {
@@ -174,23 +190,26 @@ void createMenus() {
   turntableList.setParent(&mainMenu);
 
   // Create static menu items
-  mainMenu.addItem("Testing", 0, []() { rosterMenu.display(); });
-  mainMenu.addItem("TrackManager", 0, []() { trackManagerMenu.display(); });
-  mainMenu.addItem("Roster", 0, []() { rosterList.display(); });
+  mainMenu.addItem(0, "Testing", 0, []() { rosterMenu.display(); });
+  mainMenu.addItem(1, "TrackManager", 0, []() { trackManagerMenu.display(); });
+  mainMenu.addItem(2, "Roster", 0, []() { rosterList.display(); });
+  mainMenu.addItem(3, "Routes", 0, []() { routeList.display(); });
+  mainMenu.addItem(4, "Turnouts", 0, []() { turnoutList.display(); });
+  mainMenu.addItem(5, "Turntables", 0, []() { turntableList.display(); });
 
-  rosterMenu.addItem("Test 1", 1, dummy);
-  rosterMenu.addItem("Test 2", 2, dummy);
-  rosterMenu.addItem("Test 3", 3, dummy);
-  rosterMenu.addItem("Test 4", 4, dummy);
-  rosterMenu.addItem("Test 5", 5, dummy);
-  rosterMenu.addItem("Test 6", 6, dummy);
-  rosterMenu.addItem("Test 7", 7, dummy);
-  rosterMenu.addItem("Test 8", 8, dummy);
-  rosterMenu.addItem("Test 9", 9, dummy);
-  rosterMenu.addItem("Test 10", 10, dummy);
-  rosterMenu.addItem("Test 11", 11, dummy);
-  rosterMenu.addItem("Test 12", 12, dummy);
-  trackManagerMenu.addItem("Test Menu", 0, []() { trackTestMenu.display(); });
+  rosterMenu.addItem(0, "Test 1", 1, dummy);
+  rosterMenu.addItem(1, "Test 2", 2, dummy);
+  rosterMenu.addItem(2, "Test 3", 3, dummy);
+  rosterMenu.addItem(3, "Test 4", 4, dummy);
+  rosterMenu.addItem(4, "Test 5", 5, dummy);
+  rosterMenu.addItem(5, "Test 6", 6, dummy);
+  rosterMenu.addItem(6, "Test 7", 7, dummy);
+  rosterMenu.addItem(7, "Test 8", 8, dummy);
+  rosterMenu.addItem(8, "Test 9", 9, dummy);
+  rosterMenu.addItem(9, "Test 10", 10, dummy);
+  rosterMenu.addItem(10, "Test 11", 11, dummy);
+  rosterMenu.addItem(11, "Test 12", 12, dummy);
+  trackManagerMenu.addItem(0, "Test Menu", 0, []() { trackTestMenu.display(); });
 }
 
 void dummy() {
