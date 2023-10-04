@@ -73,15 +73,16 @@ void updateRoster() {
     dccexProtocol.getRoster();
   } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
     gotRoster = true;
-    CONSOLE.println("Got roster");
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
-      const char* locoName = dccexProtocol.roster.get(i)->getLocoName().c_str();
-      int dccId = dccexProtocol.roster.get(i)->getLocoAddress();
-      rosterList.addItem(i, locoName, dccId, dummy);
-      CONSOLE.print("Roster index ");
-      CONSOLE.print(i);
-      CONSOLE.print(": ");
+      Loco* loco = dccexProtocol.roster.get(i);
+      const char* locoName = loco->getLocoName().c_str();
+      int locoAddress = loco->getLocoAddress();
+      rosterList.addItem(i, locoName, locoAddress, dummy);
+      CONSOLE.print("Roster before|after c_str(): ");
+      CONSOLE.print(loco->getLocoName());
+      CONSOLE.print(F("|"));
       CONSOLE.println(locoName);
+      delete[] loco;
     }
   }
 }
@@ -97,13 +98,15 @@ void updateRoutes() {
   } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
-      const char* routeName = dccexProtocol.routes.get(i)->getRouteName().c_str();
-      int routeId = dccexProtocol.routes.get(i)->getRouteId();
+      Route* route = dccexProtocol.routes.get(i);
+      const char* routeName = route->getRouteName().c_str();
+      int routeId = route->getRouteId();
       routeList.addItem(i, routeName, routeId, dummy);
       CONSOLE.print("Route before|after c_str(): ");
-      CONSOLE.print(dccexProtocol.routes.get(i)->getRouteName());
+      CONSOLE.print(route->getRouteName());
       CONSOLE.print(F("|"));
       CONSOLE.println(routeName);
+      delete[] route;
     }
   }
 }
@@ -119,13 +122,15 @@ void updateTurnouts() {
   } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
-      const char* turnoutName = dccexProtocol.turnouts.get(i)->getTurnoutName().c_str();
-      int turnoutId = dccexProtocol.turnouts.get(i)->getTurnoutId();
+      Turnout* turnout = dccexProtocol.turnouts.get(i);
+      const char* turnoutName = turnout->getTurnoutName().c_str();
+      int turnoutId = turnout->getTurnoutId();
       turnoutList.addItem(i, turnoutName, turnoutId, dummy);
       CONSOLE.print("Turnout before|after c_str(): ");
-      CONSOLE.print(dccexProtocol.turnouts.get(i)->getTurnoutName());
+      CONSOLE.print(turnout->getTurnoutName());
       CONSOLE.print(F("|"));
       CONSOLE.println(turnoutName);
+      delete[] turnout;
     }
   }
 }
@@ -141,13 +146,15 @@ void updateTurntables() {
   } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
-      const char* turntableName = dccexProtocol.turntables.get(i)->getTurntableName().c_str();
-      int turntableId = dccexProtocol.turntables.get(i)->getTurntableId();
+      Turntable* turntable = dccexProtocol.turntables.get(i);
+      const char* turntableName = turntable->getTurntableName().c_str();
+      int turntableId = turntable->getTurntableId();
       turntableList.addItem(i, turntableName, turntableId, dummy);
-      CONSOLE.print("Turntable index ");
-      CONSOLE.print(i);
-      CONSOLE.print(": ");
+      CONSOLE.print("Turntable before|after c_str(): ");
+      CONSOLE.print(turntable->getTurntableName());
+      CONSOLE.print(F("|"));
       CONSOLE.println(turntableName);
+      delete[] turntable;
     }
   }
 }

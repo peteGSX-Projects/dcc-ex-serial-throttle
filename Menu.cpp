@@ -44,11 +44,18 @@ void Menu::addItem(int index, const char* label, int16_t objectId, void (*action
   }
   
   MenuItem* newItem = new MenuItem(index, labelCopy, objectId, action);
+  newItem->next = nullptr;
+
   if (!head) {
     head = newItem;
   } else {
-    newItem->next = head;
-    head = newItem;
+    // Find last list item
+    MenuItem* current = head;
+    while (current->next != nullptr) {
+      current = current->next;
+    }
+    // Add to end of list
+    current->next = newItem;
   }
 }
 
