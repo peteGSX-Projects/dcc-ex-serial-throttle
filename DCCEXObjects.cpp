@@ -77,7 +77,7 @@ void updateRoster() {
       String name = dccexProtocol.roster.get(i)->getLocoName();
       const char* locoName = name.c_str();
       int dccId = dccexProtocol.roster.get(i)->getLocoAddress();
-      rosterList.addItem(locoName, dccId, dummy);
+      rosterList.addItem(i, locoName, dccId, dummy);
     }
   }
 }
@@ -96,7 +96,7 @@ void updateRoutes() {
       String name = dccexProtocol.routes.get(i)->getRouteName();
       const char* routeName = name.c_str();
       int routeId = dccexProtocol.routes.get(i)->getRouteId();
-      routeList.addItem(routeName, routeId, dummy);
+      routeList.addItem(i, routeName, routeId, dummy);
     }
   }
 }
@@ -115,7 +115,7 @@ void updateTurnouts() {
       String name = dccexProtocol.turnouts.get(i)->getTurnoutName();
       const char* turnoutName = name.c_str();
       int turnoutId = dccexProtocol.turnouts.get(i)->getTurnoutId();
-      rosterList.addItem(turnoutName, turnoutId, dummy);
+      rosterList.addItem(i, turnoutName, turnoutId, dummy);
     }
   }
 }
@@ -134,7 +134,7 @@ void updateTurntables() {
       String name = dccexProtocol.turntables.get(i)->getTurntableName();
       const char* turntableName = name.c_str();
       int turntableId = dccexProtocol.turntables.get(i)->getTurntableId();
-      rosterList.addItem(turntableName, turntableId, dummy);
+      rosterList.addItem(i, turntableName, turntableId, dummy);
     }
   }
 }

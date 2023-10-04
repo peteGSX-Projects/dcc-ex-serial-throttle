@@ -31,9 +31,16 @@ with paginated menu pages also.
 
 // Structure for each menu item
 struct MenuItem {
+  int index;
   const char* label;
   int16_t objectId;
   void (*action)();
+  MenuItem* next;
+
+  MenuItem() : index(0), label(nullptr), objectId(0), action(nullptr), next(nullptr) {}
+
+  MenuItem(int idx, const char* label, int16_t objectId, void (*action)()) :
+    index(idx), label(label), objectId(objectId), action(action), next(nullptr) {}
 };
 
 /*
@@ -50,7 +57,7 @@ public:
   };
 
   // Public functions
-  void addItem(const char* label, int16_t objectId, void (*action)());
+  void addItem(int index, const char* label, int16_t objectId, void (*action)());
   void setParent(Menu* parent);
   void display();
   void handleKeyPress(char key);
@@ -66,6 +73,7 @@ private:
   int itemCount;
   int currentPage;
   Menu* parentMenu;
+  MenuItem* head;
 
   // Private functions
   void displayMenu();
