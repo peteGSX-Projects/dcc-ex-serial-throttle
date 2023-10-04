@@ -118,7 +118,7 @@ void updateTurnouts() {
     dccexProtocol.getTurnouts();
   } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
     gotTurnouts = true;
-    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       const char* turnoutName = dccexProtocol.turnouts.get(i)->getTurnoutName().c_str();
       int turnoutId = dccexProtocol.turnouts.get(i)->getTurnoutId();
       turnoutList.addItem(i, turnoutName, turnoutId, dummy);
@@ -140,7 +140,7 @@ void updateTurntables() {
     dccexProtocol.getTurntables();
   } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
     gotTurntables = true;
-    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+    for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       const char* turntableName = dccexProtocol.turntables.get(i)->getTurntableName().c_str();
       int turntableId = dccexProtocol.turntables.get(i)->getTurntableId();
       turntableList.addItem(i, turntableName, turntableId, dummy);

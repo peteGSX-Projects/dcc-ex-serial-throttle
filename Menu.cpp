@@ -37,7 +37,13 @@ Menu* currentMenuPtr = &homeScreen;
 Public functions
 */
 void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
-  MenuItem* newItem = new MenuItem(index, label, objectId, action);
+  char* labelCopy = strdup(label);
+
+  if (!labelCopy) {
+    return;
+  }
+  
+  MenuItem* newItem = new MenuItem(index, labelCopy, objectId, action);
   if (!head) {
     head = newItem;
   } else {
@@ -77,11 +83,12 @@ void Menu::handleKeyPress(char key){
     case '#':
       if (currentPage < (getItemCount() / 9) + 1) {
         currentPage++;
-        // displayMenu();
       } else {
         currentPage = 1;
       }
-      displayMenu();
+      if (getItemCount() > 10) {
+        displayMenu();
+      }
       break;
     case '*':
       if (currentMenuPtr->getParent() == nullptr) {
