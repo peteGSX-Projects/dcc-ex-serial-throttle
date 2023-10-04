@@ -100,9 +100,9 @@ void updateRoutes() {
       const char* routeName = dccexProtocol.routes.get(i)->getRouteName().c_str();
       int routeId = dccexProtocol.routes.get(i)->getRouteId();
       routeList.addItem(i, routeName, routeId, dummy);
-      CONSOLE.print("Route index ");
-      CONSOLE.print(i);
-      CONSOLE.print(": ");
+      CONSOLE.print("Route before|after c_str(): ");
+      CONSOLE.print(dccexProtocol.routes.get(i)->getRouteName());
+      CONSOLE.print(F("|"));
       CONSOLE.println(routeName);
     }
   }
@@ -122,9 +122,9 @@ void updateTurnouts() {
       const char* turnoutName = dccexProtocol.turnouts.get(i)->getTurnoutName().c_str();
       int turnoutId = dccexProtocol.turnouts.get(i)->getTurnoutId();
       turnoutList.addItem(i, turnoutName, turnoutId, dummy);
-      CONSOLE.print("Turnout index ");
-      CONSOLE.print(i);
-      CONSOLE.print(": ");
+      CONSOLE.print("Turnout before|after c_str(): ");
+      CONSOLE.print(dccexProtocol.turnouts.get(i)->getTurnoutName());
+      CONSOLE.print(F("|"));
       CONSOLE.println(turnoutName);
     }
   }
