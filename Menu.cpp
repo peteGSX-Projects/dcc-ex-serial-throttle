@@ -67,15 +67,15 @@ void Menu::handleKeyPress(char key){
     case '8':
     case '9':
     case '0':
-      if (itemCount > 0) {
+      if (getItemCount() > 0) {
         int index = key - '1' + (currentPage - 1) * 9;
-        if (index < itemCount) {
-          items[index].action();
+        if (index < getItemCount()) {
+          getItem(index).action();
         }
       }
       break;
     case '#':
-      if (currentPage < (itemCount / 9) + 1) {
+      if (currentPage < (getItemCount() / 9) + 1) {
         currentPage++;
         // displayMenu();
       } else {
@@ -97,7 +97,15 @@ void Menu::handleKeyPress(char key){
 }
 
 int Menu::getItemCount() {
-  return itemCount;
+  int count = 0;
+  MenuItem* current = head;
+  
+  while (current != nullptr) {
+    count++;
+    current = current->next;
+  }
+
+  return count;
 }
 
 Menu* Menu::getParent() {
@@ -134,7 +142,7 @@ void Menu::displayMenu(){
     oled.print(label);
 
     int startIdx = (currentPage - 1) * 10;
-    int endIdx = min(startIdx + 10, itemCount);
+    int endIdx = min(startIdx + 10, getItemCount());
 
     // Display number keys 1 -> 0 (instead of 10) to select
     int key = 1;
@@ -144,7 +152,7 @@ void Menu::displayMenu(){
       oled.setCursor(column, row);
       oled.print(key);
       oled.print(" ");
-      oled.print(items[i].label);
+      oled.print(getItem(i).label);
       key++;
       // If next key would be 10, make it 0
       if (key > 9) {

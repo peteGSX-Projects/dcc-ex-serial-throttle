@@ -51,7 +51,6 @@ public:
   // Constructor
   Menu(const char* label) {
     this->label = label;
-    itemCount = 0;
     currentPage = 1;
     parentMenu = nullptr;
   };
@@ -69,8 +68,6 @@ private:
   // Private variables
   static const int MAX_ITEMS = 40;
   const char* label;
-  MenuItem items[MAX_ITEMS];
-  int itemCount;
   int currentPage;
   Menu* parentMenu;
   MenuItem* head;
