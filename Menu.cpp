@@ -193,6 +193,9 @@ void createMenus() {
   mainMenu.addItem(0, "Testing", 0, []() { rosterMenu.display(); });
   mainMenu.addItem(1, "TrackManager", 0, []() { trackManagerMenu.display(); });
   mainMenu.addItem(2, "Roster", 0, []() { rosterList.display(); });
+  mainMenu.addItem(3, "Routes", 0, []() { routeList.display(); });
+  mainMenu.addItem(4, "Turnouts", 0, []() { turnoutList.display(); });
+  mainMenu.addItem(5, "Turntables", 0, []() { turntableList.display(); });
 
   rosterMenu.addItem(0, "Test 1", 1, dummy);
   rosterMenu.addItem(1, "Test 2", 2, dummy);
