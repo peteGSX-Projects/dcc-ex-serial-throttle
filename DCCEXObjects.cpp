@@ -117,7 +117,7 @@ void updateTurnouts() {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
       const char* turnoutName = turnout->getTurnoutName().c_str();
       int turnoutId = turnout->getTurnoutId();
-      turnoutList.addItem(i, turnoutName, turnoutId, dummy);
+      turnoutList.addItem(i, turnoutName, turnoutId, operateTurnout);
       delete turnout;
     }
   }
@@ -147,6 +147,19 @@ void updateTurntables() {
 Function to operate a turnout
 If closed, will throw, if thrown, will close
 */
-void operateTurnout(int16_t turnoutId) {
-  
+void operateTurnout() {
+  if (currentMenuPtr != nullptr) {
+    int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+    CONSOLE.print(F("Toggle turnout ID "));
+    CONSOLE.println(objectId);
+    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
+      Turnout* turnout = dccexProtocol.turnouts.get(i);
+      int turnoutId = turnout->getTurnoutId();
+      if (turnoutId == objectId) {
+        CONSOLE.println(turnout->getTurnoutState());
+        turnout->setTurnoutState(TurnoutToggle);
+      }
+      // delete turnout;
+    }
+  }
 }

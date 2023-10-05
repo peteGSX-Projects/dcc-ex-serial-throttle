@@ -217,7 +217,5 @@ void dummy() {
     int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
     CONSOLE.print(F("Selected item object ID: "));
     CONSOLE.println(objectId);
-  //   CONSOLE.print("Dummy item ");
-  //   CONSOLE.println(objectId);
   }
 }
