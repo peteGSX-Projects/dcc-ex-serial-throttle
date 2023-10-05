@@ -63,6 +63,7 @@ public:
   int getItemCount();
   Menu* getParent();
   MenuItem getItem(int index);
+  int getSelectedItem();
 
 private:
   // Private variables
@@ -71,6 +72,7 @@ private:
   int currentPage;
   Menu* parentMenu;
   MenuItem* head;
+  int selectedItemIndex;
 
   // Private functions
   void displayMenu();

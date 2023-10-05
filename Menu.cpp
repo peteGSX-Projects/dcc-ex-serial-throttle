@@ -80,6 +80,7 @@ void Menu::handleKeyPress(char key){
       if (getItemCount() > 0) {
         int index = key - '1' + (currentPage - 1) * 9;
         if (index < getItemCount()) {
+          selectedItemIndex = getItem(index).index;
           getItem(index).action();
         }
       }
@@ -135,6 +136,10 @@ MenuItem Menu::getItem(int index) {
     currentItem = currentItem->next;
   }
   return MenuItem{0, "", 0, nullptr};
+}
+
+int Menu::getSelectedItem() {
+  return selectedItemIndex;
 }
 
 /*
@@ -208,9 +213,11 @@ void createMenus() {
 }
 
 void dummy() {
-  // if (currentMenuPtr != nullptr && currentMenuPtr->getItemCount() > 0) {
-  //   int16_t objectId = currentMenuPtr->items[0].objectId;
+  if (currentMenuPtr != nullptr) {
+    int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+    CONSOLE.print(F("Selected item object ID: "));
+    CONSOLE.println(objectId);
   //   CONSOLE.print("Dummy item ");
   //   CONSOLE.println(objectId);
-  // }
+  }
 }
