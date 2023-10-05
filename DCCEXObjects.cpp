@@ -82,7 +82,7 @@ void updateRoster() {
       CONSOLE.print(loco->getLocoName());
       CONSOLE.print(F("|"));
       CONSOLE.println(locoName);
-      delete[] loco;
+      delete loco;
     }
   }
 }
@@ -106,7 +106,7 @@ void updateRoutes() {
       CONSOLE.print(route->getRouteName());
       CONSOLE.print(F("|"));
       CONSOLE.println(routeName);
-      delete[] route;
+      delete route;
     }
   }
 }
@@ -130,7 +130,7 @@ void updateTurnouts() {
       CONSOLE.print(turnout->getTurnoutName());
       CONSOLE.print(F("|"));
       CONSOLE.println(turnoutName);
-      delete[] turnout;
+      delete turnout;
     }
   }
 }
@@ -154,7 +154,7 @@ void updateTurntables() {
       CONSOLE.print(turntable->getTurntableName());
       CONSOLE.print(F("|"));
       CONSOLE.println(turntableName);
-      delete[] turntable;
+      delete turntable;
     }
   }
 }
