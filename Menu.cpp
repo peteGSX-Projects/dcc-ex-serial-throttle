@@ -23,9 +23,6 @@
 // Create menus
 Menu homeScreen("Home Screen");
 Menu mainMenu("Main Menu");
-Menu rosterMenu("Roster Menu");
-Menu trackManagerMenu("TrackManager Menu");
-Menu trackTestMenu("Testing Menu");
 Menu rosterList("Roster List");
 Menu routeList("Route List");
 Menu turnoutList("Turnout List");
@@ -189,41 +186,25 @@ void Menu::displayMenu(){
   }
 }
 
+// End of class
+
 /*
 Function to create required menus including static list items
 */
 void createMenus() {
   // Create menu structure
   mainMenu.setParent(&homeScreen);
-  rosterMenu.setParent(&mainMenu);
-  trackManagerMenu.setParent(&mainMenu);
-  trackTestMenu.setParent(&trackManagerMenu);
   rosterList.setParent(&mainMenu);
   routeList.setParent(&mainMenu);
   turnoutList.setParent(&mainMenu);
   turntableList.setParent(&mainMenu);
 
   // Create static menu items
-  mainMenu.addItem(0, "Testing", 0, []() { rosterMenu.display(); });
-  mainMenu.addItem(1, "TrackManager", 0, []() { trackManagerMenu.display(); });
-  mainMenu.addItem(2, "Roster", 0, []() { rosterList.display(); });
-  mainMenu.addItem(3, "Routes", 0, []() { routeList.display(); });
-  mainMenu.addItem(4, "Turnouts", 0, []() { turnoutList.display(); });
-  mainMenu.addItem(5, "Turntables", 0, []() { turntableList.display(); });
+  mainMenu.addItem(0, "Roster", 0, []() { rosterList.display(); });
+  mainMenu.addItem(1, "Routes", 0, []() { routeList.display(); });
+  mainMenu.addItem(2, "Turnouts", 0, []() { turnoutList.display(); });
+  mainMenu.addItem(3, "Turntables", 0, []() { turntableList.display(); });
 
-  rosterMenu.addItem(0, "Test 1", 1, dummy);
-  rosterMenu.addItem(1, "Test 2", 2, dummy);
-  rosterMenu.addItem(2, "Test 3", 3, dummy);
-  rosterMenu.addItem(3, "Test 4", 4, dummy);
-  rosterMenu.addItem(4, "Test 5", 5, dummy);
-  rosterMenu.addItem(5, "Test 6", 6, dummy);
-  rosterMenu.addItem(6, "Test 7", 7, dummy);
-  rosterMenu.addItem(7, "Test 8", 8, dummy);
-  rosterMenu.addItem(8, "Test 9", 9, dummy);
-  rosterMenu.addItem(9, "Test 10", 10, dummy);
-  rosterMenu.addItem(10, "Test 11", 11, dummy);
-  rosterMenu.addItem(11, "Test 12", 12, dummy);
-  trackManagerMenu.addItem(0, "Test Menu", 0, []() { trackTestMenu.display(); });
 }
 
 void dummy() {

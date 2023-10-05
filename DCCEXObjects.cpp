@@ -78,10 +78,6 @@ void updateRoster() {
       const char* locoName = loco->getLocoName().c_str();
       int locoAddress = loco->getLocoAddress();
       rosterList.addItem(i, locoName, locoAddress, dummy);
-      CONSOLE.print("Roster before|after c_str(): ");
-      CONSOLE.print(loco->getLocoName());
-      CONSOLE.print(F("|"));
-      CONSOLE.println(locoName);
       delete loco;
     }
   }
@@ -102,10 +98,6 @@ void updateRoutes() {
       const char* routeName = route->getRouteName().c_str();
       int routeId = route->getRouteId();
       routeList.addItem(i, routeName, routeId, dummy);
-      CONSOLE.print("Route before|after c_str(): ");
-      CONSOLE.print(route->getRouteName());
-      CONSOLE.print(F("|"));
-      CONSOLE.println(routeName);
       delete route;
     }
   }
@@ -126,10 +118,6 @@ void updateTurnouts() {
       const char* turnoutName = turnout->getTurnoutName().c_str();
       int turnoutId = turnout->getTurnoutId();
       turnoutList.addItem(i, turnoutName, turnoutId, dummy);
-      CONSOLE.print("Turnout before|after c_str(): ");
-      CONSOLE.print(turnout->getTurnoutName());
-      CONSOLE.print(F("|"));
-      CONSOLE.println(turnoutName);
       delete turnout;
     }
   }
@@ -150,11 +138,15 @@ void updateTurntables() {
       const char* turntableName = turntable->getTurntableName().c_str();
       int turntableId = turntable->getTurntableId();
       turntableList.addItem(i, turntableName, turntableId, dummy);
-      CONSOLE.print("Turntable before|after c_str(): ");
-      CONSOLE.print(turntable->getTurntableName());
-      CONSOLE.print(F("|"));
-      CONSOLE.println(turntableName);
       delete turntable;
     }
   }
+}
+
+/*
+Function to operate a turnout
+If closed, will throw, if thrown, will close
+*/
+void operateTurnout(int16_t turnoutId) {
+  
 }

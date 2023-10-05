@@ -29,7 +29,7 @@ with paginated menu pages also.
 #include "defines.h"
 #include "DisplayFunctions.h"
 
-// Structure for each menu item
+// Structure for each menu item - no parameters
 struct MenuItem {
   int index;
   const char* label;
@@ -76,6 +76,8 @@ private:
   void displayMenu();
 
 };
+
+// End of class
 
 extern Menu* currentMenuPtr;
 

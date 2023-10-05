@@ -33,5 +33,6 @@ void updateRoster();
 void updateRoutes();
 void updateTurnouts();
 void updateTurntables();
+void operateTurnout(int16_t turnoutId);
 
 #endif
