@@ -75,10 +75,7 @@ void updateRoster() {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
-      const char* locoName = loco->getLocoName().c_str();
-      int locoAddress = loco->getLocoAddress();
-      rosterList.addItem(i, locoName, locoAddress, dummy);
-      delete loco;
+      rosterList.addItem(i, loco->getLocoName().c_str(), loco->getLocoAddress(), dummy);
     }
   }
 }
@@ -95,10 +92,7 @@ void updateRoutes() {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
-      const char* routeName = route->getRouteName().c_str();
-      int routeId = route->getRouteId();
-      routeList.addItem(i, routeName, routeId, dummy);
-      delete route;
+      routeList.addItem(i, route->getRouteName().c_str(), route->getRouteId(), dummy);
     }
   }
 }
@@ -115,10 +109,7 @@ void updateTurnouts() {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      const char* turnoutName = turnout->getTurnoutName().c_str();
-      int turnoutId = turnout->getTurnoutId();
-      turnoutList.addItem(i, turnoutName, turnoutId, operateTurnout);
-      delete turnout;
+      turnoutList.addItem(i, turnout->getTurnoutName().c_str(), turnout->getTurnoutId(), operateTurnout);
     }
   }
 }
@@ -135,10 +126,7 @@ void updateTurntables() {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
-      const char* turntableName = turntable->getTurntableName().c_str();
-      int turntableId = turntable->getTurntableId();
-      turntableList.addItem(i, turntableName, turntableId, dummy);
-      delete turntable;
+      turntableList.addItem(i, turntable->getTurntableName().c_str(), turntable->getTurntableId(), dummy);
     }
   }
 }
@@ -150,16 +138,12 @@ If closed, will throw, if thrown, will close
 void operateTurnout() {
   if (currentMenuPtr != nullptr) {
     int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    CONSOLE.print(F("Toggle turnout ID "));
-    CONSOLE.println(objectId);
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      int turnoutId = turnout->getTurnoutId();
-      if (turnoutId == objectId) {
-        CONSOLE.println(turnout->getTurnoutState());
+      if (turnout->getTurnoutId() == objectId) {
         turnout->setTurnoutState(TurnoutToggle);
+        CONSOLE.println(turnout->getTurnoutState());
       }
-      // delete turnout;
     }
   }
 }
