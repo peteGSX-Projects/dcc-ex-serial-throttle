@@ -30,10 +30,10 @@ If we haven't got a custom config.h, use the example
   #include "config.example.h"
 #endif
 
-#if MAX_OBJECTS < 10
-#undef MAX_OBJECTS
-#define MAX_OBJECTS 10
-#endif
+// #if MAX_OBJECTS < 10
+// #undef MAX_OBJECTS
+// #define MAX_OBJECTS 10
+// #endif
 
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #undef CONSOLE

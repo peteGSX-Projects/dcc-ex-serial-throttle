@@ -27,13 +27,14 @@ Include the required libraries
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
 #include "SerialFunctions.h"
-#include "AnalogueAverage.h"
+// #include "AnalogueAverage.h"
 #include "DCCEXObjects.h"
 #include "Menu.h"
+#include "Throttle.h"
 
-AnalogueAverage pot1(POT1_PIN);
-AnalogueAverage pot2(POT2_PIN);
-AnalogueAverage pot3(POT3_PIN);
+// AnalogueAverage pot1(POT1_PIN);
+// AnalogueAverage pot2(POT2_PIN);
+// AnalogueAverage pot3(POT3_PIN);
 
 
 /***********************************************************************************
@@ -69,28 +70,28 @@ void loop() {
   updateRoutes();
   updateTurnouts();
   updateTurntables();
-  pot1.averageInput();
-  pot2.averageInput();
-  pot3.averageInput();
-  newLoco1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  newLoco2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  newLoco3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
-  bool updateSpeeds = false;
-  if (newLoco1Speed != loco1Speed) {
-    loco1Speed = newLoco1Speed;
-    updateSpeeds = true;
-  }
-  if (newLoco2Speed != loco2Speed) {
-    loco2Speed = newLoco2Speed;
-    updateSpeeds = true;
-  }
-  if (newLoco3Speed != loco3Speed) {
-    loco3Speed = newLoco3Speed;
-    updateSpeeds = true;
-  }
-  if (updateSpeeds) {
-    currentMenuPtr->display();
-  }
+  // pot1.averageInput();
+  // pot2.averageInput();
+  // pot3.averageInput();
+  // newLoco1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  // newLoco2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  // newLoco3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
+  // bool updateSpeeds = false;
+  // if (newLoco1Speed != loco1Speed) {
+  //   loco1Speed = newLoco1Speed;
+  //   updateSpeeds = true;
+  // }
+  // if (newLoco2Speed != loco2Speed) {
+  //   loco2Speed = newLoco2Speed;
+  //   updateSpeeds = true;
+  // }
+  // if (newLoco3Speed != loco3Speed) {
+  //   loco3Speed = newLoco3Speed;
+  //   updateSpeeds = true;
+  // }
+  // if (updateSpeeds) {
+  //   currentMenuPtr->display();
+  // }
   char key = keypad.getKey();
   if (key) {
     currentMenuPtr->handleKeyPress(key);

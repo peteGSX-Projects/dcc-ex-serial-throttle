@@ -46,9 +46,9 @@ void displayStartupInfo() {
   // Set up serial and display basic config
   Serial.print(F("DCC-EX Serial Throttle "));
   Serial.println(VERSION);
-  Serial.print(F("Averaging inputs over "));
-  Serial.print(SAMPLES);
-  Serial.println(F(" samples"));
+  // Serial.print(F("Averaging inputs over "));
+  // Serial.print(SAMPLES);
+  // Serial.println(F(" samples"));
   // Set up OLED
 #ifdef USE_OLED_SPI
   oled.begin(OLED_TYPE, CS_PIN, DC_PIN);

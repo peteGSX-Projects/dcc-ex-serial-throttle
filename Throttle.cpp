@@ -21,7 +21,30 @@
 #include "defines.h"
 #include "AnalogueAverage.h"
 
+/*
+Constructor, set input mode on construction
+*/
+Throttle::Throttle(uint8_t potPin) {
+  _potPin = potPin;
+  pinMode(_potPin, INPUT);
+}
 
+/*
+Process throttle object:
+- Average potentiometer input over samples
+- If average has changed, update display and loco speed
+*/
+void Throttle::process() {
+  
+}
+
+/*
+Associate a loco address with this throttle
+Can be a consist instead?
+*/
+void Throttle::setLocoAddress(int16_t address) {
+
+}
 
 
 

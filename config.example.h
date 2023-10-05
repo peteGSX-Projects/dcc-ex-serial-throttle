@@ -15,12 +15,12 @@
 //    - Turnouts
 //    - Routes and automation sequences
 // 
-#define MAX_OBJECTS 10
+// #define MAX_OBJECTS 10
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Number of times to sample the analogue input to average out twitchy sliders.
 // 
-#define SAMPLES 10
+// #define SAMPLES 10
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer analog pins.

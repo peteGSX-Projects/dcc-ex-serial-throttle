@@ -21,7 +21,26 @@
 #define THROTTLE_H
 
 #include <Arduino.h>
+#include "DCCEXObjects.h"
 
+const uint8_t SAMPLES = 10;
 
+class Throttle {
+public:
+  // Constructor
+  Throttle(uint8_t potPin);
+
+  void process();
+  void setLocoAddress(int16_t address);
+
+private:
+  uint8_t _potPin;  // pin the potentiometer is on for this throttle
+  uint8_t _currentIndex = 0;
+  uint8_t _valueCount = 0;
+  uint16_t _sum = 0;
+  uint16_t _values[SAMPLES];
+  uint16_t _rollingAverage = 0;
+
+};
 
 #endif
