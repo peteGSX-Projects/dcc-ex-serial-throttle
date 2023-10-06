@@ -75,7 +75,7 @@ void updateRoster() {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addItem(i, loco->getLocoName().c_str(), loco->getLocoAddress(), dummy);
+      rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), dummy);
     }
   }
 }
@@ -92,7 +92,7 @@ void updateRoutes() {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
-      routeList.addItem(i, route->getRouteName().c_str(), route->getRouteId(), dummy);
+      routeList.addItem(i, route->getRouteName(), route->getRouteId(), dummy);
     }
   }
 }
@@ -109,7 +109,7 @@ void updateTurnouts() {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addItem(i, turnout->getTurnoutName().c_str(), turnout->getTurnoutId(), operateTurnout);
+      turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), operateTurnout);
     }
   }
 }
@@ -126,7 +126,7 @@ void updateTurntables() {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
-      turntableList.addItem(i, turntable->getTurntableName().c_str(), turntable->getTurntableId(), dummy);
+      turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), dummy);
     }
   }
 }
