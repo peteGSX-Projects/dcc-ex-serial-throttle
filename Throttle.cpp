@@ -63,10 +63,7 @@ Can be a consist instead?
 */
 void Throttle::setLocoAddress(uint16_t address) {
   _locoAddress = address;
-  CONSOLE.print("Set loco address for throttle ");
-  CONSOLE.print(_throttleNumber);
-  CONSOLE.print(" to ");
-  CONSOLE.println(_locoAddress);
+  
 }
 
 /*

@@ -91,8 +91,13 @@ void Menu::handleKeyPress(char key){
         if (number < 1 || number > 10239) {
           oled.setCursor(0, 3);
           oled.print("#####");
-          oled.setCursor(0, 5);
+          oled.setCursor(0, 6);
           oled.print("INVALID ADDRESS");
+        } else if (throttle1.getLocoAddress() == number || throttle2.getLocoAddress() == number || throttle3.getLocoAddress() == number) {
+          oled.setCursor(0, 3);
+          oled.print("#####");
+          oled.setCursor(0, 6);
+          oled.print("ADDRESS IN USE");
         } else {
           _inputMode = false;
           _isLocoInput = false;
@@ -288,17 +293,17 @@ void createMenus() {
   setupThrottles.addItem(2, "Throttle 3", 0, setThrottleContext);
 
   // Setup manage throttle menu
-  manageThrottle.addItem(0, "Select from roster", 0, dummy);
+  manageThrottle.addItem(0, "Select from roster", 0, selectFromRoster);
   manageThrottle.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageThrottle.addItem(2, "Setup consist", 0, dummy);
+  manageThrottle.addItem(2, "Setup consist", 0, noAction);
   manageThrottle.addItem(3, "Forget loco", 0, forgetLoco);
 
   // Setup track management
-  trackManagement.addItem(0, "Power On", 0, dummy);
-  trackManagement.addItem(1, "Power Off", 0, dummy);
-  trackManagement.addItem(2, "Join", 0, dummy);
-  trackManagement.addItem(3, "Unjoin", 0, dummy);
-  trackManagement.addItem(4, "TrackManager", 0, dummy);
+  trackManagement.addItem(0, "Power On", 1, setTrackPower);
+  trackManagement.addItem(1, "Power Off", 0, setTrackPower);
+  trackManagement.addItem(2, "Join", 1, setJoinTracks);
+  trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
+  trackManagement.addItem(4, "TrackManager", 0, noAction);
 
 }
 
@@ -335,17 +340,36 @@ Helper function to forget loco
 */
 void forgetLoco() {
   currentThrottle->forgetLoco();
-  currentMenuPtr = &homeScreen;
-  currentMenuPtr->display();
+  homeScreen.display();
 }
 
 /*
-Placeholder menu action
+Helper function to show the roster list when selecting a loco
 */
-void dummy() {
-  if (currentMenuPtr != nullptr) {
-    int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    CONSOLE.print(F("Selected item object ID: "));
-    CONSOLE.println(objectId);
+void selectFromRoster() {
+  rosterList.setParent(currentMenuPtr);
+  rosterList.display();
+}
+
+/*
+Helper function to set the loco address from the roster list
+and update the parent correctly
+*/
+void setLocoFromRoster() {
+  if (rosterList.getParent() != &mainMenu) {
+    uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+    if (throttle1.getLocoAddress() == address || throttle2.getLocoAddress() == address || throttle3.getLocoAddress() == address) {
+      oled.setCursor(0, 6);
+      oled.print("ADDRESS IN USE");
+    } else {
+      currentThrottle->setLocoAddress(address);
+      rosterList.setParent(&mainMenu);
+      homeScreen.display();
+    }
   }
 }
+
+/*
+Function for menu items that just display info
+*/
+void noAction() {}
