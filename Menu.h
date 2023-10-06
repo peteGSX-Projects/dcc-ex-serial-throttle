@@ -103,6 +103,7 @@ extern Menu turntableList;
 
 void createMenus();
 void setThrottleContext();
+void enterLocoAddress();
 void forgetLoco();
 void dummy();
 

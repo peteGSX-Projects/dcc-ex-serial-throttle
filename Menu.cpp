@@ -80,7 +80,7 @@ void Menu::handleKeyPress(char key){
         _inputBuffer[_inputIndex++] = key;
         oled.setCursor(inputKeyColumn, 3);
         oled.print(key);
-        inputKeyColumn++;
+        inputKeyColumn+= 6;
       }
     } else if (key == '#') {
       if (_inputIndex > 0) {
@@ -89,7 +89,7 @@ void Menu::handleKeyPress(char key){
         memset(_inputBuffer, 0, sizeof(_inputBuffer));
         inputKeyColumn = 0;
         if (number < 1 || number > 10239) {
-          oled.setCursor(0, 4);
+          oled.setCursor(0, 3);
           oled.print("#####");
           oled.setCursor(0, 5);
           oled.print("INVALID ADDRESS");
@@ -201,7 +201,7 @@ void Menu::_displayMenu(){
   // The top most menu only displays the * key to access the menu system
   if (_parentMenu == nullptr) {
     displayHomeScreen();
-  } else if (_isLocoInput) {
+  } else if (_inputMode) {
   // For entering a loco address manually
     oled.clear();
     oled.set1X();
@@ -214,7 +214,7 @@ void Menu::_displayMenu(){
     oled.print("#####");
     oled.setCursor(0, 7);
     oled.print("* Back");
-    oled.setCursor(60, 7);
+    oled.setCursor(65, 7);
     oled.print("# Confirm");
   } else {
   // All other menus show 10 per page in two columns
@@ -244,14 +244,14 @@ void Menu::_displayMenu(){
       // 6th row means row 1 in second column
       if (row > 5) {
         row = 1;
-        column = 60;
+        column = 65;
       }
     }
 
     oled.setCursor(0, 7);
     oled.print("* Back");
     if (getItemCount() > 10) {
-      oled.setCursor(60, 7);
+      oled.setCursor(65, 7);
       oled.print("# Next page");
     }
   }
@@ -289,7 +289,7 @@ void createMenus() {
 
   // Setup manage throttle menu
   manageThrottle.addItem(0, "Select from roster", 0, dummy);
-  manageThrottle.addItem(1, "Enter address", 0, []() { inputLocoAddress.display(); });
+  manageThrottle.addItem(1, "Enter address", 0, enterLocoAddress);
   manageThrottle.addItem(2, "Setup consist", 0, dummy);
   manageThrottle.addItem(3, "Forget loco", 0, forgetLoco);
 
@@ -323,15 +323,15 @@ void setThrottleContext() {
 }
 
 /*
-Function to get input from the keypad
+Helper function to get input from the keypad
 */
-void getInput() {
-  currentMenuPtr->setInputMode();
-  currentMenuPtr->display();
+void enterLocoAddress() {
+  inputLocoAddress.setInputMode();
+  inputLocoAddress.display();
 }
 
 /*
-Help function to forget loco
+Helper function to forget loco
 */
 void forgetLoco() {
   currentThrottle->forgetLoco();

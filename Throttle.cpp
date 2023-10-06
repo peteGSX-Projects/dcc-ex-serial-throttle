@@ -66,7 +66,7 @@ void Throttle::setLocoAddress(uint16_t address) {
   CONSOLE.print("Set loco address for throttle ");
   CONSOLE.print(_throttleNumber);
   CONSOLE.print(" to ");
-  CONSOLE.print(_locoAddress);
+  CONSOLE.println(_locoAddress);
 }
 
 /*
