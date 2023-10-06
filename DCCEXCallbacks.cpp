@@ -26,3 +26,49 @@ void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.print(F(" running version "));
   CONSOLE.println(version);
 }
+
+void DCCEXCallbacks::receivedSpeed(int throttleNo, int speed) { 
+  CONSOLE.print("Received Throttle Speed: ");
+  CONSOLE.print(throttleNo);
+  CONSOLE.print(" Speed: ");
+  CONSOLE.println(speed); 
+}
+
+void DCCEXCallbacks::receivedDirection(int throttleNo, Direction dir) { 
+  CONSOLE.print("Received Throttle Direction: ");
+  CONSOLE.print(throttleNo);
+  CONSOLE.print(" Direction: ");
+  CONSOLE.println(dir); 
+}
+
+void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) { 
+  CONSOLE.print("Received Throttle Function change: ");
+  CONSOLE.print(throttleNo);
+  CONSOLE.print(" function: ");
+  CONSOLE.print(func);
+  CONSOLE.print(" state: ");
+  CONSOLE.println(state);
+}
+
+void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, TurnoutState state) {
+  CONSOLE.print("Received turnout action: ");
+  CONSOLE.print(turnoutId);
+  CONSOLE.print(" state: ");
+  CONSOLE.println(state);
+}
+
+void DCCEXCallbacks::receivedRouteAction(int routeId, RouteState state) {
+  CONSOLE.print("Received route action: ");
+  CONSOLE.print(routeId);
+  CONSOLE.print(" state: ");
+  CONSOLE.println(state);
+}
+
+void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, TurntableState turntableState){ 
+  CONSOLE.print("Received turntable action: ");
+  CONSOLE.print(turntableId);
+  CONSOLE.print(" position: ");
+  CONSOLE.print(position);
+  CONSOLE.print(" state: ");
+  CONSOLE.println(turntableState);
+}

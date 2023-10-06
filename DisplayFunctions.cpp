@@ -67,49 +67,12 @@ void displayStartupInfo() {
   oled.print(VERSION);
 }
 
-/*
-Display speeds
-*/
-// void displaySpeeds() {
-//   oled.clear();
-//   oled.setCursor(4, 0);
-//   oled.set2X();
-//   oled.print(loco1Speed);
-//   oled.clearToEOL();
-//   oled.setCursor(46, 0);
-//   oled.print(loco2Speed);
-//   oled.clearToEOL();
-//   oled.setCursor(88, 0);
-//   oled.print(loco3Speed);
-//   oled.clearToEOL();
-//   oled.set1X();
-//   oled.setCursor(10, 3);
-//   if (loco1Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-//   oled.clearToEOL();
-//   oled.setCursor(52, 3);
-//   if (loco2Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-//   oled.clearToEOL();
-//   oled.setCursor(94, 3);
-//   if (loco3Direction) {
-//     oled.print(F("Fwd"));
-//   } else {
-//     oled.print(F("Rev"));
-//   }
-// }
-
-void updateLocoSpeed(int startCol, int endCol, int textCol, int speed) {
+void updateLocoSpeed(int startCol, int endCol, int textCol, int speed, bool override) {
   oled.set2X();
   oled.clear(startCol, endCol, 0, 2);
   oled.setCursor(textCol, 0);
   oled.print(speed);
+  if (override) oled.print("*");
 }
 
 void updateLocoDirection(int startCol, int endCol, int textCol, bool direction) {
@@ -123,23 +86,24 @@ void updateLocoDirection(int startCol, int endCol, int textCol, bool direction) 
   }
 }
 
-void updateLocoAddress(int startCol, int endCol, int textCol, int address) {
+void updateLocoAddress(int startCol, int endCol, int textCol, int address, bool isConsist) {
   oled.set1X();
   oled.clear(startCol, endCol, 5, 5);
   oled.setCursor(textCol, 5);
   oled.print(address);
+  if (isConsist) oled.print("c");
 }
 
 void updateLoco1Speed() {
-  updateLocoSpeed(0, 45, 4, loco1Speed);
+  updateLocoSpeed(0, 45, 4, throttle1.getSpeed(), false);
 }
 
 void updateLoco2Speed() {
-  updateLocoSpeed(46, 87, 46, loco2Speed);
+  updateLocoSpeed(46, 87, 46, throttle2.getSpeed(), false);
 }
 
 void updateLoco3Speed() {
-  updateLocoSpeed(88, 128, 88, loco3Speed);
+  updateLocoSpeed(88, 128, 88, throttle3.getSpeed(), false);
 }
 
 void updateLoco1Direction() {
@@ -155,15 +119,15 @@ void updateLoco3Direction() {
 }
 
 void updateLoco1Address() {
-  updateLocoAddress(0, 46, 5, loco1Address);
+  updateLocoAddress(0, 46, 5, throttle1.getLocoAddress(), throttle1.isConsist());
 }
 
 void updateLoco2Address() {
-  updateLocoAddress(47, 88, 47, loco2Address);
+  updateLocoAddress(47, 88, 47, throttle2.getLocoAddress(), throttle2.isConsist());
 }
 
 void updateLoco3Address() {
-  updateLocoAddress(89, 128, 89, loco3Address);
+  updateLocoAddress(89, 128, 89, throttle3.getLocoAddress(), throttle3.isConsist());
 }
 
 void displayHomeScreen() {
@@ -187,25 +151,6 @@ void displayConnectionError() {
   oled.set1X();
   oled.print("Connection error");
 }
-
-/*
-Display directions
-*/
-
-/*
-Display locos
-*/
-// void displayLocos() {
-//   oled.setCursor(5, 5);
-//   oled.print(loco1Address);
-//   oled.clearToEOL();
-//   oled.setCursor(47, 5);
-//   oled.print(loco2Address);
-//   oled.clearToEOL();
-//   oled.setCursor(89, 5);
-//   oled.print(loco3Address);
-//   oled.clearToEOL();
-// }
 
 /*
 Display EStop status

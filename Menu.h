@@ -20,6 +20,14 @@
 /*
 This menu class can create a structured parent/subparent menu system,
 with paginated menu pages also.
+
+When constructing menus, consider that a 128 x 64 OLED can accommodate:
+- 25 characters per row
+- 9 rows
+
+Each menu page can accommodate 2 columns of 5 items, meaning the text for each
+item is limited to 10 characters as 5 characters are lost to the key for each
+item plus space between.
 */
 
 #ifndef MENU_H
@@ -28,6 +36,7 @@ with paginated menu pages also.
 #include <Arduino.h>
 #include "defines.h"
 #include "DisplayFunctions.h"
+#include "Throttle.h"
 
 // Structure for each menu item - no parameters
 struct MenuItem {
@@ -50,9 +59,9 @@ class Menu {
 public:
   // Constructor
   Menu(const char* label) {
-    this->label = label;
-    currentPage = 1;
-    parentMenu = nullptr;
+    this->_label = label;
+    _currentPage = 1;
+    _parentMenu = nullptr;
   };
 
   // Public functions
@@ -64,18 +73,22 @@ public:
   Menu* getParent();
   MenuItem getItem(int index);
   int getSelectedItem();
+  void setInputMode();
 
 private:
   // Private variables
-  static const int MAX_ITEMS = 40;
-  const char* label;
-  int currentPage;
-  Menu* parentMenu;
-  MenuItem* head;
-  int selectedItemIndex;
+  const char* _label;
+  int _currentPage;
+  Menu* _parentMenu;
+  MenuItem* _head;
+  int _selectedItemIndex;
+  bool _inputMode = false;
+  char _inputBuffer[5];
+  byte _inputIndex = 0;
+  bool _isLocoInput = false;
 
   // Private functions
-  void displayMenu();
+  void _displayMenu();
 
 };
 
@@ -89,6 +102,8 @@ extern Menu turnoutList;
 extern Menu turntableList;
 
 void createMenus();
+void setThrottleContext();
+void forgetLoco();
 void dummy();
 
 #endif

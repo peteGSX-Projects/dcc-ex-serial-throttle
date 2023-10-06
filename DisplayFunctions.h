@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "version.h"
+#include "Throttle.h"
 
 #ifdef USE_OLED_SPI
 #include <SPI.h>
@@ -35,16 +36,6 @@ extern SSD1306AsciiSpi oled;
 #include "SSD1306AsciiAvrI2c.h"
 extern SSD1306AsciiAvrI2c oled;
 #endif
-
-extern uint8_t loco1Speed;
-extern uint8_t loco2Speed;
-extern uint8_t loco3Speed;
-extern uint8_t newLoco1Speed;
-extern uint8_t newLoco2Speed;
-extern uint8_t newLoco3Speed;
-extern int loco1Address;
-extern int loco2Address;
-extern int loco3Address;
 
 void displayStartupInfo();
 void displayHomeScreen();
@@ -59,8 +50,6 @@ void updateLoco3Speed();
 void updateLoco3Direction();
 void updateLoco3Address();
 
-// void displaySpeeds();
-// void displayLocos();
 // void displayEStop();
 
 #endif

@@ -27,6 +27,12 @@ class DCCEXCallbacks : public DCCEXProtocolDelegate {
 
 public:
   void receivedServerDescription(String uc, String version);
+  void receivedSpeed(int throttleNo, int speed);
+  void receivedDirection(int throttleNo, Direction dir);
+  void receivedFunction(int throttleNo, int func, bool state);
+  void receivedTurnoutAction(int turnoutId, TurnoutState state);
+  void receivedRouteAction(int routeId, RouteState state);
+  void receivedTurntableAction(int turntableId, int position, TurntableState turntableState);
 
 };
 

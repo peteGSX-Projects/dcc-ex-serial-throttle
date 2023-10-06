@@ -19,14 +19,14 @@
 
 #include "Throttle.h"
 #include "defines.h"
-#include "AnalogueAverage.h"
 
 /*
 Constructor, set input mode on construction
 */
-Throttle::Throttle(uint8_t potPin) {
+Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin) {
   _potPin = potPin;
   pinMode(_potPin, INPUT);
+  _throttleNumber = throttleNumber;
 }
 
 /*
@@ -35,102 +35,76 @@ Process throttle object:
 - If average has changed, update display and loco speed
 */
 void Throttle::process() {
-  
+  if (_locoAddress == 0) return;
+  uint16_t _instantValue = analogRead(_potPin);
+  _sum += _instantValue;
+  if (_valueCount == SAMPLES) _sum -= _values[_currentIndex];
+  _values[_currentIndex] = _instantValue;
+  if (++_currentIndex >= SAMPLES) _currentIndex = 0;
+  if (_valueCount < SAMPLES) _valueCount += 1;
+  _rollingAverage = _sum/_valueCount;
+  _speedChanged = false;
+  if (_speed != map(_rollingAverage, POT_MIN, POT_MAX, 0, 126)) {
+    _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
+    _speedChanged = true;
+  }
+}
+
+/*
+Return this throttle's number (for display purposes)
+*/
+uint8_t Throttle::getThrottleNumber() {
+  return _throttleNumber;
 }
 
 /*
 Associate a loco address with this throttle
 Can be a consist instead?
 */
-void Throttle::setLocoAddress(int16_t address) {
-
+void Throttle::setLocoAddress(uint16_t address) {
+  _locoAddress = address;
+  CONSOLE.print("Set loco address for throttle ");
+  CONSOLE.print(_throttleNumber);
+  CONSOLE.print(" to ");
+  CONSOLE.print(_locoAddress);
 }
 
-
-
-
-
-/***********************************************************************************
-Set up our pot objects
-***********************************************************************************/
-// AnalogueAverage pot1(POT1_PIN);
-// AnalogueAverage pot2(POT2_PIN);
-// AnalogueAverage pot3(POT3_PIN);
-
-// int8_t loco1Speed = 0;
-// int8_t loco2Speed = 0;
-// int8_t loco3Speed = 0;
-// bool loco1Direction = 1;
-// bool loco2Direction = 1;
-// bool loco3Direction = 1;
-// bool loco1Light = 0;
-// bool loco2Light = 0;
-// bool loco3Light = 0;
-// bool loco1Stop = false;                   // Flag to temporarily stop loco when button held
-// bool loco2Stop = false;
-// bool loco3Stop = false;
-// bool eStop = false;                       // Flag when 0 held for EStop
-// bool trackPower = 0;                      // Flag for track power
-// uint16_t loco1Address = 2010;
-// uint16_t loco2Address = 2004;
-// uint16_t loco3Address = 2006;
-
-
-
-/***********************************************************************************
-Potentiometer processing functions
-***********************************************************************************/
 /*
-Function to process the potentiometer inputs to control speed
-This is a HORRENDOUS function and needs to be optimised
+Return the current loco address
 */
-// void processSliders() {
-//   pot1.averageInput();
-//   pot2.averageInput();
-//   pot3.averageInput();
-//   int8_t newL1Speed;
-//   int8_t newL2Speed;
-//   int8_t newL3Speed;
-//   if (loco1Stop == true) {
-//     newL1Speed = 0;
-//   } else {
-//     newL1Speed = map(pot1.getAverage(), POT_MIN, POT_MAX, 0, 126);
-//   };
-//   if (loco2Stop == true) {
-//     newL2Speed = 0;
-//   } else {
-//     newL2Speed = map(pot2.getAverage(), POT_MIN, POT_MAX, 0, 126);
-//   };
-//   if (loco3Stop == true) {
-//     newL3Speed = 0;
-//   } else {
-//     newL3Speed = map(pot3.getAverage(), POT_MIN, POT_MAX, 0, 126);
-//   };
-//   if (eStop == true) {
-//     displayEStop();
-//     if (newL1Speed == 0 && newL2Speed == 0 && newL3Speed == 0) {
-//       eStop = false;
-//     }
-//   } else {
-//     bool updateDisplay = false;
-//     if (newL1Speed != loco1Speed) {
-//       loco1Speed = newL1Speed;
-//       updateDisplay = true;
-//       setLocoThrottle(loco1Address, loco1Speed, loco1Direction);
-//     }
-//     if (newL2Speed != loco2Speed) {
-//       loco2Speed = newL2Speed;
-//       updateDisplay = true;
-//       setLocoThrottle(loco2Address, loco2Speed, loco2Direction);
-//     }
-//     if (newL3Speed != loco3Speed) {
-//       loco3Speed = newL3Speed;
-//       updateDisplay = true;
-//       setLocoThrottle(loco3Address, loco3Speed, loco3Direction);
-//     }
-//     if (updateDisplay) {
-//       displaySpeeds();
-//       displayLocos();
-//     }
-//   }
-// }
+uint16_t Throttle::getLocoAddress() {
+  return _locoAddress;
+}
+
+/*
+Flag if throttle is a consist or not
+*/
+bool Throttle::isConsist() {
+  return _isConsist;
+}
+
+/*Function to flag if the speed has changed
+*/
+bool Throttle::speedChanged() {
+  return _speedChanged;
+}
+
+/*
+Returns the current speed
+*/
+uint8_t Throttle::getSpeed() {
+  return map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
+}
+
+/*
+Forgets the acquired loco
+This needs to delete any Loco or Consist objects in use
+*/
+void Throttle::forgetLoco() {
+  _locoAddress = 0;
+}
+
+// Create throttle objects
+Throttle throttle1(1, POT1_PIN);
+Throttle throttle2(2, POT2_PIN);
+Throttle throttle3(3, POT3_PIN);
