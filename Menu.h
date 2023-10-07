@@ -105,6 +105,8 @@ void createMenus();
 void setThrottleContext();
 void enterLocoAddress();
 void forgetLoco();
-void dummy();
+void selectFromRoster();
+void setLocoFromRoster();
+void noAction();    // For menu items that just display info
 
 #endif

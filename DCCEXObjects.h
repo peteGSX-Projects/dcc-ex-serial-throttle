@@ -33,6 +33,8 @@ void updateRoster();
 void updateRoutes();
 void updateTurnouts();
 void updateTurntables();
-void operateTurnout();
+void toggleTurnout();
+void setTrackPower();
+void setJoinTracks();
 
 #endif

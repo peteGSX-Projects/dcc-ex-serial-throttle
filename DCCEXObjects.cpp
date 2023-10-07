@@ -75,7 +75,7 @@ void updateRoster() {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), dummy);
+      rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
     }
   }
 }
@@ -92,7 +92,7 @@ void updateRoutes() {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
-      routeList.addItem(i, route->getRouteName(), route->getRouteId(), dummy);
+      routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
     }
   }
 }
@@ -109,7 +109,7 @@ void updateTurnouts() {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), operateTurnout);
+      turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
     }
   }
 }
@@ -126,24 +126,48 @@ void updateTurntables() {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
-      turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), dummy);
+      turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), noAction);
     }
   }
 }
 
 /*
-Function to operate a turnout
+Function to toggle a turnout
 If closed, will throw, if thrown, will close
 */
-void operateTurnout() {
+void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
-      Turnout* turnout = dccexProtocol.turnouts.get(i);
-      if (turnout->getTurnoutId() == objectId) {
-        turnout->setTurnoutState(TurnoutToggle);
-        CONSOLE.println(turnout->getTurnoutState());
-      }
+    Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
+    turnout->toggleTurnout();
+    CONSOLE.println(turnout->getTurnoutState());
+  }
+}
+
+/*
+Function to turn track power on or off
+*/
+void setTrackPower() {
+  if (currentMenuPtr != nullptr) {
+    int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+    if (state == 1) {
+      dccexProtocol.sendTrackPower(PowerOn);
+    } else {
+      dccexProtocol.sendTrackPower(PowerOff);
+    }
+  }
+}
+
+/*
+Function to join or unjoin tracks
+*/
+void setJoinTracks() {
+  if (currentMenuPtr != nullptr) {
+    int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+    if (join == 1) {
+      CONSOLE.println("Would join but not implemented yet");
+    } else {
+      CONSOLE.println("Would unjoin but not implemented yet");
     }
   }
 }
