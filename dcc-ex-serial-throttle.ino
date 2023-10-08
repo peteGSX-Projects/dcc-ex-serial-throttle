@@ -59,6 +59,7 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
+  dccexProtocol.getLists(true, true, true, true);
   validateConnection();
   updateRoster();
   updateRoutes();
@@ -67,9 +68,9 @@ void loop() {
   throttle1.process();
   throttle2.process();
   throttle3.process();
-  if (throttle1.speedChanged()) updateLoco1Speed();
-  if (throttle2.speedChanged()) updateLoco2Speed();
-  if (throttle3.speedChanged()) updateLoco3Speed();
+  if (throttle1.speedChanged()) displayThrottle1Speed();
+  if (throttle2.speedChanged()) displayThrottle2Speed();
+  if (throttle3.speedChanged()) displayThrottle3Speed();
   char key = keypad.getKey();
   if (key) {
     currentMenuPtr->handleKeyPress(key);

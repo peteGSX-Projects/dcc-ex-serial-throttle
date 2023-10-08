@@ -89,6 +89,7 @@ private:
 
   // Private functions
   void _displayMenu();
+  void _doHomeFunctions(char key);
 
 };
 

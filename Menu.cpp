@@ -128,11 +128,15 @@ void Menu::handleKeyPress(char key){
       case '8':
       case '9':
       case '0':
-        if (getItemCount() > 0) {
-          int index = key - '1' + (_currentPage - 1) * 9;
-          if (index < getItemCount()) {
-            _selectedItemIndex = getItem(index).index;
-            getItem(index).action();
+        if (currentMenuPtr == &homeScreen) {
+          _doHomeFunctions(key);
+        } else {
+          if (getItemCount() > 0) {
+            int index = key - '1' + (_currentPage - 1) * 9;
+            if (index < getItemCount()) {
+              _selectedItemIndex = getItem(index).index;
+              getItem(index).action();
+            }
           }
         }
         break;
@@ -259,6 +263,34 @@ void Menu::_displayMenu(){
       oled.setCursor(65, 7);
       oled.print("# Next page");
     }
+  }
+}
+
+/*
+Process keys on the home screen
+*/
+void Menu::_doHomeFunctions(char key) {
+  switch (key) {
+    case '1':
+      if (throttle1.getSpeed() == 0 && throttle1.getLocoAddress() != 0) {
+        throttle1.setDirection(!throttle1.getDirection());
+        displayThrottle1Direction();
+      }
+      break;
+    case '2':
+      if (throttle2.getSpeed() == 0 && throttle2.getLocoAddress() != 0) {
+        throttle2.setDirection(!throttle2.getDirection());
+        displayThrottle2Direction();
+      }
+      break;
+    case '3':
+      if (throttle3.getSpeed() == 0 && throttle3.getLocoAddress() != 0) {
+        throttle3.setDirection(!throttle3.getDirection());
+        displayThrottle3Direction();
+      }
+      break;
+    default:
+      break;
   }
 }
 

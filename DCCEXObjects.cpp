@@ -31,14 +31,9 @@ bool errorDisplayed = false;
 uint8_t connectionRetries = 5;
 unsigned long retryDelay = 500;
 unsigned long lastRetry = 0;
-bool objectsRequested = false;
-bool requestedRoster = false;
 bool gotRoster = false;
-bool requestedRoutes = false;
 bool gotRoutes = false;
-bool requestedTurnouts = false;
 bool gotTurnouts = false;
-bool requestedTurntables = false;
 bool gotTurntables = false;
 
 /*
@@ -68,10 +63,7 @@ Function to update roster entries from the CS
 To trigger after startup, simply set requestedRoster to false
 */
 void updateRoster() {
-  if (!requestedRoster) {
-    requestedRoster = true;
-    dccexProtocol.getRoster();
-  } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
+  if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
@@ -85,10 +77,7 @@ Function to update route entries from the CS
 To trigger after startup, simply set requestedRoutes to false
 */
 void updateRoutes() {
-  if (!requestedRoutes && gotRoster) {
-    requestedRoutes = true;
-    dccexProtocol.getRoutes();
-  } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
+  if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
@@ -102,10 +91,7 @@ Function to update turnout entries from the CS
 To trigger after startup, simply set requestedTurnouts to false
 */
 void updateTurnouts() {
-  if (!requestedTurnouts && gotRoster && gotRoutes) {
-    requestedTurnouts = true;
-    dccexProtocol.getTurnouts();
-  } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
+  if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
@@ -119,10 +105,7 @@ Function to update turntable entries from the CS
 To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
-  if (!requestedTurntables && gotRoster && gotRoutes && gotTurnouts) {
-    requestedTurntables = true;
-    dccexProtocol.getTurntables();
-  } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
+  if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);

@@ -29,19 +29,6 @@ SSD1306AsciiSpi oled;
 SSD1306AsciiAvrI2c oled;
 #endif
 
-uint8_t loco1Speed = 0;
-uint8_t loco2Speed = 0;
-uint8_t loco3Speed = 0;
-uint8_t newLoco1Speed = 0;
-uint8_t newLoco2Speed = 0;
-uint8_t newLoco3Speed = 0;
-bool loco1Direction = 1;
-bool loco2Direction = 0;
-bool loco3Direction = 1;
-int loco1Address = 0;
-int loco2Address = 0;
-int loco3Address = 0;
-
 void displayStartupInfo() {
   // Set up serial and display basic config
   Serial.print(F("DCC-EX Serial Throttle "));
@@ -67,15 +54,16 @@ void displayStartupInfo() {
   oled.print(VERSION);
 }
 
-void updateLocoSpeed(int startCol, int endCol, int textCol, int speed, bool override) {
+void displayThrottleSpeed(int startCol, int endCol, int textCol, int speed) {
+  if (currentMenuPtr->getParent() != nullptr) return;
   oled.set2X();
   oled.clear(startCol, endCol, 0, 2);
   oled.setCursor(textCol, 0);
   oled.print(speed);
-  if (override) oled.print("*");
 }
 
-void updateLocoDirection(int startCol, int endCol, int textCol, bool direction) {
+void displayThrottleDirection(int startCol, int endCol, int textCol, bool direction) {
+  if (currentMenuPtr->getParent() != nullptr) return;
   oled.set1X();
   oled.clear(startCol, endCol, 3, 4);
   oled.setCursor(textCol, 3);
@@ -86,61 +74,67 @@ void updateLocoDirection(int startCol, int endCol, int textCol, bool direction) 
   }
 }
 
-void updateLocoAddress(int startCol, int endCol, int textCol, int address, bool isConsist) {
+void displayThrottleAddress(int startCol, int endCol, int textCol, int address, bool isOverridden, bool isConsist) {
+  if (currentMenuPtr->getParent() != nullptr) return;
   oled.set1X();
   oled.clear(startCol, endCol, 5, 5);
   oled.setCursor(textCol, 5);
+  if (isOverridden) {
+    oled.print("*");
+  } else {
+    oled.print(" ");
+  }
   oled.print(address);
   if (isConsist) oled.print("c");
 }
 
-void updateLoco1Speed() {
-  updateLocoSpeed(0, 45, 4, throttle1.getSpeed(), false);
+void displayThrottle1Speed() {
+  displayThrottleSpeed(0, 45, 4, throttle1.getSpeed());
 }
 
-void updateLoco2Speed() {
-  updateLocoSpeed(46, 87, 46, throttle2.getSpeed(), false);
+void displayThrottle2Speed() {
+  displayThrottleSpeed(46, 87, 46, throttle2.getSpeed());
 }
 
-void updateLoco3Speed() {
-  updateLocoSpeed(88, 128, 88, throttle3.getSpeed(), false);
+void displayThrottle3Speed() {
+  displayThrottleSpeed(88, 128, 88, throttle3.getSpeed());
 }
 
-void updateLoco1Direction() {
-  updateLocoDirection(0, 51, 10, loco1Direction);
+void displayThrottle1Direction() {
+  displayThrottleDirection(0, 51, 10, throttle1.getDirection());
 }
 
-void updateLoco2Direction() {
-  updateLocoDirection(52, 93, 52, loco2Direction);
+void displayThrottle2Direction() {
+  displayThrottleDirection(52, 93, 52, throttle2.getDirection());
 }
 
-void updateLoco3Direction() {
-  updateLocoDirection(94, 128, 94, loco3Direction);
+void displayThrottle3Direction() {
+  displayThrottleDirection(94, 128, 94, throttle3.getDirection());
 }
 
-void updateLoco1Address() {
-  updateLocoAddress(0, 46, 5, throttle1.getLocoAddress(), throttle1.isConsist());
+void displayThrottle1Address() {
+  displayThrottleAddress(0, 42, 0, throttle1.getLocoAddress(), throttle1.isOverridden(), throttle1.isConsist());
 }
 
-void updateLoco2Address() {
-  updateLocoAddress(47, 88, 47, throttle2.getLocoAddress(), throttle2.isConsist());
+void displayThrottle2Address() {
+  displayThrottleAddress(43, 86, 43, throttle2.getLocoAddress(), throttle2.isOverridden(), throttle2.isConsist());
 }
 
-void updateLoco3Address() {
-  updateLocoAddress(89, 128, 89, throttle3.getLocoAddress(), throttle3.isConsist());
+void displayThrottle3Address() {
+  displayThrottleAddress(87, 128, 87, throttle3.getLocoAddress(), throttle3.isOverridden(), throttle3.isConsist());
 }
 
 void displayHomeScreen() {
   oled.clear();
-  updateLoco1Speed();
-  updateLoco2Speed();
-  updateLoco3Speed();
-  updateLoco1Direction();
-  updateLoco2Direction();
-  updateLoco3Direction();
-  updateLoco1Address();
-  updateLoco2Address();
-  updateLoco3Address();
+  displayThrottle1Speed();
+  displayThrottle2Speed();
+  displayThrottle3Speed();
+  displayThrottle1Direction();
+  displayThrottle2Direction();
+  displayThrottle3Direction();
+  displayThrottle1Address();
+  displayThrottle2Address();
+  displayThrottle3Address();
   oled.setCursor(0, 7);
   oled.print("* Menu");
 } 

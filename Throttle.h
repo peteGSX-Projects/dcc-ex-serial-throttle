@@ -39,6 +39,9 @@ public:
   uint8_t getSpeed();
   bool isConsist();
   void forgetLoco();
+  void setDirection(bool direction);
+  bool getDirection();
+  bool isOverridden();
 
 private:
   uint8_t _potPin;  // pin the potentiometer is on for this throttle
@@ -52,6 +55,8 @@ private:
   uint16_t _locoAddress = 0;
   bool _isConsist = false;
   uint8_t _throttleNumber;
+  bool _direction = 0;
+  bool _isOverridden = false;
 
 };
 

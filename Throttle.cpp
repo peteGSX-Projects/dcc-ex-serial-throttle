@@ -63,7 +63,6 @@ Can be a consist instead?
 */
 void Throttle::setLocoAddress(uint16_t address) {
   _locoAddress = address;
-  
 }
 
 /*
@@ -99,6 +98,32 @@ This needs to delete any Loco or Consist objects in use
 */
 void Throttle::forgetLoco() {
   _locoAddress = 0;
+}
+
+/*
+Sets the direction if speed = 0
+0 = forward
+1 = reverse
+*/
+void Throttle::setDirection(bool direction){
+  if (_speed > 0) return;
+  _direction = direction;
+}
+
+/*
+Get current throttle direction
+0 = forward
+1 = reverse
+*/
+bool Throttle::getDirection() {
+  return _direction;
+}
+
+/*
+True if throttle speed and/or direction has been overridden by another throttle
+*/
+bool Throttle::isOverridden() {
+  return _isOverridden;
 }
 
 // Create throttle objects
