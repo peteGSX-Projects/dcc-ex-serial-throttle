@@ -26,10 +26,18 @@
 
 const uint8_t SAMPLES = 10;
 
+struct LocoNode {
+  Loco* loco;
+  LocoNode* next;
+};
+
 class Throttle {
 public:
   // Constructor
-  Throttle(uint8_t throttleNumber, uint8_t potPin);
+  Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList);
+
+  // Linked list containing Locos
+  LocoNode* locoList = nullptr;
 
   void process();
   uint8_t getThrottleNumber();
@@ -42,6 +50,8 @@ public:
   void setDirection(bool direction);
   bool getDirection();
   bool isOverridden();
+  // void setLocoList(LocoNode* newList);
+  // LocoNode* getLocoList();
 
 private:
   uint8_t _potPin;  // pin the potentiometer is on for this throttle

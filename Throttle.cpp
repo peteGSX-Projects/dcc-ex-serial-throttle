@@ -23,10 +23,11 @@
 /*
 Constructor, set input mode on construction
 */
-Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin) {
+Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList) {
   _potPin = potPin;
   pinMode(_potPin, INPUT);
   _throttleNumber = throttleNumber;
+  locoList = initialLocoList;
 }
 
 /*
@@ -126,7 +127,26 @@ bool Throttle::isOverridden() {
   return _isOverridden;
 }
 
+// /*
+// Function to set the associated linked list of locos
+// */
+// void Throttle::setLocoList(LocoNode* newList) {
+//   locoList = newList;
+// }
+
+// /*
+// Function to retrieve the list of locos
+// */
+// LocoNode* Throttle::getLocoList() {
+//   return locoList;
+// }
+
+// Create Loco linked lists
+LocoNode* throttle1List = nullptr;
+LocoNode* throttle2List = nullptr;
+LocoNode* throttle3List = nullptr;
+
 // Create throttle objects
-Throttle throttle1(1, POT1_PIN);
-Throttle throttle2(2, POT2_PIN);
-Throttle throttle3(3, POT3_PIN);
+Throttle throttle1(1, POT1_PIN, throttle1List);
+Throttle throttle2(2, POT2_PIN, throttle2List);
+Throttle throttle3(3, POT3_PIN, throttle3List);
