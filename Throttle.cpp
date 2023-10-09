@@ -27,7 +27,7 @@ Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLoco
   _potPin = potPin;
   pinMode(_potPin, INPUT);
   _throttleNumber = throttleNumber;
-  locoList = initialLocoList;
+  _locoList = initialLocoList;
 }
 
 /*
@@ -59,11 +59,31 @@ uint8_t Throttle::getThrottleNumber() {
 }
 
 /*
-Associate a loco address with this throttle
-Can be a consist instead?
+Associate a loco object with this throttle
+Sends the initial speed and direction to the CS also
 */
-void Throttle::setLocoAddress(uint16_t address) {
+void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
   _locoAddress = address;
+  if (throttle1.addressInUse(_locoAddress)) return;
+  if (throttle2.addressInUse(_locoAddress)) return;
+  if (throttle3.addressInUse(_locoAddress)) return;
+  char* name = "";
+  Loco* newLoco = new Loco(address, name, source);
+  LocoNode* newNode = new LocoNode;
+  newNode->loco = newLoco;
+  newNode->next = nullptr;
+
+  if (_locoList == nullptr) {
+    _locoList = newNode;
+  } else {
+    LocoNode* currentNode = _locoList;
+    while (currentNode->next != nullptr) {
+      currentNode = currentNode->next;
+    }
+    currentNode->next = newNode;
+  }
+  dccexProtocol.throttleConsists[_throttleNumber].consistAddLoco(*newLoco, FacingForward);
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
 }
 
 /*
@@ -80,9 +100,12 @@ bool Throttle::isConsist() {
   return _isConsist;
 }
 
-/*Function to flag if the speed has changed
+/*
+Function to flag if the speed has changed
+Sends new speed to the CS also
 */
 bool Throttle::speedChanged() {
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
   return _speedChanged;
 }
 
@@ -98,6 +121,22 @@ Forgets the acquired loco
 This needs to delete any Loco or Consist objects in use
 */
 void Throttle::forgetLoco() {
+  LocoNode* previousNode = nullptr;
+  LocoNode* currentNode = _locoList;
+
+  while (currentNode != nullptr) {
+    if (currentNode->loco->getLocoAddress() == _locoAddress) {
+      if (previousNode == nullptr) {
+        currentNode->next = nullptr;
+      } else {
+        previousNode->next = currentNode->next;
+      }
+    }
+  }
+
+  delete currentNode->loco;
+  delete currentNode;
+
   _locoAddress = 0;
 }
 
@@ -105,10 +144,12 @@ void Throttle::forgetLoco() {
 Sets the direction if speed = 0
 0 = forward
 1 = reverse
+Sends the change to the CS also
 */
 void Throttle::setDirection(bool direction){
   if (_speed > 0) return;
   _direction = direction;
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
 }
 
 /*
@@ -127,19 +168,20 @@ bool Throttle::isOverridden() {
   return _isOverridden;
 }
 
-// /*
-// Function to set the associated linked list of locos
-// */
-// void Throttle::setLocoList(LocoNode* newList) {
-//   locoList = newList;
-// }
-
-// /*
-// Function to retrieve the list of locos
-// */
-// LocoNode* Throttle::getLocoList() {
-//   return locoList;
-// }
+/*
+Function to check if the specified address is in use by this throttle
+By design, checks consists as well
+*/
+bool Throttle::addressInUse(uint16_t address) {
+  LocoNode* currentNode = _locoList;
+  while (currentNode != nullptr) {
+    if (currentNode->loco->getLocoAddress() == address) {
+      return true;
+    }
+    currentNode = currentNode->next;
+  }
+  return false;
+}
 
 // Create Loco linked lists
 LocoNode* throttle1List = nullptr;

@@ -24,7 +24,7 @@
 #include "defines.h"
 #include "DCCEXObjects.h"
 
-const uint8_t SAMPLES = 10;
+const uint8_t SAMPLES = SLIDER_SAMPLES;
 
 struct LocoNode {
   Loco* loco;
@@ -36,12 +36,9 @@ public:
   // Constructor
   Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList);
 
-  // Linked list containing Locos
-  LocoNode* locoList = nullptr;
-
   void process();
   uint8_t getThrottleNumber();
-  void setLocoAddress(uint16_t address);
+  void setLocoAddress(uint16_t address, LocoSource source);
   uint16_t getLocoAddress();
   bool speedChanged();
   uint8_t getSpeed();
@@ -50,8 +47,7 @@ public:
   void setDirection(bool direction);
   bool getDirection();
   bool isOverridden();
-  // void setLocoList(LocoNode* newList);
-  // LocoNode* getLocoList();
+  bool addressInUse(uint16_t address);
 
 private:
   uint8_t _potPin;  // pin the potentiometer is on for this throttle
@@ -67,6 +63,7 @@ private:
   uint8_t _throttleNumber;
   bool _direction = 0;
   bool _isOverridden = false;
+  LocoNode* _locoList = nullptr;  // Linked list containing Locos
 
 };
 

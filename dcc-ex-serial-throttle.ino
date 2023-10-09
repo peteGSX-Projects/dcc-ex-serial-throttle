@@ -51,7 +51,6 @@ void setup() {
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
   createMenus();
-  currentMenuPtr->display();
 }
 
 /***********************************************************************************

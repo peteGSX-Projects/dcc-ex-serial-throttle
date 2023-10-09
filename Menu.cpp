@@ -31,6 +31,8 @@ Menu turntableList("Turntable List");
 Menu trackManagement("Track Management");
 Menu manageThrottle("Manage Throttle");
 Menu inputLocoAddress("Input Loco Address");
+Menu manageConsist("Manage Consist");
+Menu trackManager("TrackManager");
 
 Menu* currentMenuPtr = &homeScreen;
 
@@ -93,7 +95,7 @@ void Menu::handleKeyPress(char key){
           oled.print("#####");
           oled.setCursor(0, 6);
           oled.print("INVALID ADDRESS");
-        } else if (throttle1.getLocoAddress() == number || throttle2.getLocoAddress() == number || throttle3.getLocoAddress() == number) {
+        } else if (throttle1.addressInUse(number) || throttle2.addressInUse(number) || throttle3.addressInUse(number)) {
           oled.setCursor(0, 3);
           oled.print("#####");
           oled.setCursor(0, 6);
@@ -101,7 +103,7 @@ void Menu::handleKeyPress(char key){
         } else {
           _inputMode = false;
           _isLocoInput = false;
-          currentThrottle->setLocoAddress(number);
+          currentThrottle->setLocoAddress(number, LocoSourceEntry);
           currentMenuPtr = &homeScreen;
           currentMenuPtr->display();
         }
@@ -310,6 +312,8 @@ void createMenus() {
   trackManagement.setParent(&mainMenu);
   manageThrottle.setParent(&setupThrottles);
   inputLocoAddress.setParent(&manageThrottle);
+  manageConsist.setParent(&manageThrottle);
+  trackManager.setParent(&trackManagement);
 
   // Setup main menu
   mainMenu.addItem(0, "Throttles", 0, []() { setupThrottles.display(); });
@@ -327,15 +331,32 @@ void createMenus() {
   // Setup manage throttle menu
   manageThrottle.addItem(0, "Select from roster", 0, selectFromRoster);
   manageThrottle.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageThrottle.addItem(2, "Setup consist", 0, noAction);
-  manageThrottle.addItem(3, "Forget loco", 0, forgetLoco);
+  manageThrottle.addItem(2, "Forget loco", 0, forgetLoco);
+  manageThrottle.addItem(3, "Manage a consist", 0, []() { manageConsist.display(); });
 
   // Setup track management
   trackManagement.addItem(0, "Power On", 1, setTrackPower);
   trackManagement.addItem(1, "Power Off", 0, setTrackPower);
   trackManagement.addItem(2, "Join", 1, setJoinTracks);
   trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
-  trackManagement.addItem(4, "TrackManager", 0, noAction);
+  trackManagement.addItem(4, "TrackManager", 0, []() { trackManager.display(); });
+
+  // Setup consist management
+  manageConsist.addItem(0, "Add from roster", 0, noAction);
+  manageConsist.addItem(1, "Enter address", 0, noAction);
+  manageConsist.addItem(2, "Remove loco", 0, noAction);
+  manageConsist.addItem(3, "Forget consist", 0, noAction);
+
+  // Setup TrackManager
+  trackManager.addItem(0, "Track A", 0, noAction);
+  trackManager.addItem(1, "Track B", 0, noAction);
+  trackManager.addItem(2, "Track C", 0, noAction);
+  trackManager.addItem(3, "Track D", 0, noAction);
+  trackManager.addItem(4, "Track E", 0, noAction);
+  trackManager.addItem(5, "Track F", 0, noAction);
+  trackManager.addItem(6, "Track G", 0, noAction);
+  trackManager.addItem(7, "Track H", 0, noAction);
+  trackManager.addItem(8, "Show Tracks", 0, noAction);
 
 }
 
@@ -371,6 +392,7 @@ void enterLocoAddress() {
 Helper function to forget loco
 */
 void forgetLoco() {
+  if (currentThrottle->isConsist()) return;
   currentThrottle->forgetLoco();
   homeScreen.display();
 }
@@ -390,11 +412,11 @@ and update the parent correctly
 void setLocoFromRoster() {
   if (rosterList.getParent() != &mainMenu) {
     uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (throttle1.getLocoAddress() == address || throttle2.getLocoAddress() == address || throttle3.getLocoAddress() == address) {
+    if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
       oled.setCursor(0, 6);
       oled.print("ADDRESS IN USE");
     } else {
-      currentThrottle->setLocoAddress(address);
+      currentThrottle->setLocoAddress(address, LocoSourceRoster);
       rosterList.setParent(&mainMenu);
       homeScreen.display();
     }

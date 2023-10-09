@@ -28,8 +28,8 @@ DCCEXCallbacks dccexCallbacks;
 bool connectionRequested = false;
 bool connected = false;
 bool errorDisplayed = false;
-uint8_t connectionRetries = 5;
-unsigned long retryDelay = 500;
+uint8_t connectionRetries = CONNECT_RETRIES;
+unsigned long retryDelay = 1000;
 unsigned long lastRetry = 0;
 bool gotRoster = false;
 bool gotRoutes = false;
@@ -45,12 +45,18 @@ void validateConnection() {
       connectionRequested = true;
       dccexProtocol.sendServerDetailsRequest();
       CONSOLE.println(F("Connecting to DCC-EX"));
+      oled.clear();
+      oled.setCursor(0, 0);
+      oled.print("Connecting to DCC-EX");
+      oled.setCursor(0, 2);
     } else if (dccexProtocol.isServerDetailsReceived()) {
       CONSOLE.print(F("Connected to DCC-EX"));
       connected = true;
+      currentMenuPtr->display();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
       lastRetry = millis();
       connectionRetries--;
+      oled.print(".");
     } else if (connectionRetries == 0 && !errorDisplayed) {
       errorDisplayed = true;
       displayConnectionError();
