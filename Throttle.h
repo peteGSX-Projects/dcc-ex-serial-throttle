@@ -43,7 +43,7 @@ public:
   bool speedChanged();
   uint8_t getSpeed();
   bool isConsist();
-  void forgetLoco();
+  void forgetLoco(uint16_t address);
   void setDirection(bool direction);
   bool getDirection();
   bool isOverridden();

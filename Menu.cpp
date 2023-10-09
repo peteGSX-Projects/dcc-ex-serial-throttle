@@ -393,7 +393,7 @@ Helper function to forget loco
 */
 void forgetLoco() {
   if (currentThrottle->isConsist()) return;
-  currentThrottle->forgetLoco();
+  currentThrottle->forgetLoco(currentThrottle->getLocoAddress());
   homeScreen.display();
 }
 
