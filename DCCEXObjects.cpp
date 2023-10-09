@@ -44,13 +44,11 @@ void validateConnection() {
     if (!connectionRequested) {
       connectionRequested = true;
       dccexProtocol.sendServerDetailsRequest();
-      CONSOLE.println(F("Connecting to DCC-EX"));
       oled.clear();
       oled.setCursor(0, 0);
       oled.print("Connecting to DCC-EX");
       oled.setCursor(0, 2);
     } else if (dccexProtocol.isServerDetailsReceived()) {
-      CONSOLE.print(F("Connected to DCC-EX"));
       connected = true;
       currentMenuPtr->display();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
