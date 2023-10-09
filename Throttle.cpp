@@ -146,8 +146,8 @@ void Throttle::forgetLoco(uint16_t address) {
 
 /*
 Sets the direction if speed = 0
-1 = forward
-0 = reverse
+1 = reverse
+0 = forward
 Sends the change to the CS also
 */
 void Throttle::setDirection(bool direction){
@@ -158,8 +158,8 @@ void Throttle::setDirection(bool direction){
 
 /*
 Get current throttle direction
-1 = forward
-0 = reverse
+1 = reverse
+0 = forward
 */
 bool Throttle::getDirection() {
   return _direction;
@@ -191,7 +191,7 @@ bool Throttle::addressInUse(uint16_t address) {
 Helper function to convert direction bool to Direction char
 */
 Direction getDirectionName(bool direction) {
-  return (direction) ? Forward: Reverse;
+  return (direction) ? Reverse : Forward;
 }
 
 // Create Loco linked lists

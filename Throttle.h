@@ -61,7 +61,7 @@ private:
   uint16_t _locoAddress = 0;
   bool _isConsist = false;
   uint8_t _throttleNumber;
-  bool _direction = 1;  // Default to forward
+  bool _direction = 0;  // Default to forward
   bool _isOverridden = false;
   LocoNode* _locoList = nullptr;  // Linked list containing Locos
 
