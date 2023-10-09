@@ -58,12 +58,14 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  dccexProtocol.getLists(true, true, true, true);
   validateConnection();
-  updateRoster();
-  updateRoutes();
-  updateTurnouts();
-  updateTurntables();
+  if (connected) {
+    dccexProtocol.getLists(true, true, true, true);
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
+  }
   throttle1.process();
   throttle2.process();
   throttle3.process();

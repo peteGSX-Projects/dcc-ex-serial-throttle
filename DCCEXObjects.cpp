@@ -54,6 +54,7 @@ void validateConnection() {
       connected = true;
       currentMenuPtr->display();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
+      dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
       connectionRetries--;
       oled.print(".");

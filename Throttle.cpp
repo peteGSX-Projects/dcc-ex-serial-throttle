@@ -48,6 +48,9 @@ void Throttle::process() {
   if (_speed != map(_rollingAverage, POT_MIN, POT_MAX, 0, 126)) {
     _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
     _speedChanged = true;
+    if (dccexProtocol.throttleConsists[_throttleNumber].consistGetNumberOfLocos() > 0) {
+      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+    }
   }
 }
 
@@ -64,26 +67,26 @@ Sends the initial speed and direction to the CS also
 */
 void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
   _locoAddress = address;
-  if (throttle1.addressInUse(_locoAddress)) return;
-  if (throttle2.addressInUse(_locoAddress)) return;
-  if (throttle3.addressInUse(_locoAddress)) return;
-  char* name = "";
-  Loco* newLoco = new Loco(address, name, source);
-  LocoNode* newNode = new LocoNode;
-  newNode->loco = newLoco;
-  newNode->next = nullptr;
+  // if (throttle1.addressInUse(_locoAddress)) return;
+  // if (throttle2.addressInUse(_locoAddress)) return;
+  // if (throttle3.addressInUse(_locoAddress)) return;
+  // char* name = "";
+  // Loco* newLoco = new Loco(address, name, source);
+  // LocoNode* newNode = new LocoNode;
+  // newNode->loco = newLoco;
+  // newNode->next = nullptr;
 
-  if (_locoList == nullptr) {
-    _locoList = newNode;
-  } else {
-    LocoNode* currentNode = _locoList;
-    while (currentNode->next != nullptr) {
-      currentNode = currentNode->next;
-    }
-    currentNode->next = newNode;
-  }
-  dccexProtocol.throttleConsists[_throttleNumber].consistAddLoco(*newLoco, FacingForward);
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+  // if (_locoList == nullptr) {
+  //   _locoList = newNode;
+  // } else {
+  //   LocoNode* currentNode = _locoList;
+  //   while (currentNode->next != nullptr) {
+  //     currentNode = currentNode->next;
+  //   }
+  //   currentNode->next = newNode;
+  // }
+  // dccexProtocol.throttleConsists[_throttleNumber].consistAddLoco(*newLoco, FacingForward);
+  // dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
 /*
@@ -105,7 +108,6 @@ Function to flag if the speed has changed
 Sends new speed to the CS also
 */
 bool Throttle::speedChanged() {
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
   return _speedChanged;
 }
 
@@ -121,41 +123,41 @@ Forgets the acquired loco
 This needs to delete any Loco or Consist objects in use
 */
 void Throttle::forgetLoco() {
-  LocoNode* previousNode = nullptr;
-  LocoNode* currentNode = _locoList;
+  // LocoNode* previousNode = nullptr;
+  // LocoNode* currentNode = _locoList;
 
-  while (currentNode != nullptr) {
-    if (currentNode->loco->getLocoAddress() == _locoAddress) {
-      if (previousNode == nullptr) {
-        currentNode->next = nullptr;
-      } else {
-        previousNode->next = currentNode->next;
-      }
-    }
-  }
+  // while (currentNode != nullptr) {
+  //   if (currentNode->loco->getLocoAddress() == _locoAddress) {
+  //     if (previousNode == nullptr) {
+  //       currentNode->next = nullptr;
+  //     } else {
+  //       previousNode->next = currentNode->next;
+  //     }
+  //   }
+  // }
 
-  delete currentNode->loco;
-  delete currentNode;
+  // delete currentNode->loco;
+  // delete currentNode;
 
   _locoAddress = 0;
 }
 
 /*
 Sets the direction if speed = 0
-0 = forward
-1 = reverse
+1 = forward
+0 = reverse
 Sends the change to the CS also
 */
 void Throttle::setDirection(bool direction){
   if (_speed > 0) return;
   _direction = direction;
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+  // dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
 /*
 Get current throttle direction
-0 = forward
-1 = reverse
+1 = forward
+0 = reverse
 */
 bool Throttle::getDirection() {
   return _direction;
@@ -173,14 +175,21 @@ Function to check if the specified address is in use by this throttle
 By design, checks consists as well
 */
 bool Throttle::addressInUse(uint16_t address) {
-  LocoNode* currentNode = _locoList;
-  while (currentNode != nullptr) {
-    if (currentNode->loco->getLocoAddress() == address) {
-      return true;
-    }
-    currentNode = currentNode->next;
-  }
+  // LocoNode* currentNode = _locoList;
+  // while (currentNode != nullptr) {
+  //   if (currentNode->loco->getLocoAddress() == address) {
+  //     return true;
+  //   }
+  //   currentNode = currentNode->next;
+  // }
   return false;
+}
+
+/*
+Helper function to convert direction bool to Direction char
+*/
+Direction getDirectionName(bool direction) {
+  return (direction) ? Forward: Reverse;
 }
 
 // Create Loco linked lists

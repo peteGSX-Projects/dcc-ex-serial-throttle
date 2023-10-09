@@ -28,6 +28,8 @@
 extern DCCEXProtocol dccexProtocol;
 extern DCCEXCallbacks dccexCallbacks;
 
+extern bool connected;
+
 void validateConnection();
 void updateRoster();
 void updateRoutes();
