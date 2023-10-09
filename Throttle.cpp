@@ -49,7 +49,7 @@ void Throttle::process() {
     _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
     _speedChanged = true;
     if (dccexProtocol.throttleConsists[_throttleNumber].consistGetNumberOfLocos() > 0) {
-      // dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
     }
   }
 }
@@ -87,7 +87,7 @@ void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
     currentNode->next = newNode;
   }
   dccexProtocol.throttleConsists[_throttleNumber].consistAddLoco(*newLoco, FacingForward);
-  // dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
 /*
@@ -153,7 +153,7 @@ Sends the change to the CS also
 void Throttle::setDirection(bool direction){
   if (_speed > 0) return;
   _direction = direction;
-  // dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
 /*
