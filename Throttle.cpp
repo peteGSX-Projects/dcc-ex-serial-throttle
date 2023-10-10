@@ -101,7 +101,7 @@ uint16_t Throttle::getLocoAddress() {
 Flag if throttle is a consist or not
 */
 bool Throttle::isConsist() {
-  return _isConsist;
+  return (dccexProtocol.throttleConsists[_throttleNumber].consistGetNumberOfLocos() > 1) ? true : false;
 }
 
 /*

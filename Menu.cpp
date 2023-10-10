@@ -29,9 +29,8 @@ Menu routeList("Route List");
 Menu turnoutList("Turnout List");
 Menu turntableList("Turntable List");
 Menu trackManagement("Track Management");
-Menu manageThrottle("Manage Throttle");
+Menu manageLocoConsist("Manage Loco/Consist");
 Menu inputLocoAddress("Input Loco Address");
-Menu manageConsist("Manage Consist");
 Menu trackManager("TrackManager");
 
 Menu* currentMenuPtr = &homeScreen;
@@ -310,9 +309,8 @@ void createMenus() {
   turnoutList.setParent(&mainMenu);
   turntableList.setParent(&mainMenu);
   trackManagement.setParent(&mainMenu);
-  manageThrottle.setParent(&setupThrottles);
-  inputLocoAddress.setParent(&manageThrottle);
-  manageConsist.setParent(&manageThrottle);
+  manageLocoConsist.setParent(&setupThrottles);
+  inputLocoAddress.setParent(&manageLocoConsist);
   trackManager.setParent(&trackManagement);
 
   // Setup main menu
@@ -329,10 +327,11 @@ void createMenus() {
   setupThrottles.addItem(2, "Throttle 3", 0, setThrottleContext);
 
   // Setup manage throttle menu
-  manageThrottle.addItem(0, "Select from roster", 0, selectFromRoster);
-  manageThrottle.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageThrottle.addItem(2, "Forget loco", 0, forgetLoco);
-  manageThrottle.addItem(3, "Manage a consist", 0, []() { manageConsist.display(); });
+  manageLocoConsist.addItem(0, "Select from roster", 0, selectFromRoster);
+  manageLocoConsist.addItem(1, "Enter address", 0, enterLocoAddress);
+  manageLocoConsist.addItem(2, "Remove loco", 0, forgetLoco);
+  manageLocoConsist.addItem(3, "Display consist", 0, noAction);
+  manageLocoConsist.addItem(4, "Forget loco/consist", 0, noAction);
 
   // Setup track management
   trackManagement.addItem(0, "Power On", 1, setTrackPower);
@@ -340,12 +339,6 @@ void createMenus() {
   trackManagement.addItem(2, "Join", 1, setJoinTracks);
   trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
   trackManagement.addItem(4, "TrackManager", 0, []() { trackManager.display(); });
-
-  // Setup consist management
-  manageConsist.addItem(0, "Add from roster", 0, noAction);
-  manageConsist.addItem(1, "Enter address", 0, noAction);
-  manageConsist.addItem(2, "Remove loco", 0, noAction);
-  manageConsist.addItem(3, "Forget consist", 0, noAction);
 
   // Setup TrackManager
   trackManager.addItem(0, "Track A", 0, noAction);
@@ -376,7 +369,7 @@ void setThrottleContext() {
     currentThrottle = nullptr;
   }
   Menu* tempPtr = currentMenuPtr;
-  manageThrottle.display();
+  manageLocoConsist.display();
   currentMenuPtr->setParent(tempPtr);
 }
 
@@ -416,9 +409,14 @@ void setLocoFromRoster() {
       oled.setCursor(0, 6);
       oled.print("ADDRESS IN USE");
     } else {
-      currentThrottle->setLocoAddress(address, LocoSourceRoster);
-      rosterList.setParent(&mainMenu);
-      homeScreen.display();
+      if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
+        currentThrottle->setLocoAddress(address, LocoSourceRoster);
+        rosterList.setParent(&mainMenu);
+        homeScreen.display();rosterList.setParent(&mainMenu);
+        homeScreen.display();
+      } else {
+        // This needs to add another loco but needs to figure out facing forward or reverse.
+      }
     }
   }
 }
