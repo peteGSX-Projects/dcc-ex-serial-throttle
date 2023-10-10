@@ -52,4 +52,9 @@ If we haven't got a custom config.h, use the example
 #define CLIENT Serial
 #endif
 
+enum ThrottleDirection {
+  ThrottleForward = 1,
+  ThrottleReverse = 0,
+};
+
 #endif

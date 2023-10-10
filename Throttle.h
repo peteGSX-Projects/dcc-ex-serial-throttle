@@ -60,7 +60,7 @@ private:
   bool _speedChanged = false;
   uint16_t _locoAddress = 0;
   uint8_t _throttleNumber;
-  bool _direction = 0;  // Default to forward
+  bool _direction = ThrottleDirection::ThrottleForward;  // Default to forward
   bool _isOverridden = false;
   LocoNode* _locoList = nullptr;  // Linked list containing Locos
 

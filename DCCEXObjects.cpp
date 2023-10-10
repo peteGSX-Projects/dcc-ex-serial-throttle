@@ -126,7 +126,12 @@ If closed, will throw, if thrown, will close
 void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    dccexProtocol.sendTurnoutAction(objectId, TurnoutToggle);
+    Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
+    if (turnout->getTurnoutState() == TurnoutClosed) {
+      dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
+    } else {
+      dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
+    }
   }
 }
 
