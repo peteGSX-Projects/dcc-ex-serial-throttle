@@ -60,7 +60,7 @@ void loop() {
   dccexProtocol.check();
   validateConnection();
   if (connected) {
-    dccexProtocol.getLists(true, true, true, true);
+    dccexProtocol.getLists(false, true, false, false);
     updateRoster();
     updateRoutes();
     updateTurnouts();
