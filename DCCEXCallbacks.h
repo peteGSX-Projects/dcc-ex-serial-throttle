@@ -33,6 +33,7 @@ public:
   void receivedTurnoutAction(int turnoutId, TurnoutState state);
   void receivedRouteAction(int routeId, RouteState state);
   void receivedTurntableAction(int turntableId, int position, TurntableState turntableState);
+  void receivedTrackPower(TrackPower state);
 
 };
 

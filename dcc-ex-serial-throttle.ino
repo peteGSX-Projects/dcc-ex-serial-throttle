@@ -76,6 +76,7 @@ void loop() {
   if (key) {
     currentMenuPtr->handleKeyPress(key);
   }
+  getSerialInput();
 }
 
 /*
