@@ -1,7 +1,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.6"
+#define VERSION "0.0.7"
+// 0.0.7  - Updates for revised library parser
 // 0.0.6  - Enable control of loco speed/direction
 //        - Enable configuring consists
 //        - Add adjustable connection retries

@@ -60,7 +60,7 @@ void loop() {
   dccexProtocol.check();
   validateConnection();
   if (connected) {
-    dccexProtocol.getLists(false, true, false, false);
+    dccexProtocol.getLists(true, true, true, true);
     updateRoster();
     updateRoutes();
     updateTurnouts();
@@ -76,7 +76,7 @@ void loop() {
   if (key) {
     currentMenuPtr->handleKeyPress(key);
   }
-  getSerialInput();
+  // getSerialInput();
 }
 
 /*
