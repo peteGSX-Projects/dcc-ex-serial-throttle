@@ -67,7 +67,7 @@ void displayThrottleDirection(int startCol, int endCol, int textCol, bool direct
   oled.set1X();
   oled.clear(startCol, endCol, 3, 4);
   oled.setCursor(textCol, 3);
-  if (direction == ThrottleDirection::ThrottleForward) {
+  if (direction == Forward) {
     oled.print(F("Fwd"));
   } else {
     oled.print(F("Rev"));
