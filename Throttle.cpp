@@ -191,7 +191,7 @@ bool Throttle::addressInUse(uint16_t address) {
 Helper function to convert direction bool to Direction char
 */
 Direction getDirectionName(bool direction) {
-  return (direction) ? Reverse : Forward;
+  return (direction) ? Forward : Reverse;
 }
 
 // Create Loco linked lists
