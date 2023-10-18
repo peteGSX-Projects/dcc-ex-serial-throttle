@@ -203,6 +203,12 @@ void Menu::setInputMode() {
   _inputMode = true;
 }
 
+Menu* Menu::addSubmenu(const char* label) {
+  Menu* submenu = new Menu(label);
+  submenu->setParent(this);
+  return submenu;
+}
+
 /*
 Private functions
 */

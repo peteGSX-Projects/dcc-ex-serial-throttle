@@ -74,6 +74,7 @@ public:
   MenuItem getItem(int index);
   int getSelectedItem();
   void setInputMode();
+  Menu* addSubmenu(const char* label);
 
 private:
   // Private variables

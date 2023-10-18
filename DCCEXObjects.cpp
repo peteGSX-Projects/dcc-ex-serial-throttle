@@ -114,8 +114,24 @@ void updateTurntables() {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
-      turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), noAction);
       char *ttName = turntable->getTurntableName();
+      Menu* ttSubmenu = turntableList.addSubmenu(ttName);
+      for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
+        TurntableIndex *idx = turntable->turntableIndexes.get(j);
+        char *idxName = idx->getTurntableIndexName();
+        int idxIndex = idx->getTurntableIndexIndex();
+        int idxAngle = idx->getTurntableIndexAngle();
+        ttSubmenu->addItem(j, idxName, idxIndex, noAction);
+        CONSOLE.print(F("Got index "));
+        CONSOLE.print(idxIndex);
+        CONSOLE.print(F(" "));
+        CONSOLE.print(idxName);
+        CONSOLE.print(F(" at angle "));
+        CONSOLE.println(idxAngle);
+      }
+
+
+      // turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), noAction);
       // CONSOLE.print(F("Got turntable "));
       // CONSOLE.print(ttName);
       // CONSOLE.println(F(" with indexes:"));
