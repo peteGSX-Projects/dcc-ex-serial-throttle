@@ -71,8 +71,7 @@ void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
   if (throttle1.addressInUse(_locoAddress)) return;
   if (throttle2.addressInUse(_locoAddress)) return;
   if (throttle3.addressInUse(_locoAddress)) return;
-  char* name = "";
-  Loco* newLoco = new Loco(address, name, source);
+  Loco* newLoco = new Loco(address, source);
   LocoNode* newNode = new LocoNode;
   newNode->loco = newLoco;
   newNode->next = nullptr;
