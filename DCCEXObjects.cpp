@@ -28,17 +28,12 @@ DCCEXCallbacks dccexCallbacks;
 bool connectionRequested = false;
 bool connected = false;
 bool errorDisplayed = false;
-uint8_t connectionRetries = 5;
-unsigned long retryDelay = 500;
+uint8_t connectionRetries = CONNECT_RETRIES;
+unsigned long retryDelay = 1000;
 unsigned long lastRetry = 0;
-bool objectsRequested = false;
-bool requestedRoster = false;
 bool gotRoster = false;
-bool requestedRoutes = false;
 bool gotRoutes = false;
-bool requestedTurnouts = false;
 bool gotTurnouts = false;
-bool requestedTurntables = false;
 bool gotTurntables = false;
 
 /*
@@ -49,13 +44,18 @@ void validateConnection() {
     if (!connectionRequested) {
       connectionRequested = true;
       dccexProtocol.sendServerDetailsRequest();
-      CONSOLE.println(F("Connecting to DCC-EX"));
+      oled.clear();
+      oled.setCursor(0, 0);
+      oled.print("Connecting to DCC-EX");
+      oled.setCursor(0, 2);
     } else if (dccexProtocol.isServerDetailsReceived()) {
-      CONSOLE.print(F("Connected to DCC-EX"));
       connected = true;
+      currentMenuPtr->display();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
+      dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
       connectionRetries--;
+      oled.print(".");
     } else if (connectionRetries == 0 && !errorDisplayed) {
       errorDisplayed = true;
       displayConnectionError();
@@ -68,10 +68,7 @@ Function to update roster entries from the CS
 To trigger after startup, simply set requestedRoster to false
 */
 void updateRoster() {
-  if (!requestedRoster) {
-    requestedRoster = true;
-    dccexProtocol.getRoster();
-  } else if (dccexProtocol.isRosterFullyReceived()  && !gotRoster && requestedRoster) {
+  if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
@@ -85,10 +82,7 @@ Function to update route entries from the CS
 To trigger after startup, simply set requestedRoutes to false
 */
 void updateRoutes() {
-  if (!requestedRoutes && gotRoster) {
-    requestedRoutes = true;
-    dccexProtocol.getRoutes();
-  } else if (dccexProtocol.isRouteListFullyReceived()  && !gotRoutes && requestedRoutes) {
+  if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
@@ -102,10 +96,7 @@ Function to update turnout entries from the CS
 To trigger after startup, simply set requestedTurnouts to false
 */
 void updateTurnouts() {
-  if (!requestedTurnouts && gotRoster && gotRoutes) {
-    requestedTurnouts = true;
-    dccexProtocol.getTurnouts();
-  } else if (dccexProtocol.isTurnoutListFullyReceived()  && !gotTurnouts && requestedTurnouts) {
+  if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
@@ -119,14 +110,25 @@ Function to update turntable entries from the CS
 To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
-  if (!requestedTurntables && gotRoster && gotRoutes && gotTurnouts) {
-    requestedTurntables = true;
-    dccexProtocol.getTurntables();
-  } else if (dccexProtocol.isTurntableListFullyReceived()  && !gotTurntables && requestedTurntables) {
+  if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
     gotTurntables = true;
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
-      turntableList.addItem(i, turntable->getTurntableName(), turntable->getTurntableId(), noAction);
+      char *ttName = turntable->getTurntableName();
+      int ttId = turntable->getTurntableId();
+      turntableList.addItem(i, ttName, ttId, noAction);
+      for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
+        TurntableIndex *idx = turntable->turntableIndexes.get(j);
+        char *idxName = idx->getTurntableIndexName();
+        int idxIndex = idx->getTurntableIndexIndex();
+        int idxAngle = idx->getTurntableIndexAngle();
+        CONSOLE.print(F("Got index "));
+        CONSOLE.print(idxIndex);
+        CONSOLE.print(F(" "));
+        CONSOLE.print(idxName);
+        CONSOLE.print(F(" at angle "));
+        CONSOLE.println(idxAngle);
+      }
     }
   }
 }
@@ -139,8 +141,11 @@ void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
     Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
-    turnout->toggleTurnout();
-    CONSOLE.println(turnout->getTurnoutState());
+    if (turnout->getTurnoutState() == TurnoutClosed) {
+      dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
+    } else {
+      dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
+    }
   }
 }
 

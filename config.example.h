@@ -9,18 +9,16 @@
 #define CONFIG_H
 
 /////////////////////////////////////////////////////////////////////////////////////
-//  Maximum number of objects to retrieve, minimum of 10.
-//  This applies to:
-//    - Roster entries
-//    - Turnouts
-//    - Routes and automation sequences
-// 
-// #define MAX_OBJECTS 10
-
-/////////////////////////////////////////////////////////////////////////////////////
 //  Number of times to sample the analogue input to average out twitchy sliders.
 // 
-// #define SAMPLES 10
+#define SLIDER_SAMPLES 10
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  Number of times to retry connecting at startup before reporting connection error.
+//  A connection retry occurs every second, and can take some time if using WiFi on
+//  a CommandStation as it takes a few seconds at least to connect to WiFi.
+// 
+#define CONNECT_RETRIES 5
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Potentiometer analog pins.

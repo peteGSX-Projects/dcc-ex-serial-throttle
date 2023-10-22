@@ -30,10 +30,15 @@ If we haven't got a custom config.h, use the example
   #include "config.example.h"
 #endif
 
-// #if MAX_OBJECTS < 10
-// #undef MAX_OBJECTS
-// #define MAX_OBJECTS 10
-// #endif
+// If samples haven't been defined, use the default of 10
+#ifndef SLIDER_SAMPLES
+#define SLIDER_SAMPLES 10
+#endif
+
+// If retries haven't been defined, use the default of 5
+#ifndef CONNECT_RETRIES
+#define CONNECT_RETRIES 5
+#endif
 
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #undef CONSOLE

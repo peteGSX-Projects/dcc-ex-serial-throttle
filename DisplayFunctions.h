@@ -40,15 +40,15 @@ extern SSD1306AsciiAvrI2c oled;
 void displayStartupInfo();
 void displayHomeScreen();
 void displayConnectionError();
-void updateLoco1Speed();
-void updateLoco1Direction();
-void updateLoco2Address();
-void updateLoco2Speed();
-void updateLoco2Direction();
-void updateLoco2Address();
-void updateLoco3Speed();
-void updateLoco3Direction();
-void updateLoco3Address();
+void displayThrottle1Speed();
+void displayThrottle1Direction();
+void displayThrottle2Address();
+void displayThrottle2Speed();
+void displayThrottle2Direction();
+void displayThrottle2Address();
+void displayThrottle3Speed();
+void displayThrottle3Direction();
+void displayThrottle3Address();
 
 // void displayEStop();
 

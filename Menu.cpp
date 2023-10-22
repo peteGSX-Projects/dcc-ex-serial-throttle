@@ -29,8 +29,9 @@ Menu routeList("Route List");
 Menu turnoutList("Turnout List");
 Menu turntableList("Turntable List");
 Menu trackManagement("Track Management");
-Menu manageThrottle("Manage Throttle");
+Menu manageLocoConsist("Manage Loco/Consist");
 Menu inputLocoAddress("Input Loco Address");
+Menu trackManager("TrackManager");
 
 Menu* currentMenuPtr = &homeScreen;
 
@@ -93,7 +94,7 @@ void Menu::handleKeyPress(char key){
           oled.print("#####");
           oled.setCursor(0, 6);
           oled.print("INVALID ADDRESS");
-        } else if (throttle1.getLocoAddress() == number || throttle2.getLocoAddress() == number || throttle3.getLocoAddress() == number) {
+        } else if (throttle1.addressInUse(number) || throttle2.addressInUse(number) || throttle3.addressInUse(number)) {
           oled.setCursor(0, 3);
           oled.print("#####");
           oled.setCursor(0, 6);
@@ -101,7 +102,7 @@ void Menu::handleKeyPress(char key){
         } else {
           _inputMode = false;
           _isLocoInput = false;
-          currentThrottle->setLocoAddress(number);
+          currentThrottle->setLocoAddress(number, LocoSourceEntry);
           currentMenuPtr = &homeScreen;
           currentMenuPtr->display();
         }
@@ -128,11 +129,15 @@ void Menu::handleKeyPress(char key){
       case '8':
       case '9':
       case '0':
-        if (getItemCount() > 0) {
-          int index = key - '1' + (_currentPage - 1) * 9;
-          if (index < getItemCount()) {
-            _selectedItemIndex = getItem(index).index;
-            getItem(index).action();
+        if (currentMenuPtr == &homeScreen) {
+          _doHomeFunctions(key);
+        } else {
+          if (getItemCount() > 0) {
+            int index = key - '1' + (_currentPage - 1) * 9;
+            if (index < getItemCount()) {
+              _selectedItemIndex = getItem(index).index;
+              getItem(index).action();
+            }
           }
         }
         break;
@@ -262,6 +267,34 @@ void Menu::_displayMenu(){
   }
 }
 
+/*
+Process keys on the home screen
+*/
+void Menu::_doHomeFunctions(char key) {
+  switch (key) {
+    case '1':
+      if (throttle1.getSpeed() == 0 && throttle1.getLocoAddress() != 0) {
+        throttle1.setDirection(!throttle1.getDirection());
+        displayThrottle1Direction();
+      }
+      break;
+    case '2':
+      if (throttle2.getSpeed() == 0 && throttle2.getLocoAddress() != 0) {
+        throttle2.setDirection(!throttle2.getDirection());
+        displayThrottle2Direction();
+      }
+      break;
+    case '3':
+      if (throttle3.getSpeed() == 0 && throttle3.getLocoAddress() != 0) {
+        throttle3.setDirection(!throttle3.getDirection());
+        displayThrottle3Direction();
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 // End of class
 
 /*
@@ -276,8 +309,9 @@ void createMenus() {
   turnoutList.setParent(&mainMenu);
   turntableList.setParent(&mainMenu);
   trackManagement.setParent(&mainMenu);
-  manageThrottle.setParent(&setupThrottles);
-  inputLocoAddress.setParent(&manageThrottle);
+  manageLocoConsist.setParent(&setupThrottles);
+  inputLocoAddress.setParent(&manageLocoConsist);
+  trackManager.setParent(&trackManagement);
 
   // Setup main menu
   mainMenu.addItem(0, "Throttles", 0, []() { setupThrottles.display(); });
@@ -293,17 +327,29 @@ void createMenus() {
   setupThrottles.addItem(2, "Throttle 3", 0, setThrottleContext);
 
   // Setup manage throttle menu
-  manageThrottle.addItem(0, "Select from roster", 0, selectFromRoster);
-  manageThrottle.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageThrottle.addItem(2, "Setup consist", 0, noAction);
-  manageThrottle.addItem(3, "Forget loco", 0, forgetLoco);
+  manageLocoConsist.addItem(0, "Select from roster", 0, selectFromRoster);
+  manageLocoConsist.addItem(1, "Enter address", 0, enterLocoAddress);
+  manageLocoConsist.addItem(2, "Remove loco", 0, forgetLoco);
+  manageLocoConsist.addItem(3, "Display consist", 0, noAction);
+  manageLocoConsist.addItem(4, "Forget loco/consist", 0, noAction);
 
   // Setup track management
   trackManagement.addItem(0, "Power On", 1, setTrackPower);
   trackManagement.addItem(1, "Power Off", 0, setTrackPower);
   trackManagement.addItem(2, "Join", 1, setJoinTracks);
   trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
-  trackManagement.addItem(4, "TrackManager", 0, noAction);
+  trackManagement.addItem(4, "TrackManager", 0, []() { trackManager.display(); });
+
+  // Setup TrackManager
+  trackManager.addItem(0, "Track A", 0, noAction);
+  trackManager.addItem(1, "Track B", 0, noAction);
+  trackManager.addItem(2, "Track C", 0, noAction);
+  trackManager.addItem(3, "Track D", 0, noAction);
+  trackManager.addItem(4, "Track E", 0, noAction);
+  trackManager.addItem(5, "Track F", 0, noAction);
+  trackManager.addItem(6, "Track G", 0, noAction);
+  trackManager.addItem(7, "Track H", 0, noAction);
+  trackManager.addItem(8, "Show Tracks", 0, noAction);
 
 }
 
@@ -323,7 +369,7 @@ void setThrottleContext() {
     currentThrottle = nullptr;
   }
   Menu* tempPtr = currentMenuPtr;
-  manageThrottle.display();
+  manageLocoConsist.display();
   currentMenuPtr->setParent(tempPtr);
 }
 
@@ -339,7 +385,8 @@ void enterLocoAddress() {
 Helper function to forget loco
 */
 void forgetLoco() {
-  currentThrottle->forgetLoco();
+  if (currentThrottle->isConsist()) return;
+  currentThrottle->forgetLoco(currentThrottle->getLocoAddress());
   homeScreen.display();
 }
 
@@ -358,13 +405,18 @@ and update the parent correctly
 void setLocoFromRoster() {
   if (rosterList.getParent() != &mainMenu) {
     uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (throttle1.getLocoAddress() == address || throttle2.getLocoAddress() == address || throttle3.getLocoAddress() == address) {
+    if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
       oled.setCursor(0, 6);
       oled.print("ADDRESS IN USE");
     } else {
-      currentThrottle->setLocoAddress(address);
-      rosterList.setParent(&mainMenu);
-      homeScreen.display();
+      if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
+        currentThrottle->setLocoAddress(address, LocoSourceRoster);
+        rosterList.setParent(&mainMenu);
+        homeScreen.display();rosterList.setParent(&mainMenu);
+        homeScreen.display();
+      } else {
+        // This needs to add another loco but needs to figure out facing forward or reverse.
+      }
     }
   }
 }

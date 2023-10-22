@@ -50,7 +50,7 @@ void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) {
   CONSOLE.println(state);
 }
 
-void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, TurnoutState state) {
+void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, TurnoutStates state) {
   CONSOLE.print("Received turnout action: ");
   CONSOLE.print(turnoutId);
   CONSOLE.print(" state: ");
@@ -71,4 +71,9 @@ void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, Turn
   CONSOLE.print(position);
   CONSOLE.print(" state: ");
   CONSOLE.println(turntableState);
+}
+
+void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
+  CONSOLE.print("Received track power state: ");
+  CONSOLE.println(state);
 }

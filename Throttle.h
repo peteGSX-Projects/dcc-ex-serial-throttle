@@ -24,21 +24,30 @@
 #include "defines.h"
 #include "DCCEXObjects.h"
 
-const uint8_t SAMPLES = 10;
+const uint8_t SAMPLES = SLIDER_SAMPLES;
+
+struct LocoNode {
+  Loco* loco;
+  LocoNode* next;
+};
 
 class Throttle {
 public:
   // Constructor
-  Throttle(uint8_t throttleNumber, uint8_t potPin);
+  Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList);
 
   void process();
   uint8_t getThrottleNumber();
-  void setLocoAddress(uint16_t address);
+  void setLocoAddress(uint16_t address, LocoSource source);
   uint16_t getLocoAddress();
   bool speedChanged();
   uint8_t getSpeed();
   bool isConsist();
-  void forgetLoco();
+  void forgetLoco(uint16_t address);
+  void setDirection(bool direction);
+  bool getDirection();
+  bool isOverridden();
+  bool addressInUse(uint16_t address);
 
 private:
   uint8_t _potPin;  // pin the potentiometer is on for this throttle
@@ -50,10 +59,14 @@ private:
   uint16_t _rollingAverage = 0;
   bool _speedChanged = false;
   uint16_t _locoAddress = 0;
-  bool _isConsist = false;
   uint8_t _throttleNumber;
+  bool _direction = Forward;  // Default to forward
+  bool _isOverridden = false;
+  LocoNode* _locoList = nullptr;  // Linked list containing Locos
 
 };
+
+Direction getDirectionName(bool direction);
 
 extern Throttle throttle1;
 extern Throttle throttle2;

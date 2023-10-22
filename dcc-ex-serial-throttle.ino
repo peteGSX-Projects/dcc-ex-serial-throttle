@@ -51,7 +51,6 @@ void setup() {
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
   createMenus();
-  currentMenuPtr->display();
 }
 
 /***********************************************************************************
@@ -60,20 +59,24 @@ Main loop
 void loop() {
   dccexProtocol.check();
   validateConnection();
-  updateRoster();
-  updateRoutes();
-  updateTurnouts();
-  updateTurntables();
+  if (connected) {
+    dccexProtocol.getLists(true, true, true, true);
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
+  }
   throttle1.process();
   throttle2.process();
   throttle3.process();
-  if (throttle1.speedChanged()) updateLoco1Speed();
-  if (throttle2.speedChanged()) updateLoco2Speed();
-  if (throttle3.speedChanged()) updateLoco3Speed();
+  if (throttle1.speedChanged()) displayThrottle1Speed();
+  if (throttle2.speedChanged()) displayThrottle2Speed();
+  if (throttle3.speedChanged()) displayThrottle3Speed();
   char key = keypad.getKey();
   if (key) {
     currentMenuPtr->handleKeyPress(key);
   }
+  // getSerialInput();
 }
 
 /*

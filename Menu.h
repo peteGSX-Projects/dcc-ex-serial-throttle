@@ -65,14 +65,34 @@ public:
   };
 
   // Public functions
+  /// @brief add an item to a menu
+  /// @param index index of the item
+  /// @param label label of the item for display
+  /// @param objectId DCC-EX object ID (if appropriate, otherwise 0)
+  /// @param action action to perform when menu item selected
   void addItem(int index, const char* label, int16_t objectId, void (*action)());
+  
+  /// @brief set the parent menu of the menu item
+  /// @param parent 
   void setParent(Menu* parent);
+  
+  /// @brief display the menu
   void display();
+  
+  /// @brief process the pressed key
+  /// @param key 
   void handleKeyPress(char key);
+  
+  /// @brief get the number of menu items associated with the menu
+  /// @return 
   int getItemCount();
+  
   Menu* getParent();
+  
   MenuItem getItem(int index);
+  
   int getSelectedItem();
+  
   void setInputMode();
 
 private:
@@ -89,6 +109,7 @@ private:
 
   // Private functions
   void _displayMenu();
+  void _doHomeFunctions(char key);
 
 };
 
