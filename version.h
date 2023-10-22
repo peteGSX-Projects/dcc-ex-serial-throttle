@@ -1,7 +1,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.8"
+#define VERSION "0.0.9"
+// 0.0.9  - Menu system improvements to handle dynamic menus and items
 // 0.0.8  - Fixed bug where direction was reversed
 // 0.0.7  - Updates for revised library parser
 // 0.0.6  - Enable control of loco speed/direction
