@@ -43,13 +43,8 @@ uint8_t inputKeyColumn = 0;
 Public functions
 */
 void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
-  char* labelCopy = strdup(label);
-
-  if (!labelCopy) {
-    return;
-  }
   
-  MenuItem* newItem = new MenuItem(index, labelCopy, objectId, action);
+  MenuItem* newItem = new MenuItem(index, label, objectId, action);
   newItem->next = nullptr;
 
   if (!_head) {

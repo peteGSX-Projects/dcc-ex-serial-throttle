@@ -87,12 +87,20 @@ public:
   /// @return 
   int getItemCount();
   
+  /// @brief get parent menu object of the item
+  /// @return 
   Menu* getParent();
   
+  /// @brief get the menu item at the specified index
+  /// @param index 
+  /// @return 
   MenuItem getItem(int index);
   
+  /// @brief get the current selected item's index
+  /// @return 
   int getSelectedItem();
   
+  /// @brief set flag that numeric input is required
   void setInputMode();
 
 private:
