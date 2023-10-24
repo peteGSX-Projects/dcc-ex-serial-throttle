@@ -42,9 +42,11 @@ uint8_t inputKeyColumn = 0;
 /*
 Public functions
 */
-void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
+// void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
+void Menu::addItem(int index, const char* label, void *objectPointer, void (*action)()) {
   
-  MenuItem* newItem = new MenuItem(index, label, objectId, action);
+  // MenuItem* newItem = new MenuItem(index, label, objectId, action);
+  MenuItem* newItem = new MenuItem(index, label, objectPointer, action);
   newItem->next = nullptr;
 
   if (!_head) {
@@ -69,7 +71,7 @@ void Menu::display() {
   _displayMenu();
 }
 
-void Menu::handleKeyPress(char key){
+void Menu::handleKeyPress(char key, KeyState keyState){
   if (_inputMode) {
     if (key >= '0' && key <= '9') {
       if (_inputIndex < 5) {
@@ -187,7 +189,8 @@ MenuItem Menu::getItem(int index) {
     currentIndex++;
     currentItem = currentItem->next;
   }
-  return MenuItem{0, "", 0, nullptr};
+  // return MenuItem{0, "", 0, nullptr};
+  return MenuItem{0, "", nullptr, nullptr};
 }
 
 int Menu::getSelectedItem() {
@@ -329,11 +332,11 @@ void createMenus() {
   manageLocoConsist.addItem(4, "Forget loco/consist", 0, noAction);
 
   // Setup track management
-  trackManagement.addItem(0, "Power On", 1, setTrackPower);
-  trackManagement.addItem(1, "Power Off", 0, setTrackPower);
-  trackManagement.addItem(2, "Join", 1, setJoinTracks);
-  trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
-  trackManagement.addItem(4, "TrackManager", 0, []() { trackManager.display(); });
+  trackManagement.addItem(0, "Power On", nullptr, setTrackPower);
+  trackManagement.addItem(1, "Power Off", nullptr, setTrackPower);
+  trackManagement.addItem(2, "Join", nullptr, setJoinTracks);
+  trackManagement.addItem(3, "Unjoin", nullptr, setJoinTracks);
+  trackManagement.addItem(4, "TrackManager", nullptr, []() { trackManager.display(); });
 
   // Setup TrackManager
   trackManager.addItem(0, "Track A", 0, noAction);
@@ -398,22 +401,22 @@ Helper function to set the loco address from the roster list
 and update the parent correctly
 */
 void setLocoFromRoster() {
-  if (rosterList.getParent() != &mainMenu) {
-    uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
-      oled.setCursor(0, 6);
-      oled.print("ADDRESS IN USE");
-    } else {
-      if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
-        currentThrottle->setLocoAddress(address, LocoSourceRoster);
-        rosterList.setParent(&mainMenu);
-        homeScreen.display();rosterList.setParent(&mainMenu);
-        homeScreen.display();
-      } else {
-        // This needs to add another loco but needs to figure out facing forward or reverse.
-      }
-    }
-  }
+  // if (rosterList.getParent() != &mainMenu) {
+  //   uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
+  //     oled.setCursor(0, 6);
+  //     oled.print("ADDRESS IN USE");
+  //   } else {
+  //     if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
+  //       currentThrottle->setLocoAddress(address, LocoSourceRoster);
+  //       rosterList.setParent(&mainMenu);
+  //       homeScreen.display();rosterList.setParent(&mainMenu);
+  //       homeScreen.display();
+  //     } else {
+  //       // This needs to add another loco but needs to figure out facing forward or reverse.
+  //     }
+  //   }
+  // }
 }
 
 /*

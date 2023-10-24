@@ -37,19 +37,30 @@ item plus space between.
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "Throttle.h"
+#include "Keypad.h"
+
+enum MenuItemType {
+  MENU,
+  ACTION,
+  ENTRY,
+};
 
 // Structure for each menu item - no parameters
 struct MenuItem {
   int index;
   const char* label;
-  int16_t objectId;
+  void *objectPointer;
+  // int16_t objectId;
   void (*action)();
   MenuItem* next;
 
-  MenuItem() : index(0), label(nullptr), objectId(0), action(nullptr), next(nullptr) {}
+  // MenuItem() : index(0), label(nullptr), objectId(0), action(nullptr), next(nullptr) {}
+  MenuItem() : index(0), label(nullptr), objectPointer(nullptr), action(nullptr), next(nullptr) {}
 
-  MenuItem(int idx, const char* label, int16_t objectId, void (*action)()) :
-    index(idx), label(label), objectId(objectId), action(action), next(nullptr) {}
+  // MenuItem(int idx, const char* label, int16_t objectId, void (*action)()) :
+  //   index(idx), label(label), objectId(objectId), action(action), next(nullptr) {}
+  MenuItem(int idx, const char* label, void *objectPointer, void (*action)()) :
+    index(idx), label(label), objectPointer(objectPointer), action(action), next(nullptr) {}
 };
 
 /*
@@ -70,7 +81,8 @@ public:
   /// @param label label of the item for display
   /// @param objectId DCC-EX object ID (if appropriate, otherwise 0)
   /// @param action action to perform when menu item selected
-  void addItem(int index, const char* label, int16_t objectId, void (*action)());
+  // void addItem(int index, const char* label, void *objectPointer, int16_t objectId, void (*action)());
+  void addItem(int index, const char* label, void *objectPointer, void (*action)());
   
   /// @brief set the parent menu of the menu item
   /// @param parent 
@@ -79,9 +91,9 @@ public:
   /// @brief display the menu
   void display();
   
-  /// @brief process the pressed key
+  /// @brief process the pressed key and key state
   /// @param key 
-  void handleKeyPress(char key);
+  void handleKeyPress(char key, KeyState keyState);
   
   /// @brief get the number of menu items associated with the menu
   /// @return 

@@ -72,7 +72,8 @@ void updateRoster() {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
+      // rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
+      rosterList.addItem(i, loco->getLocoName(), &loco, setLocoFromRoster);
     }
   }
 }
@@ -86,7 +87,8 @@ void updateRoutes() {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
-      routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
+      // routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
+      routeList.addItem(i, route->getRouteName(), &route, noAction);
     }
   }
 }
@@ -100,7 +102,8 @@ void updateTurnouts() {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
+      // turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
+      turnoutList.addItem(i, turnout->getTurnoutName(), &turnout, toggleTurnout);
     }
   }
 }
@@ -116,7 +119,7 @@ void updateTurntables() {
       Turntable* turntable = dccexProtocol.turntables.get(i);
       char *ttName = turntable->getTurntableName();
       int ttId = turntable->getTurntableId();
-      turntableList.addItem(i, ttName, ttId, noAction);
+      // turntableList.addItem(i, ttName, ttId, noAction);
       for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
         TurntableIndex *idx = turntable->turntableIndexes.get(j);
         char *idxName = idx->getTurntableIndexName();
@@ -138,41 +141,41 @@ Function to toggle a turnout
 If closed, will throw, if thrown, will close
 */
 void toggleTurnout() {
-  if (currentMenuPtr != nullptr) {
-    int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
-    if (turnout->getTurnoutState() == TurnoutClosed) {
-      dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
-    } else {
-      dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
-    }
-  }
+  // if (currentMenuPtr != nullptr) {
+  //   int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
+  //   if (turnout->getTurnoutState() == TurnoutClosed) {
+  //     dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
+  //   } else {
+  //     dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
+  //   }
+  // }
 }
 
 /*
 Function to turn track power on or off
 */
 void setTrackPower() {
-  if (currentMenuPtr != nullptr) {
-    int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (state == 1) {
-      dccexProtocol.sendTrackPower(PowerOn);
-    } else {
-      dccexProtocol.sendTrackPower(PowerOff);
-    }
-  }
+  // if (currentMenuPtr != nullptr) {
+  //   int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (state == 1) {
+  //     dccexProtocol.sendTrackPower(PowerOn);
+  //   } else {
+  //     dccexProtocol.sendTrackPower(PowerOff);
+  //   }
+  // }
 }
 
 /*
 Function to join or unjoin tracks
 */
 void setJoinTracks() {
-  if (currentMenuPtr != nullptr) {
-    int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (join == 1) {
-      CONSOLE.println("Would join but not implemented yet");
-    } else {
-      CONSOLE.println("Would unjoin but not implemented yet");
-    }
-  }
+  // if (currentMenuPtr != nullptr) {
+  //   int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (join == 1) {
+  //     CONSOLE.println("Would join but not implemented yet");
+  //   } else {
+  //     CONSOLE.println("Would unjoin but not implemented yet");
+  //   }
+  // }
 }
