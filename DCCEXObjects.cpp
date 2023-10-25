@@ -72,7 +72,6 @@ void updateRoster() {
     gotRoster = true;
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
-      // rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
       rosterList.addActionItem(i, loco->getLocoName(), &loco, setLocoFromRoster);
     }
   }
@@ -87,7 +86,6 @@ void updateRoutes() {
     gotRoutes = true;
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
-      // routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
       routeList.addActionItem(i, route->getRouteName(), &route, noAction);
     }
   }
@@ -102,7 +100,6 @@ void updateTurnouts() {
     gotTurnouts = true;
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
-      // turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
       turnoutList.addActionItem(i, turnout->getTurnoutName(), &turnout, toggleTurnout);
     }
   }
@@ -118,13 +115,14 @@ void updateTurntables() {
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
       char *ttName = turntable->getTurntableName();
-      int ttId = turntable->getTurntableId();
-      // turntableList.addItem(i, ttName, ttId, noAction);
+      Menu *ttMenu = new Menu(ttName);
+      turntableList.addMenu(i, ttName, &ttMenu);
       for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
         TurntableIndex *idx = turntable->turntableIndexes.get(j);
         char *idxName = idx->getTurntableIndexName();
         int idxIndex = idx->getTurntableIndexIndex();
         int idxAngle = idx->getTurntableIndexAngle();
+        ttMenu->addActionItem(j, idxName, idx, noAction);
         CONSOLE.print(F("Got index "));
         CONSOLE.print(idxIndex);
         CONSOLE.print(F(" "));
@@ -141,15 +139,14 @@ Function to toggle a turnout
 If closed, will throw, if thrown, will close
 */
 void toggleTurnout() {
-  // if (currentMenuPtr != nullptr) {
-  //   int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-  //   Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
-  //   if (turnout->getTurnoutState() == TurnoutClosed) {
-  //     dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
-  //   } else {
-  //     dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
-  //   }
-  // }
+  if (currentMenuPtr != nullptr) {
+    Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
+    if (turnout->getTurnoutState() == TurnoutClosed) {
+      dccexProtocol.sendTurnoutAction(turnout->getTurnoutId(), TurnoutThrow);
+    } else {
+      dccexProtocol.sendTurnoutAction(turnout->getTurnoutId(), TurnoutClose);
+    }
+  }
 }
 
 /*
