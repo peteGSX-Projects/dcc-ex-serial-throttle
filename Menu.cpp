@@ -42,24 +42,19 @@ uint8_t inputKeyColumn = 0;
 /*
 Public functions
 */
-// void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
-void Menu::addItem(int index, const char* label, void *objectPointer, void (*action)()) {
-  
-  // MenuItem* newItem = new MenuItem(index, label, objectId, action);
-  MenuItem* newItem = new MenuItem(index, label, objectPointer, action);
-  newItem->next = nullptr;
+void Menu::addMenu(int index, const char* label, void *objectPointer) {
+  MenuItem* newItem = new MenuItem(index, label, MENU, objectPointer, nullptr);
+  _addItem(newItem);
+}
 
-  if (!_head) {
-    _head = newItem;
-  } else {
-    // Find last list item
-    MenuItem* current = _head;
-    while (current->next != nullptr) {
-      current = current->next;
-    }
-    // Add to end of list
-    current->next = newItem;
-  }
+void Menu::addActionItem(int index, const char* label, void *objectPointer, void (*callback)()) {
+  MenuItem* newItem = new MenuItem(index, label, ACTION, objectPointer, callback);
+  _addItem(newItem);
+}
+
+void Menu::addEntryItem(int index, const char* label, void (*callback)()) {
+  MenuItem* newItem = new MenuItem(index, label, ENTRY, nullptr, callback);
+  _addItem(newItem);
 }
 
 void Menu::setParent(Menu* parent) {
@@ -130,10 +125,29 @@ void Menu::handleKeyPress(char key, KeyState keyState){
           _doHomeFunctions(key);
         } else {
           if (getItemCount() > 0) {
-            int index = key - '1' + (_currentPage - 1) * 9;
+            int index = key - '0' + (_currentPage - 1) * 9;
             if (index < getItemCount()) {
-              _selectedItemIndex = getItem(index).index;
-              getItem(index).action();
+              MenuItem item = getItem(index);
+              _selectedItemIndex = item.index;
+              switch (item.menuItemType) {
+                case MENU: {
+                  Menu* menu = static_cast<Menu*>(item.objectPointer);
+                  menu->display();
+                  break;
+                }
+
+                case ACTION: {
+                  break;
+                }
+
+                case ENTRY: {
+                  break;
+                }
+
+                default:
+                  break;
+              }
+              // getItem(index).callback();
             }
           }
         }
@@ -189,8 +203,7 @@ MenuItem Menu::getItem(int index) {
     currentIndex++;
     currentItem = currentItem->next;
   }
-  // return MenuItem{0, "", 0, nullptr};
-  return MenuItem{0, "", nullptr, nullptr};
+  return MenuItem{0, "", MENU, nullptr, nullptr};
 }
 
 int Menu::getSelectedItem() {
@@ -204,8 +217,66 @@ void Menu::setInputMode() {
 /*
 Private functions
 */
+void Menu::_addItem(MenuItem* newItem) {
+  newItem->next = nullptr;
+
+  if (!_head) {
+    _head = newItem;
+  } else {
+    // Find last list item
+    MenuItem* current = _head;
+    while (current->next != nullptr) {
+      current = current->next;
+    }
+    // Add to end of list
+    current->next = newItem;
+  }
+}
+
 // Display the menu with a single page of options
 void Menu::_displayMenu(){
+  if (_parentMenu == nullptr) {
+    displayHomeScreen();
+  } else {
+    oled.clear();
+    oled.set1X();
+    oled.setCursor(0, 0);
+    oled.print(_label);
+
+    int startIdx = (_currentPage - 1) * 10;
+    int endIdx = min(startIdx + 10, getItemCount());
+
+    // Display number keys 0 -> 9 to select
+    int key = 0;
+    int column = 0;
+    int row = 1;
+    for (int i = startIdx; i < endIdx; i++) {
+      oled.setCursor(column, row);
+      oled.print(key);
+      oled.print(" ");
+      oled.print(getItem(i).label);
+      key++;
+      // If next key would be 10, make it 0
+      if (key > 9) {
+        key = 0;
+      }
+      row++;
+      // 6th row means row 1 in second column
+      if (row > 5) {
+        row = 1;
+        column = 65;
+      }
+    }
+
+    oled.setCursor(0, 7);
+    oled.print("* Back");
+    if (getItemCount() > 10) {
+      oled.setCursor(65, 7);
+      oled.print("# Next page");
+    }
+  }
+
+/* OLD DISPLAYMENU
   // The top most menu only displays the * key to access the menu system
   if (_parentMenu == nullptr) {
     displayHomeScreen();
@@ -263,6 +334,7 @@ void Menu::_displayMenu(){
       oled.print("# Next page");
     }
   }
+END OLD DISPLAYMENU */
 }
 
 /*
@@ -298,7 +370,7 @@ void Menu::_doHomeFunctions(char key) {
 /*
 Function to create required menu structure including static list items
 */
-void createMenus() {
+void createStaticMenus() {
   // Create menu structure
   mainMenu.setParent(&homeScreen);
   setupThrottles.setParent(&mainMenu);
@@ -312,42 +384,45 @@ void createMenus() {
   trackManager.setParent(&trackManagement);
 
   // Setup main menu
-  mainMenu.addItem(0, "Throttles", 0, []() { setupThrottles.display(); });
-  mainMenu.addItem(1, "Turnouts", 0, []() { turnoutList.display(); });
-  mainMenu.addItem(2, "Routes", 0, []() { routeList.display(); });
-  mainMenu.addItem(3, "Turntables", 0, []() { turntableList.display(); });
-  mainMenu.addItem(4, "Roster", 0, []() { rosterList.display(); });
-  mainMenu.addItem(5, "Tracks", 0, []() { trackManagement.display(); });
+  mainMenu.addMenu(0, "Throttles", &setupThrottles);
+  mainMenu.addMenu(1, "Turnouts", &turnoutList);
+  mainMenu.addMenu(2, "Routes", &routeList);
+  mainMenu.addMenu(3, "Turntables", &turntableList);
+  mainMenu.addMenu(4, "Roster", &rosterList);
+  mainMenu.addMenu(5, "Tracks", &trackManagement);
 
   // Setup throttle menu
-  setupThrottles.addItem(0, "Throttle 1", 0, setThrottleContext);
-  setupThrottles.addItem(1, "Throttle 2", 0, setThrottleContext);
-  setupThrottles.addItem(2, "Throttle 3", 0, setThrottleContext);
+  setupThrottles.addActionItem(0, "Throttle 1", nullptr, setThrottleContext);
+  setupThrottles.addActionItem(1, "Throttle 2", nullptr, setThrottleContext);
+  setupThrottles.addActionItem(2, "Throttle 3", nullptr, setThrottleContext);
 
   // Setup manage throttle menu
-  manageLocoConsist.addItem(0, "Select from roster", 0, selectFromRoster);
-  manageLocoConsist.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageLocoConsist.addItem(2, "Remove loco", 0, forgetLoco);
-  manageLocoConsist.addItem(3, "Display consist", 0, noAction);
-  manageLocoConsist.addItem(4, "Forget loco/consist", 0, noAction);
+  manageLocoConsist.addActionItem(0, "Select from roster", nullptr, selectFromRoster);
+  manageLocoConsist.addActionItem(1, "Enter address", nullptr, enterLocoAddress);
+  manageLocoConsist.addActionItem(2, "Remove loco", nullptr, forgetLoco);
+  manageLocoConsist.addActionItem(3, "Display consist", nullptr, noAction);
+  manageLocoConsist.addActionItem(4, "Forget loco/consist", nullptr, noAction);
 
   // Setup track management
-  trackManagement.addItem(0, "Power On", nullptr, setTrackPower);
-  trackManagement.addItem(1, "Power Off", nullptr, setTrackPower);
-  trackManagement.addItem(2, "Join", nullptr, setJoinTracks);
-  trackManagement.addItem(3, "Unjoin", nullptr, setJoinTracks);
-  trackManagement.addItem(4, "TrackManager", nullptr, []() { trackManager.display(); });
+  trackManagement.addActionItem(0, "Power On", nullptr, setTrackPower);
+  trackManagement.addActionItem(1, "Power Off", nullptr, setTrackPower);
+  trackManagement.addActionItem(2, "Join", nullptr, setJoinTracks);
+  trackManagement.addActionItem(3, "Unjoin", nullptr, setJoinTracks);
+  trackManagement.addMenu(4, "TrackManager", &trackManager);
 
   // Setup TrackManager
-  trackManager.addItem(0, "Track A", 0, noAction);
-  trackManager.addItem(1, "Track B", 0, noAction);
-  trackManager.addItem(2, "Track C", 0, noAction);
-  trackManager.addItem(3, "Track D", 0, noAction);
-  trackManager.addItem(4, "Track E", 0, noAction);
-  trackManager.addItem(5, "Track F", 0, noAction);
-  trackManager.addItem(6, "Track G", 0, noAction);
-  trackManager.addItem(7, "Track H", 0, noAction);
-  trackManager.addItem(8, "Show Tracks", 0, noAction);
+  trackManager.addActionItem(0, "Track A", nullptr, noAction);
+  trackManager.addActionItem(1, "Track B", nullptr, noAction);
+  trackManager.addActionItem(2, "Track C", nullptr, noAction);
+  trackManager.addActionItem(3, "Track D", nullptr, noAction);
+  trackManager.addActionItem(4, "Track E", nullptr, noAction);
+  trackManager.addActionItem(5, "Track F", nullptr, noAction);
+  trackManager.addActionItem(6, "Track G", nullptr, noAction);
+  trackManager.addActionItem(7, "Track H", nullptr, noAction);
+  trackManager.addActionItem(8, "Show Tracks", nullptr, noAction);
+  trackManager.addActionItem(9, "Dummy 1", nullptr, noAction);
+  trackManager.addActionItem(10, "Dummy 2", nullptr, noAction);
+  trackManager.addActionItem(11, "Dummy 3", nullptr, noAction);
 
 }
 

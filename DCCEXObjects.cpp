@@ -73,7 +73,7 @@ void updateRoster() {
     for (int i = 0; i < dccexProtocol.roster.size(); i++) {
       Loco* loco = dccexProtocol.roster.get(i);
       // rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
-      rosterList.addItem(i, loco->getLocoName(), &loco, setLocoFromRoster);
+      rosterList.addActionItem(i, loco->getLocoName(), &loco, setLocoFromRoster);
     }
   }
 }
@@ -88,7 +88,7 @@ void updateRoutes() {
     for (int i = 0; i < dccexProtocol.routes.size(); i++) {
       Route* route = dccexProtocol.routes.get(i);
       // routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
-      routeList.addItem(i, route->getRouteName(), &route, noAction);
+      routeList.addActionItem(i, route->getRouteName(), &route, noAction);
     }
   }
 }
@@ -103,7 +103,7 @@ void updateTurnouts() {
     for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
       Turnout* turnout = dccexProtocol.turnouts.get(i);
       // turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
-      turnoutList.addItem(i, turnout->getTurnoutName(), &turnout, toggleTurnout);
+      turnoutList.addActionItem(i, turnout->getTurnoutName(), &turnout, toggleTurnout);
     }
   }
 }

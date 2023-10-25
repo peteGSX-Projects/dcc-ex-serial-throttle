@@ -49,18 +49,16 @@ enum MenuItemType {
 struct MenuItem {
   int index;
   const char* label;
+  MenuItemType menuItemType;
   void *objectPointer;
   // int16_t objectId;
-  void (*action)();
+  void (*callback)();
   MenuItem* next;
 
-  // MenuItem() : index(0), label(nullptr), objectId(0), action(nullptr), next(nullptr) {}
-  MenuItem() : index(0), label(nullptr), objectPointer(nullptr), action(nullptr), next(nullptr) {}
+  MenuItem() : index(0), label(nullptr), menuItemType(MENU), objectPointer(nullptr), callback(nullptr), next(nullptr) {}
 
-  // MenuItem(int idx, const char* label, int16_t objectId, void (*action)()) :
-  //   index(idx), label(label), objectId(objectId), action(action), next(nullptr) {}
-  MenuItem(int idx, const char* label, void *objectPointer, void (*action)()) :
-    index(idx), label(label), objectPointer(objectPointer), action(action), next(nullptr) {}
+  MenuItem(int idx, const char* label, MenuItemType menuItemType, void *objectPointer, void (*callback)()) :
+    index(idx), label(label), menuItemType(menuItemType), objectPointer(objectPointer), callback(callback), next(nullptr) {}
 };
 
 /*
@@ -76,14 +74,25 @@ public:
   };
 
   // Public functions
-  /// @brief add an item to a menu
-  /// @param index index of the item
-  /// @param label label of the item for display
-  /// @param objectId DCC-EX object ID (if appropriate, otherwise 0)
-  /// @param action action to perform when menu item selected
-  // void addItem(int index, const char* label, void *objectPointer, int16_t objectId, void (*action)());
-  void addItem(int index, const char* label, void *objectPointer, void (*action)());
-  
+  /// @brief Add a menu
+  /// @param index Index of the menu, determins display order
+  /// @param label Label of the menu
+  /// @param objectPointer Pointer to the menu object
+  void addMenu(int index, const char* label, void *objectPointer);
+
+  /// @brief Add an item to a menu that triggers an action
+  /// @param index Index of the item, determines display order
+  /// @param label Label of the item for display
+  /// @param objectPointer Pointer to a DCC-EX object (if appropriate, otherwise nullptr)
+  /// @param callback Function to call when menu item selected
+  void addActionItem(int index, const char* label, void *objectPointer, void (*callback)());
+
+  /// @brief Add an item to a menu that requires user entry
+  /// @param index Index of the item, determines display order
+  /// @param label Label of the item for display
+  /// @param callback Function to call when menu item selected
+  void addEntryItem(int index, const char* label, void (*callback)());
+
   /// @brief set the parent menu of the menu item
   /// @param parent 
   void setParent(Menu* parent);
@@ -128,6 +137,7 @@ private:
   bool _isLocoInput = false;
 
   // Private functions
+  void _addItem(MenuItem* newItem);
   void _displayMenu();
   void _doHomeFunctions(char key);
 
@@ -142,7 +152,8 @@ extern Menu routeList;
 extern Menu turnoutList;
 extern Menu turntableList;
 
-void createMenus();
+void createStaticMenus();
+
 void setThrottleContext();
 void enterLocoAddress();
 void forgetLoco();

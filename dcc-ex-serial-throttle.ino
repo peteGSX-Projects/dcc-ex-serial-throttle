@@ -50,7 +50,7 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  createMenus();
+  createStaticMenus();
 }
 
 /***********************************************************************************

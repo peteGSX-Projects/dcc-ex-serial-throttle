@@ -57,12 +57,18 @@ void keypadEvent(KeypadEvent key) {
       break;
     case HOLD:
       keyPress = false;
+      CONSOLE.print(key);
+      CONSOLE.println(F(" held"));
       currentMenuPtr->handleKeyPress(key, HOLD);
       break;
     case RELEASED:
       if (keyPress == true) {
+        CONSOLE.print(key);
+        CONSOLE.println(F(" pressed"));
         currentMenuPtr->handleKeyPress(key, PRESSED);
       } else {
+        CONSOLE.print(key);
+        CONSOLE.println(F(" released"));
         currentMenuPtr->handleKeyPress(key, RELEASED);
       }
       break;
