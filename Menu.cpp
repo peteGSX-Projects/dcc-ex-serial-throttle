@@ -137,6 +137,7 @@ void Menu::handleKeyPress(char key, KeyState keyState){
                 }
 
                 case ACTION: {
+                  item.callback();
                   break;
                 }
 
