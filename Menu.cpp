@@ -21,17 +21,17 @@
 #include "Menu.h"
 
 // Create menus
-Menu homeScreen("Home Screen");
-Menu mainMenu("Main Menu");
-Menu setupThrottles("Setup Throttles");
-Menu rosterList("Roster List");
-Menu routeList("Route List");
-Menu turnoutList("Turnout List");
-Menu turntableList("Turntable List");
-Menu trackManagement("Track Management");
-Menu manageLocoConsist("Manage Loco/Consist");
-Menu inputLocoAddress("Input Loco Address");
-Menu trackManager("TrackManager");
+Menu homeScreen("Home Screen", nullptr);
+Menu mainMenu("Main Menu", &homeScreen);
+Menu setupThrottles("Setup Throttles", &mainMenu);
+Menu rosterList("Roster List", &mainMenu);
+Menu routeList("Route List", &mainMenu);
+Menu turnoutList("Turnout List", &mainMenu);
+Menu turntableList("Turntable List", &mainMenu);
+Menu trackManagement("Track Management", &mainMenu);
+Menu manageLocoConsist("Manage Loco/Consist", &setupThrottles);
+Menu inputLocoAddress("Input Loco Address", &manageLocoConsist);
+Menu trackManager("TrackManager", &trackManagement);
 
 Menu* currentMenuPtr = &homeScreen;
 
@@ -148,7 +148,6 @@ void Menu::handleKeyPress(char key, KeyState keyState){
                 default:
                   break;
               }
-              // getItem(index).callback();
             }
           }
         }
@@ -236,48 +235,47 @@ void Menu::_addItem(MenuItem* newItem) {
 
 // Display the menu with a single page of options
 void Menu::_displayMenu(){
-  if (_parentMenu == nullptr) {
-    displayHomeScreen();
-  } else {
-    oled.clear();
-    oled.set1X();
-    oled.setCursor(0, 0);
-    oled.print(_label);
+  // if (_parentMenu == nullptr) {
+  //   displayHomeScreen();
+  // } else {
+  //   oled.clear();
+  //   oled.set1X();
+  //   oled.setCursor(0, 0);
+  //   oled.print(_label);
 
-    int startIdx = (_currentPage - 1) * 10;
-    int endIdx = min(startIdx + 10, getItemCount());
+  //   int startIdx = (_currentPage - 1) * 10;
+  //   int endIdx = min(startIdx + 10, getItemCount());
 
-    // Display number keys 0 -> 9 to select
-    int key = 0;
-    int column = 0;
-    int row = 1;
-    for (int i = startIdx; i < endIdx; i++) {
-      oled.setCursor(column, row);
-      oled.print(key);
-      oled.print(" ");
-      oled.print(getItem(i).label);
-      key++;
-      // If next key would be 10, make it 0
-      if (key > 9) {
-        key = 0;
-      }
-      row++;
-      // 6th row means row 1 in second column
-      if (row > 5) {
-        row = 1;
-        column = 65;
-      }
-    }
+  //   // Display number keys 0 -> 9 to select
+  //   int key = 0;
+  //   int column = 0;
+  //   int row = 1;
+  //   for (int i = startIdx; i < endIdx; i++) {
+  //     oled.setCursor(column, row);
+  //     oled.print(key);
+  //     oled.print(" ");
+  //     oled.print(getItem(i).label);
+  //     key++;
+  //     // If next key would be 10, make it 0
+  //     if (key > 9) {
+  //       key = 0;
+  //     }
+  //     row++;
+  //     // 6th row means row 1 in second column
+  //     if (row > 5) {
+  //       row = 1;
+  //       column = 65;
+  //     }
+  //   }
 
-    oled.setCursor(0, 7);
-    oled.print("* Back");
-    if (getItemCount() > 10) {
-      oled.setCursor(65, 7);
-      oled.print("# Next page");
-    }
-  }
+  //   oled.setCursor(0, 7);
+  //   oled.print("* Back");
+  //   if (getItemCount() > 10) {
+  //     oled.setCursor(65, 7);
+  //     oled.print("# Next page");
+  //   }
+  // }
 
-/* OLD DISPLAYMENU
   // The top most menu only displays the * key to access the menu system
   if (_parentMenu == nullptr) {
     displayHomeScreen();
@@ -303,28 +301,31 @@ void Menu::_displayMenu(){
     oled.setCursor(0, 0);
     oled.print(_label);
 
-    int startIdx = (_currentPage - 1) * 10;
-    int endIdx = min(startIdx + 10, getItemCount());
+    if (getItemCount() > 0) {
+    
+      int startIdx = (_currentPage - 1) * 10;
+      int endIdx = min(startIdx + 10, getItemCount());
 
-    // Display number keys 1 -> 0 (instead of 10) to select
-    int key = 1;
-    int column = 0;
-    int row = 1;
-    for (int i = startIdx; i < endIdx; i++) {
-      oled.setCursor(column, row);
-      oled.print(key);
-      oled.print(" ");
-      oled.print(getItem(i).label);
-      key++;
-      // If next key would be 10, make it 0
-      if (key > 9) {
-        key = 0;
-      }
-      row++;
-      // 6th row means row 1 in second column
-      if (row > 5) {
-        row = 1;
-        column = 65;
+      // Display number keys 1 -> 0 (instead of 10) to select
+      int key = 0;
+      int column = 0;
+      int row = 1;
+      for (int i = startIdx; i < endIdx; i++) {
+        oled.setCursor(column, row);
+        oled.print(key);
+        oled.print(" ");
+        oled.print(getItem(i).label);
+        key++;
+        // If next key would be 10, make it 0
+        if (key > 9) {
+          key = 0;
+        }
+        row++;
+        // 6th row means row 1 in second column
+        if (row > 5) {
+          row = 1;
+          column = 65;
+        }
       }
     }
 
@@ -335,7 +336,6 @@ void Menu::_displayMenu(){
       oled.print("# Next page");
     }
   }
-END OLD DISPLAYMENU */
 }
 
 /*
@@ -373,16 +373,16 @@ Function to create required menu structure including static list items
 */
 void createStaticMenus() {
   // Create menu structure
-  mainMenu.setParent(&homeScreen);
-  setupThrottles.setParent(&mainMenu);
-  rosterList.setParent(&mainMenu);
-  routeList.setParent(&mainMenu);
-  turnoutList.setParent(&mainMenu);
-  turntableList.setParent(&mainMenu);
-  trackManagement.setParent(&mainMenu);
-  manageLocoConsist.setParent(&setupThrottles);
-  inputLocoAddress.setParent(&manageLocoConsist);
-  trackManager.setParent(&trackManagement);
+  // mainMenu.setParent(&homeScreen);
+  // setupThrottles.setParent(&mainMenu);
+  // rosterList.setParent(&mainMenu);
+  // routeList.setParent(&mainMenu);
+  // turnoutList.setParent(&mainMenu);
+  // turntableList.setParent(&mainMenu);
+  // trackManagement.setParent(&mainMenu);
+  // manageLocoConsist.setParent(&setupThrottles);
+  // inputLocoAddress.setParent(&manageLocoConsist);
+  // trackManager.setParent(&trackManagement);
 
   // Setup main menu
   mainMenu.addMenu(0, "Throttles", &setupThrottles);

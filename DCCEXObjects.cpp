@@ -115,15 +115,15 @@ void updateTurntables() {
     for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
       Turntable* turntable = dccexProtocol.turntables.get(i);
       char *ttName = turntable->getTurntableName();
-      Menu *ttMenu = new Menu(ttName);
-      ttMenu->setParent(&turntableList);
+      Menu *ttMenu = new Menu(ttName, &turntableList);
+      // ttMenu->setParent(&turntableList);
       turntableList.addMenu(i, ttName, ttMenu);
       for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
         TurntableIndex *idx = turntable->turntableIndexes.get(j);
         char *idxName = idx->getTurntableIndexName();
         int idxIndex = idx->getTurntableIndexIndex();
         int idxAngle = idx->getTurntableIndexAngle();
-        // ttMenu.addActionItem(j, idxName, idx, noAction);
+        // ttMenu->addActionItem(j, idxName, idx, nullptr);
         CONSOLE.print(F("Got index "));
         CONSOLE.print(idxIndex);
         CONSOLE.print(F(" "));

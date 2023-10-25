@@ -51,7 +51,6 @@ struct MenuItem {
   const char* label;
   MenuItemType menuItemType;
   void *objectPointer;
-  // int16_t objectId;
   void (*callback)();
   MenuItem* next;
 
@@ -67,10 +66,10 @@ Menu class
 class Menu {
 public:
   // Constructor
-  Menu(const char* label) {
+  Menu(const char* label, Menu* parent) {
     this->_label = label;
     _currentPage = 1;
-    _parentMenu = nullptr;
+    _parentMenu = parent;
   };
 
   // Public functions
