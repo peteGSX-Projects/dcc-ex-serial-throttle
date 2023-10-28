@@ -98,9 +98,10 @@ To trigger after startup, simply set requestedTurnouts to false
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
     gotTurnouts = true;
-    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
-      Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addActionItem(i, turnout->getTurnoutName(), turnout, toggleTurnout);
+    int i=0;
+    for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
+      turnoutList.addActionItem(i, t->getName(), t, toggleTurnout);
+      i++;
     }
   }
 }
@@ -142,14 +143,10 @@ If closed, will throw, if thrown, will close
 void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
-    int turnoutId = turnout->getTurnoutId();
+    int turnoutId = turnout->getId();
     CONSOLE.print(F("Toggle turnout "));
     CONSOLE.println(turnoutId);
-    if (turnout->getTurnoutState() == TurnoutClosed) {
-      dccexProtocol.sendTurnoutAction(turnoutId, TurnoutThrow);
-    } else {
-      dccexProtocol.sendTurnoutAction(turnoutId, TurnoutClose);
-    }
+    dccexProtocol.toggleTurnout(turnoutId);
   }
 }
 
