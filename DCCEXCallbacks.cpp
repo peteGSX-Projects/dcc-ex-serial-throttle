@@ -50,12 +50,12 @@ void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) {
   CONSOLE.println(state);
 }
 
-// void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, TurnoutStates state) {
-//   CONSOLE.print("Received turnout action: ");
-//   CONSOLE.print(turnoutId);
-//   CONSOLE.print(" state: ");
-//   CONSOLE.println(state);
-// }
+void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
+  CONSOLE.print("Received turnout action: ");
+  CONSOLE.print(turnoutId);
+  CONSOLE.print(" thrown: ");
+  CONSOLE.println(thrown);
+}
 
 void DCCEXCallbacks::receivedRouteAction(int routeId, RouteState state) {
   CONSOLE.print("Received route action: ");
