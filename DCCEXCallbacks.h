@@ -31,8 +31,7 @@ public:
   void receivedDirection(int throttleNo, Direction dir);
   void receivedFunction(int throttleNo, int func, bool state);
   void receivedTurnoutAction(int turnoutId, bool thrown);
-  void receivedRouteAction(int routeId, RouteState state);
-  void receivedTurntableAction(int turntableId, int position, TurntableState turntableState);
+  void receivedTurntableAction(int turntableId, int position, bool moving);
   void receivedTrackPower(TrackPower state);
 
 };

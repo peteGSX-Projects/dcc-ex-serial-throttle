@@ -84,9 +84,10 @@ To trigger after startup, simply set requestedRoutes to false
 void updateRoutes() {
   if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
-    for (int i = 0; i < dccexProtocol.routes.size(); i++) {
-      Route* route = dccexProtocol.routes.get(i);
-      routeList.addActionItem(i, route->getRouteName(), route, noAction);
+    int i=0;
+    for (Route* r=dccexProtocol.routes->getFirst(); r; r=r->getNext()) {
+      routeList.addActionItem(i, r->getName(), r, noAction);
+      i++;
     }
   }
 }
@@ -111,29 +112,29 @@ Function to update turntable entries from the CS
 To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
-  if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
-    gotTurntables = true;
-    for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
-      Turntable* turntable = dccexProtocol.turntables.get(i);
-      char *ttName = turntable->getTurntableName();
-      Menu *ttMenu = new Menu(ttName, &turntableList);
-      // ttMenu->setParent(&turntableList);
-      turntableList.addMenu(i, ttName, ttMenu);
-      for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
-        TurntableIndex *idx = turntable->turntableIndexes.get(j);
-        char *idxName = idx->getTurntableIndexName();
-        int idxIndex = idx->getTurntableIndexIndex();
-        int idxAngle = idx->getTurntableIndexAngle();
-        // ttMenu->addActionItem(j, idxName, idx, nullptr);
-        CONSOLE.print(F("Got index "));
-        CONSOLE.print(idxIndex);
-        CONSOLE.print(F(" "));
-        CONSOLE.print(idxName);
-        CONSOLE.print(F(" at angle "));
-        CONSOLE.println(idxAngle);
-      }
-    }
-  }
+  // if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
+  //   gotTurntables = true;
+  //   for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
+  //     Turntable* turntable = dccexProtocol.turntables.get(i);
+  //     char *ttName = turntable->getTurntableName();
+  //     Menu *ttMenu = new Menu(ttName, &turntableList);
+  //     // ttMenu->setParent(&turntableList);
+  //     turntableList.addMenu(i, ttName, ttMenu);
+  //     for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
+  //       TurntableIndex *idx = turntable->turntableIndexes.get(j);
+  //       char *idxName = idx->getTurntableIndexName();
+  //       int idxIndex = idx->getTurntableIndexIndex();
+  //       int idxAngle = idx->getTurntableIndexAngle();
+  //       // ttMenu->addActionItem(j, idxName, idx, nullptr);
+  //       CONSOLE.print(F("Got index "));
+  //       CONSOLE.print(idxIndex);
+  //       CONSOLE.print(F(" "));
+  //       CONSOLE.print(idxName);
+  //       CONSOLE.print(F(" at angle "));
+  //       CONSOLE.println(idxAngle);
+  //     }
+  //   }
+  // }
 }
 
 /*
