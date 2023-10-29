@@ -98,7 +98,7 @@ To trigger after startup, simply set requestedTurnouts to false
 */
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
-    gotTurnouts = true;
+    gotTurnouts=true;
     int i=0;
     for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
       turnoutList.addActionItem(i, t->getName(), t, toggleTurnout);
@@ -112,8 +112,24 @@ Function to update turntable entries from the CS
 To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
-  // if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
-  //   gotTurntables = true;
+  if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
+    gotTurntables=true;
+    int i=0;
+    for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
+      char* ttName=tt->getName();
+      CONSOLE.println(ttName);
+      Menu* ttMenu=new Menu(ttName, &turntableList);
+      turnoutList.addMenu(i, ttName, ttMenu);
+      i++;
+      TurntableIndex* iList=tt->getIndexList();
+      int j=0;
+      for (TurntableIndex* idx=iList->getFirst(); idx; idx=idx->getNext()) {
+        char* idxName=idx->getName();
+        CONSOLE.println(idxName);
+        ttMenu->addActionItem(j, idxName, idx, nullptr);
+        j++;
+      }
+    }
   //   for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
   //     Turntable* turntable = dccexProtocol.turntables.get(i);
   //     char *ttName = turntable->getTurntableName();
@@ -134,7 +150,7 @@ void updateTurntables() {
   //       CONSOLE.println(idxAngle);
   //     }
   //   }
-  // }
+  }
 }
 
 /*
