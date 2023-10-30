@@ -119,7 +119,7 @@ void updateTurntables() {
       char* ttName=tt->getName();
       CONSOLE.println(ttName);
       Menu* ttMenu=new Menu(ttName, &turntableList);
-      turnoutList.addMenu(i, ttName, ttMenu);
+      turntableList.addMenu(i, ttName, ttMenu);
       i++;
       TurntableIndex* iList=tt->getIndexList();
       int j=0;
