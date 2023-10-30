@@ -121,12 +121,11 @@ void updateTurntables() {
       Menu* ttMenu=new Menu(ttName, &turntableList);
       turntableList.addMenu(i, ttName, ttMenu);
       i++;
-      TurntableIndex* iList=tt->getIndexList();
       int j=0;
-      for (TurntableIndex* idx=iList->getFirst(); idx; idx=idx->getNext()) {
+      for (TurntableIndex* idx=tt->getIndexList(); idx; idx=idx->getNext()) {
         char* idxName=idx->getName();
         CONSOLE.println(idxName);
-        ttMenu->addActionItem(j, idxName, idx, nullptr);
+        // ttMenu->addActionItem(j, idxName, idx, nullptr);
         j++;
       }
     }
