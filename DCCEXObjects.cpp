@@ -68,13 +68,13 @@ Function to update roster entries from the CS
 To trigger after startup, simply set requestedRoster to false
 */
 void updateRoster() {
-  if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
-    gotRoster = true;
-    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
-      Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addActionItem(i, loco->getLocoName(), loco, setLocoFromRoster);
-    }
-  }
+  // if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
+  //   gotRoster = true;
+  //   for (int i = 0; i < dccexProtocol.roster.size(); i++) {
+  //     Loco* loco = dccexProtocol.roster.get(i);
+  //     rosterList.addActionItem(i, loco->getLocoName(), loco, setLocoFromRoster);
+  //   }
+  // }
 }
 
 /*
@@ -130,6 +130,7 @@ void updateTurntables() {
         j++;
       }
     }
+  }
 }
 
 /*

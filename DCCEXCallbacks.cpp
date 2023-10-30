@@ -27,28 +27,28 @@ void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.println(version);
 }
 
-void DCCEXCallbacks::receivedSpeed(int throttleNo, int speed) { 
-  CONSOLE.print("Received Throttle Speed: ");
-  CONSOLE.print(throttleNo);
-  CONSOLE.print(" Speed: ");
-  CONSOLE.println(speed); 
-}
+// void DCCEXCallbacks::receivedSpeed(int throttleNo, int speed) { 
+//   CONSOLE.print("Received Throttle Speed: ");
+//   CONSOLE.print(throttleNo);
+//   CONSOLE.print(" Speed: ");
+//   CONSOLE.println(speed); 
+// }
 
-void DCCEXCallbacks::receivedDirection(int throttleNo, Direction dir) { 
-  CONSOLE.print("Received Throttle Direction: ");
-  CONSOLE.print(throttleNo);
-  CONSOLE.print(" Direction: ");
-  CONSOLE.println(dir); 
-}
+// void DCCEXCallbacks::receivedDirection(int throttleNo, Direction dir) { 
+//   CONSOLE.print("Received Throttle Direction: ");
+//   CONSOLE.print(throttleNo);
+//   CONSOLE.print(" Direction: ");
+//   CONSOLE.println(dir); 
+// }
 
-void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) { 
-  CONSOLE.print("Received Throttle Function change: ");
-  CONSOLE.print(throttleNo);
-  CONSOLE.print(" function: ");
-  CONSOLE.print(func);
-  CONSOLE.print(" state: ");
-  CONSOLE.println(state);
-}
+// void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) { 
+//   CONSOLE.print("Received Throttle Function change: ");
+//   CONSOLE.print(throttleNo);
+//   CONSOLE.print(" function: ");
+//   CONSOLE.print(func);
+//   CONSOLE.print(" state: ");
+//   CONSOLE.println(state);
+// }
 
 void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
   CONSOLE.print("Received turnout action: ");
