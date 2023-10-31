@@ -23,7 +23,7 @@
 #include "DCCEXObjects.h"
 
 DCCEXProtocol dccexProtocol(3);
-DCCEXCallbacks dccexCallbacks;
+// DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
 bool connected = false;
@@ -37,8 +37,7 @@ bool gotTurnouts = false;
 bool gotTurntables = false;
 
 /*
-Function to validate a connection to the CS has been made
-*/
+// Function to validate a connection to the CS has been made
 void validateConnection() {
   if (!connected) {
     if (!connectionRequested) {
@@ -63,10 +62,8 @@ void validateConnection() {
   }
 }
 
-/*
-Function to update roster entries from the CS
-To trigger after startup, simply set requestedRoster to false
-*/
+// Function to update roster entries from the CS
+// To trigger after startup, simply set requestedRoster to false
 void updateRoster() {
   if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
@@ -78,10 +75,8 @@ void updateRoster() {
   }
 }
 
-/*
-Function to update route entries from the CS
-To trigger after startup, simply set requestedRoutes to false
-*/
+// Function to update route entries from the CS
+// To trigger after startup, simply set requestedRoutes to false
 void updateRoutes() {
   if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
@@ -93,10 +88,8 @@ void updateRoutes() {
   }
 }
 
-/*
-Function to update turnout entries from the CS
-To trigger after startup, simply set requestedTurnouts to false
-*/
+// Function to update turnout entries from the CS
+// To trigger after startup, simply set requestedTurnouts to false
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
     gotTurnouts=true;
@@ -108,10 +101,8 @@ void updateTurnouts() {
   }
 }
 
-/*
-Function to update turntable entries from the CS
-To trigger after startup, simply set requestedTurntables to false
-*/
+// Function to update turntable entries from the CS
+// To trigger after startup, simply set requestedTurntables to false
 void updateTurntables() {
   if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
     gotTurntables=true;
@@ -133,10 +124,8 @@ void updateTurntables() {
   }
 }
 
-/*
-Function to toggle a turnout
-If closed, will throw, if thrown, will close
-*/
+// Function to toggle a turnout
+// If closed, will throw, if thrown, will close
 void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
@@ -147,9 +136,7 @@ void toggleTurnout() {
   }
 }
 
-/*
-Function to turn track power on or off
-*/
+// Function to turn track power on or off
 void setTrackPower() {
   // if (currentMenuPtr != nullptr) {
   //   int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
@@ -161,9 +148,7 @@ void setTrackPower() {
   // }
 }
 
-/*
-Function to join or unjoin tracks
-*/
+// Function to join or unjoin tracks
 void setJoinTracks() {
   // if (currentMenuPtr != nullptr) {
   //   int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
@@ -174,3 +159,4 @@ void setJoinTracks() {
   //   }
   // }
 }
+*/

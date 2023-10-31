@@ -21,6 +21,7 @@
 #include "defines.h"
 #include "DCCEXCallbacks.h"
 
+/*
 void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.print(uc);
   CONSOLE.print(F(" running version "));
@@ -70,3 +71,4 @@ void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
   CONSOLE.print("Received track power state: ");
   CONSOLE.println(state);
 }
+*/

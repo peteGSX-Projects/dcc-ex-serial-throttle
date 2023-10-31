@@ -17,28 +17,6 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DCCEXOBJECTS_H
-#define DCCEXOBJECTS_H
-
 #include <Arduino.h>
-#include <DCCEXProtocol.h>
-#include "DCCEXCallbacks.h"
-#include "Menu.h"
+#include "MenuSystem.h"
 
-extern DCCEXProtocol dccexProtocol;
-// extern DCCEXCallbacks dccexCallbacks;
-
-extern bool connected;
-
-/*
-void validateConnection();
-void updateRoster();
-void updateRoutes();
-void updateTurnouts();
-void updateTurntables();
-void toggleTurnout();
-void setTrackPower();
-void setJoinTracks();
-*/
-
-#endif

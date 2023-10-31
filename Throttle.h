@@ -26,6 +26,7 @@
 
 const uint8_t SAMPLES = SLIDER_SAMPLES;
 
+/*
 struct LocoNode {
   Loco* loco;
   LocoNode* next;
@@ -71,5 +72,6 @@ Direction getDirectionName(bool direction);
 extern Throttle throttle1;
 extern Throttle throttle2;
 extern Throttle throttle3;
+*/
 
 #endif

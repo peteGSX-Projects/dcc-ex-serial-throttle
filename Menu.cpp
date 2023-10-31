@@ -20,6 +20,7 @@
 #include <Arduino.h>
 #include "Menu.h"
 
+/*
 // Create menus
 Menu homeScreen("Home Screen", nullptr);
 Menu mainMenu("Main Menu", &homeScreen);
@@ -39,9 +40,7 @@ Throttle* currentThrottle = nullptr;
 
 uint8_t inputKeyColumn = 0;
 
-/*
-Public functions
-*/
+// Public functions
 void Menu::addMenu(int index, const char* label, void *objectPointer) {
   MenuItem* newItem = new MenuItem(index, label, MENU, objectPointer, nullptr);
   _addItem(newItem);
@@ -214,9 +213,7 @@ void Menu::setInputMode() {
   _inputMode = true;
 }
 
-/*
-Private functions
-*/
+// Private functions
 void Menu::_addItem(MenuItem* newItem) {
   newItem->next = nullptr;
 
@@ -338,9 +335,7 @@ void Menu::_displayMenu(){
   }
 }
 
-/*
-Process keys on the home screen
-*/
+// Process keys on the home screen
 void Menu::_doHomeFunctions(char key) {
   switch (key) {
     case '1':
@@ -368,9 +363,7 @@ void Menu::_doHomeFunctions(char key) {
 
 // End of class
 
-/*
-Function to create required menu structure including static list items
-*/
+// Function to create required menu structure including static list items
 void createStaticMenus() {
   // Create menu structure
   // mainMenu.setParent(&homeScreen);
@@ -427,11 +420,9 @@ void createStaticMenus() {
 
 }
 
-/*
-Function to display the correct context when managing a throttle
-- Displays the same menu options regardless of selected throttle
-- Updates the parent to keep it in the right menu context
-*/
+// Function to display the correct context when managing a throttle
+// - Displays the same menu options regardless of selected throttle
+// - Updates the parent to keep it in the right menu context
 void setThrottleContext() {
   if (currentMenuPtr->getSelectedItem() == 0) {
     currentThrottle = &throttle1;
@@ -447,35 +438,27 @@ void setThrottleContext() {
   currentMenuPtr->setParent(tempPtr);
 }
 
-/*
-Helper function to get input from the keypad
-*/
+// Helper function to get input from the keypad
 void enterLocoAddress() {
   inputLocoAddress.setInputMode();
   inputLocoAddress.display();
 }
 
-/*
-Helper function to forget loco
-*/
+// Helper function to forget loco
 void forgetLoco() {
   if (currentThrottle->isConsist()) return;
   currentThrottle->forgetLoco(currentThrottle->getLocoAddress());
   homeScreen.display();
 }
 
-/*
-Helper function to show the roster list when selecting a loco
-*/
+// Helper function to show the roster list when selecting a loco
 void selectFromRoster() {
   rosterList.setParent(currentMenuPtr);
   rosterList.display();
 }
 
-/*
-Helper function to set the loco address from the roster list
-and update the parent correctly
-*/
+// Helper function to set the loco address from the roster list
+// and update the parent correctly
 void setLocoFromRoster() {
   // if (rosterList.getParent() != &mainMenu) {
   //   uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
@@ -495,7 +478,6 @@ void setLocoFromRoster() {
   // }
 }
 
-/*
-Function for menu items that just display info
-*/
+// Function for menu items that just display info
 void noAction() {}
+*/

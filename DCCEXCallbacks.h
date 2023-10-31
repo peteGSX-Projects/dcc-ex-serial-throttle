@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include <DCCEXProtocol.h>
 
+/*
 class DCCEXCallbacks : public DCCEXProtocolDelegate {
 
 public:
@@ -35,5 +36,6 @@ public:
   void receivedTrackPower(TrackPower state);
 
 };
+*/
 
 #endif

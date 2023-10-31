@@ -54,6 +54,19 @@ void displayStartupInfo() {
   oled.print(VERSION);
 }
 
+void displayKey(char key, KeyState keyState) {
+  oled.setCursor(0, 7);
+  oled.clearToEOL();
+  oled.set1X();
+  oled.print(key);
+  if (keyState==HOLD) {
+    oled.print(F("!"));
+  } else if (keyState==RELEASED) {
+    oled.print(F("&"));
+  }
+}
+
+/*
 void displayThrottleSpeed(int startCol, int endCol, int textCol, int speed) {
   if (currentMenuPtr->getParent() != nullptr) return;
   oled.set2X();
@@ -145,6 +158,7 @@ void displayConnectionError() {
   oled.set1X();
   oled.print("Connection error");
 }
+*/
 
 /*
 Display EStop status

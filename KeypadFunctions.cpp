@@ -34,9 +34,7 @@ byte pin_rows[4] = {KEYPAD_PIN2, KEYPAD_PIN7, KEYPAD_PIN6, KEYPAD_PIN4};
 byte pin_column[3] = {KEYPAD_PIN3, KEYPAD_PIN1, KEYPAD_PIN5};
 Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
-/*
-Function to set up the keypad object
-*/
+// Function to set up the keypad object
 void setupKeypad() {
   keypad.addEventListener(keypadEvent);
   keypad.setDebounceTime(KEYPAD_DEBOUNCE);
@@ -47,9 +45,7 @@ void setupKeypad() {
 //   keypad.getKey();
 // }
 
-/*
-Function for a keypad event handler
-*/
+// Function for a keypad event handler
 void keypadEvent(KeypadEvent key) {
   switch (keypad.getState()) {
     case PRESSED:
@@ -59,17 +55,20 @@ void keypadEvent(KeypadEvent key) {
       keyPress = false;
       CONSOLE.print(key);
       CONSOLE.println(F(" held"));
-      currentMenuPtr->handleKeyPress(key, HOLD);
+      displayKey(key, HOLD);
+      // currentMenuPtr->handleKeyPress(key, HOLD);
       break;
     case RELEASED:
       if (keyPress == true) {
         CONSOLE.print(key);
         CONSOLE.println(F(" pressed"));
-        currentMenuPtr->handleKeyPress(key, PRESSED);
+        displayKey(key, PRESSED);
+        // currentMenuPtr->handleKeyPress(key, PRESSED);
       } else {
         CONSOLE.print(key);
         CONSOLE.println(F(" released"));
-        currentMenuPtr->handleKeyPress(key, RELEASED);
+        displayKey(key, RELEASED);
+        // currentMenuPtr->handleKeyPress(key, RELEASED);
       }
       break;
     case IDLE:

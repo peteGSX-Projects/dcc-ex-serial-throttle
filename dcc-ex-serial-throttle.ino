@@ -47,31 +47,31 @@ void setup() {
   displayStartupInfo();
   delay(2000);
   setupKeypad();
-  dccexProtocol.setLogStream(&CONSOLE);
-  dccexProtocol.setDelegate(&dccexCallbacks);
-  dccexProtocol.connect(&CLIENT);
-  createStaticMenus();
+  // dccexProtocol.setLogStream(&CONSOLE);
+  // dccexProtocol.setDelegate(&dccexCallbacks);
+  // dccexProtocol.connect(&CLIENT);
+  // createStaticMenus();
 }
 
 /***********************************************************************************
 Main loop
 ***********************************************************************************/
 void loop() {
-  dccexProtocol.check();
-  validateConnection();
-  if (connected) {
-    dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
-  }
-  throttle1.process();
-  throttle2.process();
-  throttle3.process();
-  if (throttle1.speedChanged()) displayThrottle1Speed();
-  if (throttle2.speedChanged()) displayThrottle2Speed();
-  if (throttle3.speedChanged()) displayThrottle3Speed();
+  // dccexProtocol.check();
+  // validateConnection();
+  // if (connected) {
+  //   dccexProtocol.getLists(true, true, true, true);
+  //   updateRoster();
+  //   updateRoutes();
+  //   updateTurnouts();
+  //   updateTurntables();
+  // }
+  // throttle1.process();
+  // throttle2.process();
+  // throttle3.process();
+  // if (throttle1.speedChanged()) displayThrottle1Speed();
+  // if (throttle2.speedChanged()) displayThrottle2Speed();
+  // if (throttle3.speedChanged()) displayThrottle3Speed();
   keypad.getKey();
   // char key = keypad.getKey();
   // if (key) {

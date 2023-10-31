@@ -21,8 +21,7 @@
 #include "defines.h"
 
 /*
-Constructor, set input mode on construction
-*/
+// Constructor, set input mode on construction
 Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList) {
   _potPin = potPin;
   pinMode(_potPin, INPUT);
@@ -30,11 +29,9 @@ Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLoco
   _locoList = initialLocoList;
 }
 
-/*
-Process throttle object:
-- Average potentiometer input over samples
-- If average has changed, update display and loco speed
-*/
+// Process throttle object:
+// - Average potentiometer input over samples
+// - If average has changed, update display and loco speed
 void Throttle::process() {
   if (_locoAddress == 0) return;
   uint16_t _instantValue = analogRead(_potPin);
@@ -54,17 +51,13 @@ void Throttle::process() {
   }
 }
 
-/*
-Return this throttle's number (for display purposes)
-*/
+// Return this throttle's number (for display purposes)
 uint8_t Throttle::getThrottleNumber() {
   return _throttleNumber;
 }
 
-/*
-Associate a loco object with this throttle
-Sends the initial speed and direction to the CS also
-*/
+// Associate a loco object with this throttle
+// Sends the initial speed and direction to the CS also
 void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
   if (_locoAddress > 0) this->forgetLoco(_locoAddress);
   _locoAddress = address;
@@ -89,39 +82,29 @@ void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
   dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
-/*
-Return the current loco address
-*/
+// Return the current loco address
 uint16_t Throttle::getLocoAddress() {
   return _locoAddress;
 }
 
-/*
-Flag if throttle is a consist or not
-*/
+// Flag if throttle is a consist or not
 bool Throttle::isConsist() {
   return (dccexProtocol.throttle[_throttleNumber].getLocoCount()>1) ? true : false;
 }
 
-/*
-Function to flag if the speed has changed
-Sends new speed to the CS also
-*/
+// Function to flag if the speed has changed
+// Sends new speed to the CS also
 bool Throttle::speedChanged() {
   return _speedChanged;
 }
 
-/*
-Returns the current speed
-*/
+// Returns the current speed
 uint8_t Throttle::getSpeed() {
   return map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
 }
 
-/*
-Forgets the acquired loco
-This needs to delete any Loco or Consist objects in use
-*/
+// Forgets the acquired loco
+// This needs to delete any Loco or Consist objects in use
 void Throttle::forgetLoco(uint16_t address) {
   LocoNode* previousNode = nullptr;
   LocoNode* currentNode = _locoList;
@@ -143,38 +126,30 @@ void Throttle::forgetLoco(uint16_t address) {
   }
 }
 
-/*
-Sets the direction if speed = 0
-1 = reverse
-0 = forward
-Sends the change to the CS also
-*/
+// Sets the direction if speed = 0
+// 1 = reverse
+// 0 = forward
+// Sends the change to the CS also
 void Throttle::setDirection(bool direction){
   if (_speed > 0) return;
   _direction = direction;
   dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
-/*
-Get current throttle direction
-1 = reverse
-0 = forward
-*/
+// Get current throttle direction
+// 1 = reverse
+// 0 = forward
 bool Throttle::getDirection() {
   return _direction;
 }
 
-/*
-True if throttle speed and/or direction has been overridden by another throttle
-*/
+// True if throttle speed and/or direction has been overridden by another throttle
 bool Throttle::isOverridden() {
   return _isOverridden;
 }
 
-/*
-Function to check if the specified address is in use by this throttle
-By design, checks consists as well
-*/
+// Function to check if the specified address is in use by this throttle
+// By design, checks consists as well
 bool Throttle::addressInUse(uint16_t address) {
   LocoNode* currentNode = _locoList;
   while (currentNode != nullptr) {
@@ -186,9 +161,7 @@ bool Throttle::addressInUse(uint16_t address) {
   return false;
 }
 
-/*
-Helper function to convert direction bool to Direction char
-*/
+// Helper function to convert direction bool to Direction char
 Direction getDirectionName(bool direction) {
   return (direction) ? Forward : Reverse;
 }
@@ -202,3 +175,4 @@ LocoNode* throttle3List = nullptr;
 Throttle throttle1(1, POT1_PIN, throttle1List);
 Throttle throttle2(2, POT2_PIN, throttle2List);
 Throttle throttle3(3, POT3_PIN, throttle3List);
+*/
