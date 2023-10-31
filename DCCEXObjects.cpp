@@ -22,7 +22,7 @@
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
 
-DCCEXProtocol dccexProtocol;
+DCCEXProtocol dccexProtocol(3);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
