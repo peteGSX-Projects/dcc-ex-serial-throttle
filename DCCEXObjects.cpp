@@ -22,7 +22,7 @@
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
 
-DCCEXProtocol dccexProtocol;
+DCCEXProtocol dccexProtocol(3);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
@@ -70,9 +70,10 @@ To trigger after startup, simply set requestedRoster to false
 void updateRoster() {
   if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
-    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
-      Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addActionItem(i, loco->getLocoName(), loco, setLocoFromRoster);
+    int i=0;
+    for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
+      rosterList.addActionItem(i, loco->getName(), loco, setLocoFromRoster);
+      i++;
     }
   }
 }
@@ -84,9 +85,10 @@ To trigger after startup, simply set requestedRoutes to false
 void updateRoutes() {
   if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
-    for (int i = 0; i < dccexProtocol.routes.size(); i++) {
-      Route* route = dccexProtocol.routes.get(i);
-      routeList.addActionItem(i, route->getRouteName(), route, noAction);
+    int i=0;
+    for (Route* r=dccexProtocol.routes->getFirst(); r; r=r->getNext()) {
+      routeList.addActionItem(i, r->getName(), r, noAction);
+      i++;
     }
   }
 }
@@ -97,10 +99,11 @@ To trigger after startup, simply set requestedTurnouts to false
 */
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
-    gotTurnouts = true;
-    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
-      Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addActionItem(i, turnout->getTurnoutName(), turnout, toggleTurnout);
+    gotTurnouts=true;
+    int i=0;
+    for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
+      turnoutList.addActionItem(i, t->getName(), t, toggleTurnout);
+      i++;
     }
   }
 }
@@ -111,25 +114,20 @@ To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
   if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
-    gotTurntables = true;
-    for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
-      Turntable* turntable = dccexProtocol.turntables.get(i);
-      char *ttName = turntable->getTurntableName();
-      Menu *ttMenu = new Menu(ttName, &turntableList);
-      // ttMenu->setParent(&turntableList);
+    gotTurntables=true;
+    int i=0;
+    for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
+      char* ttName=tt->getName();
+      CONSOLE.println(ttName);
+      Menu* ttMenu=new Menu(ttName, &turntableList);
       turntableList.addMenu(i, ttName, ttMenu);
-      for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
-        TurntableIndex *idx = turntable->turntableIndexes.get(j);
-        char *idxName = idx->getTurntableIndexName();
-        int idxIndex = idx->getTurntableIndexIndex();
-        int idxAngle = idx->getTurntableIndexAngle();
+      i++;
+      int j=0;
+      for (TurntableIndex* idx=tt->getIndexList(); idx; idx=idx->getNext()) {
+        char* idxName=idx->getName();
+        CONSOLE.println(idxName);
         // ttMenu->addActionItem(j, idxName, idx, nullptr);
-        CONSOLE.print(F("Got index "));
-        CONSOLE.print(idxIndex);
-        CONSOLE.print(F(" "));
-        CONSOLE.print(idxName);
-        CONSOLE.print(F(" at angle "));
-        CONSOLE.println(idxAngle);
+        j++;
       }
     }
   }
@@ -142,14 +140,10 @@ If closed, will throw, if thrown, will close
 void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
     Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
-    int turnoutId = turnout->getTurnoutId();
+    int turnoutId = turnout->getId();
     CONSOLE.print(F("Toggle turnout "));
     CONSOLE.println(turnoutId);
-    if (turnout->getTurnoutState() == TurnoutClosed) {
-      dccexProtocol.sendTurnoutAction(turnoutId, TurnoutThrow);
-    } else {
-      dccexProtocol.sendTurnoutAction(turnoutId, TurnoutClose);
-    }
+    dccexProtocol.toggleTurnout(turnoutId);
   }
 }
 
