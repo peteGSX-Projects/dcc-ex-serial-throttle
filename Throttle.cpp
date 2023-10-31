@@ -48,7 +48,7 @@ void Throttle::process() {
   if (_speed != map(_rollingAverage, POT_MIN, POT_MAX, 0, 126)) {
     _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
     _speedChanged = true;
-    if (dccexProtocol.throttleConsists[_throttleNumber].consistGetNumberOfLocos() > 0) {
+    if (dccexProtocol.throttle[_throttleNumber].getLocoCount() > 0) {
       dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
     }
   }
@@ -85,7 +85,7 @@ void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
     }
     currentNode->next = newNode;
   }
-  dccexProtocol.throttleConsists[_throttleNumber].consistAddLoco(*newLoco, FacingForward);
+  dccexProtocol.throttle[_throttleNumber].addFromEntry(_locoAddress, FacingForward);
   dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
 }
 
@@ -100,7 +100,7 @@ uint16_t Throttle::getLocoAddress() {
 Flag if throttle is a consist or not
 */
 bool Throttle::isConsist() {
-  return (dccexProtocol.throttleConsists[_throttleNumber].consistGetNumberOfLocos() > 1) ? true : false;
+  return (dccexProtocol.throttle[_throttleNumber].getLocoCount()>1) ? true : false;
 }
 
 /*
@@ -127,7 +127,7 @@ void Throttle::forgetLoco(uint16_t address) {
   LocoNode* currentNode = _locoList;
 
   while (currentNode != nullptr) {
-    if (currentNode->loco->getLocoAddress() == address) {
+    if (currentNode->loco->getAddress() == address) {
       if (previousNode == nullptr) {
         _locoList = currentNode->next;
       } else {
@@ -178,7 +178,7 @@ By design, checks consists as well
 bool Throttle::addressInUse(uint16_t address) {
   LocoNode* currentNode = _locoList;
   while (currentNode != nullptr) {
-    if (currentNode->loco->getLocoAddress() == address) {
+    if (currentNode->loco->getAddress() == address) {
       return true;
     }
     currentNode = currentNode->next;

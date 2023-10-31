@@ -21,17 +21,17 @@
 #include "Menu.h"
 
 // Create menus
-Menu homeScreen("Home Screen");
-Menu mainMenu("Main Menu");
-Menu setupThrottles("Setup Throttles");
-Menu rosterList("Roster List");
-Menu routeList("Route List");
-Menu turnoutList("Turnout List");
-Menu turntableList("Turntable List");
-Menu trackManagement("Track Management");
-Menu manageLocoConsist("Manage Loco/Consist");
-Menu inputLocoAddress("Input Loco Address");
-Menu trackManager("TrackManager");
+Menu homeScreen("Home Screen", nullptr);
+Menu mainMenu("Main Menu", &homeScreen);
+Menu setupThrottles("Setup Throttles", &mainMenu);
+Menu rosterList("Roster List", &mainMenu);
+Menu routeList("Route List", &mainMenu);
+Menu turnoutList("Turnout List", &mainMenu);
+Menu turntableList("Turntable List", &mainMenu);
+Menu trackManagement("Track Management", &mainMenu);
+Menu manageLocoConsist("Manage Loco/Consist", &setupThrottles);
+Menu inputLocoAddress("Input Loco Address", &manageLocoConsist);
+Menu trackManager("TrackManager", &trackManagement);
 
 Menu* currentMenuPtr = &homeScreen;
 
@@ -42,27 +42,19 @@ uint8_t inputKeyColumn = 0;
 /*
 Public functions
 */
-void Menu::addItem(int index, const char* label, int16_t objectId, void (*action)()) {
-  char* labelCopy = strdup(label);
+void Menu::addMenu(int index, const char* label, void *objectPointer) {
+  MenuItem* newItem = new MenuItem(index, label, MENU, objectPointer, nullptr);
+  _addItem(newItem);
+}
 
-  if (!labelCopy) {
-    return;
-  }
-  
-  MenuItem* newItem = new MenuItem(index, labelCopy, objectId, action);
-  newItem->next = nullptr;
+void Menu::addActionItem(int index, const char* label, void *objectPointer, void (*callback)()) {
+  MenuItem* newItem = new MenuItem(index, label, ACTION, objectPointer, callback);
+  _addItem(newItem);
+}
 
-  if (!_head) {
-    _head = newItem;
-  } else {
-    // Find last list item
-    MenuItem* current = _head;
-    while (current->next != nullptr) {
-      current = current->next;
-    }
-    // Add to end of list
-    current->next = newItem;
-  }
+void Menu::addEntryItem(int index, const char* label, void (*callback)()) {
+  MenuItem* newItem = new MenuItem(index, label, ENTRY, nullptr, callback);
+  _addItem(newItem);
 }
 
 void Menu::setParent(Menu* parent) {
@@ -74,7 +66,7 @@ void Menu::display() {
   _displayMenu();
 }
 
-void Menu::handleKeyPress(char key){
+void Menu::handleKeyPress(char key, KeyState keyState){
   if (_inputMode) {
     if (key >= '0' && key <= '9') {
       if (_inputIndex < 5) {
@@ -133,10 +125,29 @@ void Menu::handleKeyPress(char key){
           _doHomeFunctions(key);
         } else {
           if (getItemCount() > 0) {
-            int index = key - '1' + (_currentPage - 1) * 9;
+            int index = key - '0' + (_currentPage - 1) * 9;
             if (index < getItemCount()) {
-              _selectedItemIndex = getItem(index).index;
-              getItem(index).action();
+              MenuItem item = getItem(index);
+              _selectedItemIndex = item.index;
+              switch (item.menuItemType) {
+                case MENU: {
+                  Menu* menu = static_cast<Menu*>(item.objectPointer);
+                  menu->display();
+                  break;
+                }
+
+                case ACTION: {
+                  item.callback();
+                  break;
+                }
+
+                case ENTRY: {
+                  break;
+                }
+
+                default:
+                  break;
+              }
             }
           }
         }
@@ -192,7 +203,7 @@ MenuItem Menu::getItem(int index) {
     currentIndex++;
     currentItem = currentItem->next;
   }
-  return MenuItem{0, "", 0, nullptr};
+  return MenuItem{0, "", MENU, nullptr, nullptr};
 }
 
 int Menu::getSelectedItem() {
@@ -206,8 +217,65 @@ void Menu::setInputMode() {
 /*
 Private functions
 */
+void Menu::_addItem(MenuItem* newItem) {
+  newItem->next = nullptr;
+
+  if (!_head) {
+    _head = newItem;
+  } else {
+    // Find last list item
+    MenuItem* current = _head;
+    while (current->next != nullptr) {
+      current = current->next;
+    }
+    // Add to end of list
+    current->next = newItem;
+  }
+}
+
 // Display the menu with a single page of options
 void Menu::_displayMenu(){
+  // if (_parentMenu == nullptr) {
+  //   displayHomeScreen();
+  // } else {
+  //   oled.clear();
+  //   oled.set1X();
+  //   oled.setCursor(0, 0);
+  //   oled.print(_label);
+
+  //   int startIdx = (_currentPage - 1) * 10;
+  //   int endIdx = min(startIdx + 10, getItemCount());
+
+  //   // Display number keys 0 -> 9 to select
+  //   int key = 0;
+  //   int column = 0;
+  //   int row = 1;
+  //   for (int i = startIdx; i < endIdx; i++) {
+  //     oled.setCursor(column, row);
+  //     oled.print(key);
+  //     oled.print(" ");
+  //     oled.print(getItem(i).label);
+  //     key++;
+  //     // If next key would be 10, make it 0
+  //     if (key > 9) {
+  //       key = 0;
+  //     }
+  //     row++;
+  //     // 6th row means row 1 in second column
+  //     if (row > 5) {
+  //       row = 1;
+  //       column = 65;
+  //     }
+  //   }
+
+  //   oled.setCursor(0, 7);
+  //   oled.print("* Back");
+  //   if (getItemCount() > 10) {
+  //     oled.setCursor(65, 7);
+  //     oled.print("# Next page");
+  //   }
+  // }
+
   // The top most menu only displays the * key to access the menu system
   if (_parentMenu == nullptr) {
     displayHomeScreen();
@@ -233,28 +301,31 @@ void Menu::_displayMenu(){
     oled.setCursor(0, 0);
     oled.print(_label);
 
-    int startIdx = (_currentPage - 1) * 10;
-    int endIdx = min(startIdx + 10, getItemCount());
+    if (getItemCount() > 0) {
+    
+      int startIdx = (_currentPage - 1) * 10;
+      int endIdx = min(startIdx + 10, getItemCount());
 
-    // Display number keys 1 -> 0 (instead of 10) to select
-    int key = 1;
-    int column = 0;
-    int row = 1;
-    for (int i = startIdx; i < endIdx; i++) {
-      oled.setCursor(column, row);
-      oled.print(key);
-      oled.print(" ");
-      oled.print(getItem(i).label);
-      key++;
-      // If next key would be 10, make it 0
-      if (key > 9) {
-        key = 0;
-      }
-      row++;
-      // 6th row means row 1 in second column
-      if (row > 5) {
-        row = 1;
-        column = 65;
+      // Display number keys 1 -> 0 (instead of 10) to select
+      int key = 0;
+      int column = 0;
+      int row = 1;
+      for (int i = startIdx; i < endIdx; i++) {
+        oled.setCursor(column, row);
+        oled.print(key);
+        oled.print(" ");
+        oled.print(getItem(i).label);
+        key++;
+        // If next key would be 10, make it 0
+        if (key > 9) {
+          key = 0;
+        }
+        row++;
+        // 6th row means row 1 in second column
+        if (row > 5) {
+          row = 1;
+          column = 65;
+        }
       }
     }
 
@@ -300,56 +371,59 @@ void Menu::_doHomeFunctions(char key) {
 /*
 Function to create required menu structure including static list items
 */
-void createMenus() {
+void createStaticMenus() {
   // Create menu structure
-  mainMenu.setParent(&homeScreen);
-  setupThrottles.setParent(&mainMenu);
-  rosterList.setParent(&mainMenu);
-  routeList.setParent(&mainMenu);
-  turnoutList.setParent(&mainMenu);
-  turntableList.setParent(&mainMenu);
-  trackManagement.setParent(&mainMenu);
-  manageLocoConsist.setParent(&setupThrottles);
-  inputLocoAddress.setParent(&manageLocoConsist);
-  trackManager.setParent(&trackManagement);
+  // mainMenu.setParent(&homeScreen);
+  // setupThrottles.setParent(&mainMenu);
+  // rosterList.setParent(&mainMenu);
+  // routeList.setParent(&mainMenu);
+  // turnoutList.setParent(&mainMenu);
+  // turntableList.setParent(&mainMenu);
+  // trackManagement.setParent(&mainMenu);
+  // manageLocoConsist.setParent(&setupThrottles);
+  // inputLocoAddress.setParent(&manageLocoConsist);
+  // trackManager.setParent(&trackManagement);
 
   // Setup main menu
-  mainMenu.addItem(0, "Throttles", 0, []() { setupThrottles.display(); });
-  mainMenu.addItem(1, "Turnouts", 0, []() { turnoutList.display(); });
-  mainMenu.addItem(2, "Routes", 0, []() { routeList.display(); });
-  mainMenu.addItem(3, "Turntables", 0, []() { turntableList.display(); });
-  mainMenu.addItem(4, "Roster", 0, []() { rosterList.display(); });
-  mainMenu.addItem(5, "Tracks", 0, []() { trackManagement.display(); });
+  mainMenu.addMenu(0, "Throttles", &setupThrottles);
+  mainMenu.addMenu(1, "Turnouts", &turnoutList);
+  mainMenu.addMenu(2, "Routes", &routeList);
+  mainMenu.addMenu(3, "Turntables", &turntableList);
+  mainMenu.addMenu(4, "Roster", &rosterList);
+  mainMenu.addMenu(5, "Tracks", &trackManagement);
 
   // Setup throttle menu
-  setupThrottles.addItem(0, "Throttle 1", 0, setThrottleContext);
-  setupThrottles.addItem(1, "Throttle 2", 0, setThrottleContext);
-  setupThrottles.addItem(2, "Throttle 3", 0, setThrottleContext);
+  setupThrottles.addActionItem(0, "Throttle 1", nullptr, setThrottleContext);
+  setupThrottles.addActionItem(1, "Throttle 2", nullptr, setThrottleContext);
+  setupThrottles.addActionItem(2, "Throttle 3", nullptr, setThrottleContext);
 
   // Setup manage throttle menu
-  manageLocoConsist.addItem(0, "Select from roster", 0, selectFromRoster);
-  manageLocoConsist.addItem(1, "Enter address", 0, enterLocoAddress);
-  manageLocoConsist.addItem(2, "Remove loco", 0, forgetLoco);
-  manageLocoConsist.addItem(3, "Display consist", 0, noAction);
-  manageLocoConsist.addItem(4, "Forget loco/consist", 0, noAction);
+  manageLocoConsist.addActionItem(0, "Select from roster", nullptr, selectFromRoster);
+  manageLocoConsist.addActionItem(1, "Enter address", nullptr, enterLocoAddress);
+  manageLocoConsist.addActionItem(2, "Remove loco", nullptr, forgetLoco);
+  manageLocoConsist.addActionItem(3, "Display consist", nullptr, noAction);
+  manageLocoConsist.addActionItem(4, "Forget loco/consist", nullptr, noAction);
 
   // Setup track management
-  trackManagement.addItem(0, "Power On", 1, setTrackPower);
-  trackManagement.addItem(1, "Power Off", 0, setTrackPower);
-  trackManagement.addItem(2, "Join", 1, setJoinTracks);
-  trackManagement.addItem(3, "Unjoin", 0, setJoinTracks);
-  trackManagement.addItem(4, "TrackManager", 0, []() { trackManager.display(); });
+  trackManagement.addActionItem(0, "Power On", nullptr, setTrackPower);
+  trackManagement.addActionItem(1, "Power Off", nullptr, setTrackPower);
+  trackManagement.addActionItem(2, "Join", nullptr, setJoinTracks);
+  trackManagement.addActionItem(3, "Unjoin", nullptr, setJoinTracks);
+  trackManagement.addMenu(4, "TrackManager", &trackManager);
 
   // Setup TrackManager
-  trackManager.addItem(0, "Track A", 0, noAction);
-  trackManager.addItem(1, "Track B", 0, noAction);
-  trackManager.addItem(2, "Track C", 0, noAction);
-  trackManager.addItem(3, "Track D", 0, noAction);
-  trackManager.addItem(4, "Track E", 0, noAction);
-  trackManager.addItem(5, "Track F", 0, noAction);
-  trackManager.addItem(6, "Track G", 0, noAction);
-  trackManager.addItem(7, "Track H", 0, noAction);
-  trackManager.addItem(8, "Show Tracks", 0, noAction);
+  trackManager.addActionItem(0, "Track A", nullptr, noAction);
+  trackManager.addActionItem(1, "Track B", nullptr, noAction);
+  trackManager.addActionItem(2, "Track C", nullptr, noAction);
+  trackManager.addActionItem(3, "Track D", nullptr, noAction);
+  trackManager.addActionItem(4, "Track E", nullptr, noAction);
+  trackManager.addActionItem(5, "Track F", nullptr, noAction);
+  trackManager.addActionItem(6, "Track G", nullptr, noAction);
+  trackManager.addActionItem(7, "Track H", nullptr, noAction);
+  trackManager.addActionItem(8, "Show Tracks", nullptr, noAction);
+  trackManager.addActionItem(9, "Dummy 1", nullptr, noAction);
+  trackManager.addActionItem(10, "Dummy 2", nullptr, noAction);
+  trackManager.addActionItem(11, "Dummy 3", nullptr, noAction);
 
 }
 
@@ -403,22 +477,22 @@ Helper function to set the loco address from the roster list
 and update the parent correctly
 */
 void setLocoFromRoster() {
-  if (rosterList.getParent() != &mainMenu) {
-    uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
-      oled.setCursor(0, 6);
-      oled.print("ADDRESS IN USE");
-    } else {
-      if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
-        currentThrottle->setLocoAddress(address, LocoSourceRoster);
-        rosterList.setParent(&mainMenu);
-        homeScreen.display();rosterList.setParent(&mainMenu);
-        homeScreen.display();
-      } else {
-        // This needs to add another loco but needs to figure out facing forward or reverse.
-      }
-    }
-  }
+  // if (rosterList.getParent() != &mainMenu) {
+  //   uint16_t address = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (throttle1.addressInUse(address) || throttle2.addressInUse(address) || throttle3.addressInUse(address)) {
+  //     oled.setCursor(0, 6);
+  //     oled.print("ADDRESS IN USE");
+  //   } else {
+  //     if (dccexProtocol.throttleConsists[currentThrottle->getThrottleNumber()].consistGetNumberOfLocos() == 0) {
+  //       currentThrottle->setLocoAddress(address, LocoSourceRoster);
+  //       rosterList.setParent(&mainMenu);
+  //       homeScreen.display();rosterList.setParent(&mainMenu);
+  //       homeScreen.display();
+  //     } else {
+  //       // This needs to add another loco but needs to figure out facing forward or reverse.
+  //     }
+  //   }
+  // }
 }
 
 /*

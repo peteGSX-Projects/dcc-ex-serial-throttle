@@ -50,7 +50,7 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  createMenus();
+  createStaticMenus();
 }
 
 /***********************************************************************************
@@ -72,10 +72,11 @@ void loop() {
   if (throttle1.speedChanged()) displayThrottle1Speed();
   if (throttle2.speedChanged()) displayThrottle2Speed();
   if (throttle3.speedChanged()) displayThrottle3Speed();
-  char key = keypad.getKey();
-  if (key) {
-    currentMenuPtr->handleKeyPress(key);
-  }
+  keypad.getKey();
+  // char key = keypad.getKey();
+  // if (key) {
+  //   currentMenuPtr->handleKeyPress(key);
+  // }
   // getSerialInput();
 }
 

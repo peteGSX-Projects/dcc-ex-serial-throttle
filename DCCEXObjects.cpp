@@ -22,7 +22,7 @@
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
 
-DCCEXProtocol dccexProtocol;
+DCCEXProtocol dccexProtocol(3);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
@@ -70,9 +70,10 @@ To trigger after startup, simply set requestedRoster to false
 void updateRoster() {
   if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
-    for (int i = 0; i < dccexProtocol.roster.size(); i++) {
-      Loco* loco = dccexProtocol.roster.get(i);
-      rosterList.addItem(i, loco->getLocoName(), loco->getLocoAddress(), setLocoFromRoster);
+    int i=0;
+    for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
+      rosterList.addActionItem(i, loco->getName(), loco, setLocoFromRoster);
+      i++;
     }
   }
 }
@@ -84,9 +85,10 @@ To trigger after startup, simply set requestedRoutes to false
 void updateRoutes() {
   if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
-    for (int i = 0; i < dccexProtocol.routes.size(); i++) {
-      Route* route = dccexProtocol.routes.get(i);
-      routeList.addItem(i, route->getRouteName(), route->getRouteId(), noAction);
+    int i=0;
+    for (Route* r=dccexProtocol.routes->getFirst(); r; r=r->getNext()) {
+      routeList.addActionItem(i, r->getName(), r, noAction);
+      i++;
     }
   }
 }
@@ -97,10 +99,11 @@ To trigger after startup, simply set requestedTurnouts to false
 */
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
-    gotTurnouts = true;
-    for (int i = 0; i < dccexProtocol.turnouts.size(); i++) {
-      Turnout* turnout = dccexProtocol.turnouts.get(i);
-      turnoutList.addItem(i, turnout->getTurnoutName(), turnout->getTurnoutId(), toggleTurnout);
+    gotTurnouts=true;
+    int i=0;
+    for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
+      turnoutList.addActionItem(i, t->getName(), t, toggleTurnout);
+      i++;
     }
   }
 }
@@ -111,23 +114,20 @@ To trigger after startup, simply set requestedTurntables to false
 */
 void updateTurntables() {
   if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
-    gotTurntables = true;
-    for (int i = 0; i < dccexProtocol.turntables.size(); i++) {
-      Turntable* turntable = dccexProtocol.turntables.get(i);
-      char *ttName = turntable->getTurntableName();
-      int ttId = turntable->getTurntableId();
-      turntableList.addItem(i, ttName, ttId, noAction);
-      for (int j = 0; j < turntable->getTurntableNumberOfIndexes(); j++) {
-        TurntableIndex *idx = turntable->turntableIndexes.get(j);
-        char *idxName = idx->getTurntableIndexName();
-        int idxIndex = idx->getTurntableIndexIndex();
-        int idxAngle = idx->getTurntableIndexAngle();
-        CONSOLE.print(F("Got index "));
-        CONSOLE.print(idxIndex);
-        CONSOLE.print(F(" "));
-        CONSOLE.print(idxName);
-        CONSOLE.print(F(" at angle "));
-        CONSOLE.println(idxAngle);
+    gotTurntables=true;
+    int i=0;
+    for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
+      char* ttName=tt->getName();
+      CONSOLE.println(ttName);
+      Menu* ttMenu=new Menu(ttName, &turntableList);
+      turntableList.addMenu(i, ttName, ttMenu);
+      i++;
+      int j=0;
+      for (TurntableIndex* idx=tt->getIndexList(); idx; idx=idx->getNext()) {
+        char* idxName=idx->getName();
+        CONSOLE.println(idxName);
+        // ttMenu->addActionItem(j, idxName, idx, nullptr);
+        j++;
       }
     }
   }
@@ -139,13 +139,11 @@ If closed, will throw, if thrown, will close
 */
 void toggleTurnout() {
   if (currentMenuPtr != nullptr) {
-    int16_t objectId = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    Turnout* turnout = dccexProtocol.getTurnoutById(objectId);
-    if (turnout->getTurnoutState() == TurnoutClosed) {
-      dccexProtocol.sendTurnoutAction(objectId, TurnoutThrow);
-    } else {
-      dccexProtocol.sendTurnoutAction(objectId, TurnoutClose);
-    }
+    Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
+    int turnoutId = turnout->getId();
+    CONSOLE.print(F("Toggle turnout "));
+    CONSOLE.println(turnoutId);
+    dccexProtocol.toggleTurnout(turnoutId);
   }
 }
 
@@ -153,26 +151,26 @@ void toggleTurnout() {
 Function to turn track power on or off
 */
 void setTrackPower() {
-  if (currentMenuPtr != nullptr) {
-    int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (state == 1) {
-      dccexProtocol.sendTrackPower(PowerOn);
-    } else {
-      dccexProtocol.sendTrackPower(PowerOff);
-    }
-  }
+  // if (currentMenuPtr != nullptr) {
+  //   int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (state == 1) {
+  //     dccexProtocol.sendTrackPower(PowerOn);
+  //   } else {
+  //     dccexProtocol.sendTrackPower(PowerOff);
+  //   }
+  // }
 }
 
 /*
 Function to join or unjoin tracks
 */
 void setJoinTracks() {
-  if (currentMenuPtr != nullptr) {
-    int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-    if (join == 1) {
-      CONSOLE.println("Would join but not implemented yet");
-    } else {
-      CONSOLE.println("Would unjoin but not implemented yet");
-    }
-  }
+  // if (currentMenuPtr != nullptr) {
+  //   int join = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
+  //   if (join == 1) {
+  //     CONSOLE.println("Would join but not implemented yet");
+  //   } else {
+  //     CONSOLE.println("Would unjoin but not implemented yet");
+  //   }
+  // }
 }
