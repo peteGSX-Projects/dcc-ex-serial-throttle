@@ -22,7 +22,8 @@
 
 MenuSystem menuSystem(&oled);
 
-Menu mainMenu("Main Menu");
+Menu throttleScreen("Throttle Screen");
+Menu mainMenu(&throttleScreen, 0, "Main Menu");
 Menu throttleSetup(&mainMenu, 0, "Throttles");
 Menu turnoutList(&mainMenu, 1, "Turnouts");
 Menu turntableList(&mainMenu, 2, "Turntables");

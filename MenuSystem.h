@@ -94,6 +94,20 @@ private:
 
 };
 
+class ThrottleScreen : public MenuItem {
+public:
+
+private:
+
+};
+
+class FunctionScreen : public MenuItem {
+public:
+
+private:
+
+};
+
 class Menu {
 public:
   /// @brief Constructor for menu
@@ -131,19 +145,6 @@ private:
 
 };
 
-class HomeScreen {
-public:
-  HomeScreen();
-
-  void display(OLED& oled);
-
-  void handleKeys(char key, KeyState keyState);
-
-private:
-
-
-};
-
 class MenuSystem {
 public:
   /// @brief Constructor
@@ -155,11 +156,13 @@ public:
 
   void setMenu(Menu* menu);
 
+  void begin();
+
 private:
   Menu* _currentMenu;
   OLED* _oled;
-  HomeScreen _homeScreen;
-  bool _showHomeScreen;
+
+  MenuItem* _findTopLevelMenu(MenuItem* item);
 
 };
 

@@ -96,26 +96,25 @@ void Menu::navigate(char key, KeyState keyState) {
 }
 
 // class HomeScreen
-HomeScreen::HomeScreen() {}
+// HomeScreen::HomeScreen() {}
 
-void HomeScreen::display(OLED& oled) {
-  oled.clear();
-  oled.set1X();
-  oled.setFont(OLED_FONT);
-  oled.setCursor(0, 0);
-  oled.print(F("Home screen"));
-  oled.setCursor(0, 7);
-  oled.print(F("* Menu"));
-}
+// void HomeScreen::display(OLED& oled) {
+//   oled.clear();
+//   oled.set1X();
+//   oled.setFont(OLED_FONT);
+//   oled.setCursor(0, 0);
+//   oled.print(F("Home screen"));
+//   oled.setCursor(0, 7);
+//   oled.print(F("* Menu"));
+// }
 
-void HomeScreen::handleKeys(char key, KeyState keyState) {
+// void HomeScreen::handleKeys(char key, KeyState keyState) {
 
-}
+// }
 
 // class MenuSystem
 MenuSystem::MenuSystem(OLED* oled) {
   _oled=oled;
-  _showHomeScreen=true;
   _currentMenu=nullptr;
 }
 
@@ -124,17 +123,25 @@ void MenuSystem::display() {
 }
 
 void MenuSystem::navigate(char key, KeyState keyState) {
-  if (_showHomeScreen) {
-    if (key=='*') {
-      _showHomeScreen=false;
-    } else {
-      _homeScreen.handleKeys(key, keyState);
-    }
-  } else {
-    _currentMenu->navigate(key, keyState);
-  }
+  _currentMenu->navigate(key, keyState);
 }
 
 void MenuSystem::setMenu(Menu* menu) {
   _currentMenu=menu;
+}
+
+void MenuSystem::begin() {
+  MenuItem* currentItem=_findTopLevelMenu(_currentMenu);
+  if (currentItem) {
+    _currentMenu=dynamic_cast<Menu*>(currentItem);
+    _currentMenu->display();
+  }
+}
+
+MenuItem* MenuSystem::_findTopLevelMenu(MenuItem* menuItem) {
+  if (!menuItem->getParent()) {
+    return menuItem;
+  } else {
+    return _findTopLevelMenu(menuItem->getParent());
+  }
 }
