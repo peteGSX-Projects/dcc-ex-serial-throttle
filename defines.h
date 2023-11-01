@@ -52,4 +52,16 @@ If we haven't got a custom config.h, use the example
 #define CLIENT Serial
 #endif
 
+#ifdef USE_OLED_SPI
+#include <SPI.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiSpi.h"
+#define OLED SSD1306AsciiSpi
+#endif
+#ifdef USE_OLED_I2C
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
+#define OLED SSD1306AsciiAvrI2c
+#endif
+
 #endif

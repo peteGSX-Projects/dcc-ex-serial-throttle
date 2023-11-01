@@ -26,10 +26,11 @@ Include the required libraries
 
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "SerialFunctions.h"
-#include "DCCEXObjects.h"
-#include "Menu.h"
-#include "Throttle.h"
+#include "Menus.h"
+// #include "SerialFunctions.h"
+// #include "DCCEXObjects.h"
+// #include "Menu.h"
+// #include "Throttle.h"
 
 /***********************************************************************************
 Main setup function

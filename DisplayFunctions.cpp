@@ -22,12 +22,13 @@
 /***********************************************************************************
 Set up OLED libraries and object
 ***********************************************************************************/
-#ifdef USE_OLED_SPI
-SSD1306AsciiSpi oled;
-#endif
-#ifdef USE_OLED_I2C
-SSD1306AsciiAvrI2c oled;
-#endif
+// #ifdef USE_OLED_SPI
+// SSD1306AsciiSpi oled;
+// #endif
+// #ifdef USE_OLED_I2C
+// SSD1306AsciiAvrI2c oled;
+// #endif
+OLED oled;
 
 void displayStartupInfo() {
   // Set up serial and display basic config
