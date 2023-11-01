@@ -22,26 +22,38 @@
 
 // class MenuItem
 // Public functions
-MenuItem::MenuItem(int index, const char* label) {
+MenuItem::MenuItem(int index, const char* label, Menu* parent) {
   _index=index;
   _label=label;
+  _parent=parent;
   _next=nullptr;
 }
 
+Menu* MenuItem::getParent() {
+  return _parent;
+}
+
 // class ActionItem
-ActionItem::ActionItem(int index, const char* label, void *objectPointer, void (*callback)())
-  : MenuItem(index, label), _objectPointer(objectPointer), _callback(callback) {}
+ActionItem::ActionItem(int index, const char* label, void *objectPointer, void (*callback)(), Menu* parent)
+  : MenuItem(index, label, parent), _objectPointer(objectPointer), _callback(callback) {}
 
 // class EntryItem
-EntryItem::EntryItem(int index, const char* label, const char* instruction, void(*callback)())
-  : MenuItem(index, label), _instruction(instruction), _callback(callback) {}
+EntryItem::EntryItem(int index, const char* label, const char* instruction, void(*callback)(), Menu* parent)
+  : MenuItem(index, label, parent), _instruction(instruction), _callback(callback) {}
 
 // class SubmenuItem
-SubmenuItem::SubmenuItem(int index, const char* label, Menu* submenu)
-  : MenuItem(index, label), _submenu(submenu) {}
+SubmenuItem::SubmenuItem(int index, const char* label, Menu* submenu, Menu* parent)
+  : MenuItem(index, label, parent), _submenu(submenu) {}
 
 Menu* SubmenuItem::getSubmenu() {
   return _submenu;
+}
+
+void SubmenuItem::display(OLED& oled) {
+  oled.clear();
+  oled.setFont(OLED_FONT);
+  oled.setCursor(0, 0);
+  oled.print("Menu");
 }
 
 // class Menu
@@ -53,7 +65,7 @@ Menu::Menu(const char* label) {
 }
 
 Menu::Menu(Menu* parent, int index, const char* label) {
-  SubmenuItem* newItem=new SubmenuItem(index, label, this);
+  SubmenuItem* newItem=new SubmenuItem(index, label, this, parent);
   parent->addItem(newItem);
 }
 
@@ -76,11 +88,35 @@ int Menu::getItemCount() {
 
 void Menu::display(OLED& oled) {
   MenuItem* item=_firstItem;
+  item->display(oled);
+}
+
+void Menu::navigate(char key, KeyState keyState) {
+
+}
+
+// class HomeScreen
+HomeScreen::HomeScreen() {}
+
+void HomeScreen::display(OLED& oled) {
+  oled.clear();
+  oled.set1X();
+  oled.setFont(OLED_FONT);
+  oled.setCursor(0, 0);
+  oled.print(F("Home screen"));
+  oled.setCursor(0, 7);
+  oled.print(F("* Menu"));
+}
+
+void HomeScreen::handleKeys(char key, KeyState keyState) {
+
 }
 
 // class MenuSystem
 MenuSystem::MenuSystem(OLED* oled) {
   _oled=oled;
+  _showHomeScreen=true;
+  _currentMenu=nullptr;
 }
 
 void MenuSystem::display() {
@@ -88,21 +124,17 @@ void MenuSystem::display() {
 }
 
 void MenuSystem::navigate(char key, KeyState keyState) {
-  _currentMenu->navigate(key, keyState);
+  if (_showHomeScreen) {
+    if (key=='*') {
+      _showHomeScreen=false;
+    } else {
+      _homeScreen.handleKeys(key, keyState);
+    }
+  } else {
+    _currentMenu->navigate(key, keyState);
+  }
 }
 
 void MenuSystem::setMenu(Menu* menu) {
   _currentMenu=menu;
-}
-
-void _displayMainMenu(OLED& oled) {
-
-}
-
-void _displayMenu(OLED& oled, Menu* menu) {
-
-}
-
-void _displayEntry(OLED& oled, EntryItem* entry) {
-
 }

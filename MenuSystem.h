@@ -31,12 +31,17 @@ public:
   /// @brief Constructor - provide index and label
   /// @param index 
   /// @param label 
-  MenuItem(int index, const char* label);
+  MenuItem(int index, const char* label, Menu* parent);
+
+  virtual void display(OLED& oled);
+
+  Menu* getParent();
 
 private:
   int _index;
   const char* _label;
   MenuItem* _next;
+  Menu* _parent;
 
   friend class Menu;
 
@@ -49,7 +54,9 @@ public:
   /// @param label 
   /// @param objectPointer 
   /// @param callback 
-  ActionItem(int index, const char* label, void *objectPointer, void (*callback)());
+  ActionItem(int index, const char* label, void *objectPointer, void (*callback)(), Menu* parent);
+
+  void display(OLED& oled) override;
 
 private:
   void* _objectPointer;
@@ -64,7 +71,9 @@ public:
   /// @param label 
   /// @param instruction 
   /// @param callback 
-  EntryItem(int index, const char* label, const char* instruction, void (*callback)());
+  EntryItem(int index, const char* label, const char* instruction, void (*callback)(), Menu* parent);
+
+  void display(OLED& oled) override;
 
 private:
   const char* _instruction;
@@ -74,9 +83,11 @@ private:
 
 class SubmenuItem : public MenuItem {
 public:
-  SubmenuItem(int index, const char* label, Menu* submenu);
+  SubmenuItem(int index, const char* label, Menu* submenu, Menu* parent);
 
   Menu* getSubmenu();
+
+  void display(OLED& oled) override;
 
 private:
   Menu* _submenu;
@@ -103,8 +114,13 @@ public:
   /// @return 
   int getItemCount();
 
+  /// @brief Display menu
+  /// @param oled 
   void display(OLED& oled);
 
+  /// @brief Navigate the menu
+  /// @param key 
+  /// @param keyState 
   void navigate(char key, KeyState keyState);
 
 private:
@@ -112,6 +128,19 @@ private:
   MenuItem* _firstItem;
   Menu* _firstSubmenu;
   int _itemCount;
+
+};
+
+class HomeScreen {
+public:
+  HomeScreen();
+
+  void display(OLED& oled);
+
+  void handleKeys(char key, KeyState keyState);
+
+private:
+
 
 };
 
@@ -129,6 +158,8 @@ public:
 private:
   Menu* _currentMenu;
   OLED* _oled;
+  HomeScreen _homeScreen;
+  bool _showHomeScreen;
 
 };
 

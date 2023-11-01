@@ -56,19 +56,19 @@ void keypadEvent(KeypadEvent key) {
       CONSOLE.print(key);
       CONSOLE.println(F(" held"));
       displayKey(key, HOLD);
-      // currentMenuPtr->handleKeyPress(key, HOLD);
+      menuSystem.navigate(key, HOLD);
       break;
     case RELEASED:
       if (keyPress == true) {
         CONSOLE.print(key);
         CONSOLE.println(F(" pressed"));
         displayKey(key, PRESSED);
-        // currentMenuPtr->handleKeyPress(key, PRESSED);
+        menuSystem.navigate(key, PRESSED);
       } else {
         CONSOLE.print(key);
         CONSOLE.println(F(" released"));
         displayKey(key, RELEASED);
-        // currentMenuPtr->handleKeyPress(key, RELEASED);
+        menuSystem.navigate(key, RELEASED);
       }
       break;
     case IDLE:

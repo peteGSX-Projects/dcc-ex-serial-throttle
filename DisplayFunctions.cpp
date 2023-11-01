@@ -56,8 +56,8 @@ void displayStartupInfo() {
 }
 
 void displayKey(char key, KeyState keyState) {
-  oled.setCursor(0, 7);
-  oled.clearToEOL();
+  oled.clear(40, 60, 7, 7);
+  oled.setCursor(40, 7);
   oled.set1X();
   oled.print(key);
   if (keyState==HOLD) {

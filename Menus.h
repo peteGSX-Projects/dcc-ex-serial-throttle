@@ -25,5 +25,6 @@
 #include "DisplayFunctions.h"
 
 extern MenuSystem menuSystem;
+extern Menu mainMenu;
 
 #endif
