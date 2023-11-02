@@ -25,12 +25,30 @@
 Menu mainMenu(oled, "Main Menu");
 
 void createMenus() {
-  // for (int i=0; i<10; i++) {
-  //   char *label;
-  //   sprintf(label, "Test %d", i);
-  //   mainMenu.addMenuItem(new MenuItem(label));
-  // }
-  mainMenu.addMenuItem(new MenuItem("Test 1"));
-  mainMenu.addMenuItem(new MenuItem("Test 2"));
+  mainMenu.addMenuItem(new ActionMenuItem("Test D1", dummyAction1));
+  mainMenu.addMenuItem(new ActionMenuItem("Test D2", dummyAction2));
+  for (int i=0; i<15; i++) {
+    char label[15];
+    sprintf(label, "Test %d", i);
+    mainMenu.addMenuItem(new MenuItem(label));
+  }
+  // mainMenu.addMenuItem(new MenuItem("Test 1"));
+  // mainMenu.addMenuItem(new MenuItem("Test 2"));
+  // mainMenu.addMenuItem(new MenuItem("Test 3"));
+  // mainMenu.addMenuItem(new MenuItem("Test 4"));
+  // mainMenu.addMenuItem(new MenuItem("Test 5"));
+  // mainMenu.addMenuItem(new MenuItem("Test 6"));
+  // mainMenu.addMenuItem(new MenuItem("Test 7"));
+  // mainMenu.addMenuItem(new MenuItem("Test 8"));
+  // mainMenu.addMenuItem(new MenuItem("Test 9"));
+  // mainMenu.addMenuItem(new MenuItem("Test 10"));
   
+}
+
+void dummyAction1() {
+  CONSOLE.println("Selected dummy action 1");
+}
+
+void dummyAction2() {
+  CONSOLE.println("Selected dummy action 2");
 }

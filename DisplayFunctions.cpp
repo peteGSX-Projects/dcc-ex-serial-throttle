@@ -56,14 +56,16 @@ void displayStartupInfo() {
 }
 
 void displayKey(char key, KeyState keyState) {
-  oled.clear(40, 60, 7, 7);
-  oled.setCursor(40, 7);
+  oled.clear(55, 69, 7, 7);
+  oled.setCursor(55, 7);
   oled.set1X();
   oled.print(key);
   if (keyState==HOLD) {
-    oled.print(F("!"));
+    oled.print(F("H"));
   } else if (keyState==RELEASED) {
-    oled.print(F("&"));
+    oled.print(F("R"));
+  } else {
+    oled.print(F("P"));
   }
 }
 

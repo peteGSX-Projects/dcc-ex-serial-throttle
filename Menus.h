@@ -30,4 +30,7 @@ extern Menu mainMenu;
 
 void createMenus();
 
+void dummyAction1();
+void dummyAction2();
+
 #endif

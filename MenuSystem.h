@@ -28,13 +28,34 @@ class Menu;
 
 class MenuItem {
 public:
-  MenuItem(const char* label);
-  // virtual void select() = 0;
+  enum ItemType {
+    Normal,
+    Action,
+    Entry,
+    Throttle,
+  };
+  MenuItem(const char* label, ItemType type=ItemType::Normal);
+  int getIndex() const;
+  virtual void execute() {};
 private:
   const char* _label;
+  ItemType _type;
   MenuItem* _next;
+  int _index;
 
   friend class Menu;
+
+};
+
+class ActionMenuItem : public MenuItem {
+public:
+  typedef void (*Action)();
+  ActionMenuItem(const char* label, Action action=nullptr);
+
+  void execute() override;
+
+private:
+  Action _action;
 
 };
 
@@ -42,12 +63,16 @@ class Menu {
 public:
   Menu(OLED& oled, const char* label);
   void addMenuItem(MenuItem* item);
+  MenuItem* getItemAtIndex(int index);
   void display();
+  void handleKeys(char key, KeyState keyState);
 private:
   OLED& _oled;
   const char* _label;
   MenuItem* _itemList;
   int _itemCount;
+  int _currentPage;
+  int _itemsPerPage;
   
 };
 

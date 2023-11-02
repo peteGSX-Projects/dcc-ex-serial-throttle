@@ -20,15 +20,36 @@
 #include <Arduino.h>
 #include "MenuSystem.h"
 
-MenuItem::MenuItem(const char* label) {
-  _label=label;
+// class MenuItem
+MenuItem::MenuItem(const char* label, ItemType type) : _type(type) {
+  _label=strdup(label);
   _next=nullptr;
+  _index=-1;
 }
 
+int MenuItem::getIndex() const {
+  return _index;
+}
+
+// class ActionMenuItem
+ActionMenuItem::ActionMenuItem(const char* label, Action action)
+  : MenuItem(label, ItemType::Action) {
+    _action=action;
+  }
+
+void ActionMenuItem::execute() {
+  if (_action) {
+    _action();
+  }
+}
+
+// class Menu
 Menu::Menu(OLED& oled, const char* label)
   : _oled(oled), _label(label) {
   _itemList=nullptr;
   _itemCount=0;
+  _currentPage=0;
+  _itemsPerPage=10;
 }
 
 void Menu::addMenuItem(MenuItem* item) {
@@ -42,24 +63,40 @@ void Menu::addMenuItem(MenuItem* item) {
     }
     current->_next=item;
   }
+  item->_index=_itemCount;
   _itemCount++;
 }
 
+MenuItem* Menu::getItemAtIndex(int index) {
+  for (MenuItem* item=_itemList; item; item=item->_next) {
+    if (item->getIndex()==index) {
+      return item;
+    }
+  }
+  return nullptr;
+}
+
 void Menu::display() {
+  int startIndex=_currentPage*_itemsPerPage;
+  int endIndex=min(startIndex+_itemsPerPage, _itemCount);
+  
   _oled.clear();
   _oled.setFont(OLED_FONT);
   _oled.setCursor(0, 0);
   _oled.print(_label);
   int i=0;
-  int column = 0;
-  int row = 1;
-  for (MenuItem* item=_itemList; item; item=item->_next) {
+  int column=0;
+  int row=1;
+  for (int index=startIndex; index<endIndex; index++) {
+    MenuItem* item=getItemAtIndex(index);
+    
     _oled.setCursor(column, row);
     _oled.print(i);
     _oled.print(F(" "));
     _oled.print(item->_label);
     // If next key would be 10, make it 0
     row++;
+    i++;
     // 6th row means row 1 in second column
     if (row > 5) {
       row = 1;
@@ -68,9 +105,49 @@ void Menu::display() {
   }
   _oled.setCursor(0, 7);
   _oled.print(F("* Menu"));
-  if (_itemCount>10) {
-    _oled.setCursor(0, 65);
-    _oled.print(F("# Next Page"));
+  if (_itemCount>_itemsPerPage) {
+    _oled.setCursor(70, 7);
+    _oled.print(F("# Page "));
+    int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
+    _oled.print(nextPage);
+  }
+}
+
+void Menu::handleKeys(char key, KeyState keyState) {
+  if (keyState==PRESSED) {
+    switch (key) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9': {
+        int itemIndex=key-'0';
+        itemIndex+=_currentPage*_itemsPerPage;
+        MenuItem* item=getItemAtIndex(itemIndex);
+        if (item) {
+          if (item->_type==MenuItem::Action) {
+            item->execute();
+          } else {
+            CONSOLE.print(F("Selected item "));
+            CONSOLE.println(itemIndex);
+          }
+        }
+        break;
+      }
+      
+      case '#':
+        _currentPage=(_currentPage+1) % ((int)ceil(_itemCount/(float)_itemsPerPage));
+        display();
+        break;
+      
+      default:
+        break;
+    }
   }
 }
 
