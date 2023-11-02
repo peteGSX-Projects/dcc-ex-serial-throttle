@@ -24,6 +24,8 @@
 #include "MenuSystem.h"
 #include "DisplayFunctions.h"
 
-extern MenuSystem menuSystem;
+// extern MenuSystem menuSystem;
+
+void createMenus();
 
 #endif

@@ -20,11 +20,15 @@
 #include <Arduino.h>
 #include "Menus.h"
 
-MenuSystem menuSystem(&oled);
+// MenuSystem menuSystem(&oled);
 
-Menu throttleScreen("Throttle Screen");
-Menu mainMenu(&throttleScreen, 0, "Main Menu");
-Menu throttleSetup(&mainMenu, 0, "Throttles");
-Menu turnoutList(&mainMenu, 1, "Turnouts");
-Menu turntableList(&mainMenu, 2, "Turntables");
-Menu rosterList(&mainMenu, 3, "Roster");
+void createMenus() {
+  // Menu throttleScreen;
+  // Menu mainMenu(&throttleScreen, "Main Menu");
+  // Menu throttleSetup(&mainMenu, "Throttles");
+  // Menu turnoutList(&mainMenu, "Turnouts");
+  // Menu turntableList(&mainMenu, "Turntables");
+  // Menu rosterList(&mainMenu, "Roster");
+
+  
+}

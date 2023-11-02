@@ -28,10 +28,57 @@ class Menu;
 
 class MenuItem {
 public:
+    MenuItem(const char* label);
+    virtual void select() = 0;
+protected:
+    const char* _label;
+    MenuItem* _next;
+
+    friend class Menu;
+
+};
+
+class FunctionMenuItem : public MenuItem {
+public:
+    FunctionMenuItem(const char* label, void (*function)());
+    void select() override;
+private:
+    void (*_function)();
+};
+
+class Submenu : public MenuItem {
+public:
+    Submenu(const char* label);
+    void select() override;
+    void setMenu(Menu* submenu);
+private:
+    Menu* _submenu;
+};
+
+class Menu {
+public:
+    Menu(OLED& oled);
+    void addMenuItem(MenuItem* item);
+    void display();
+private:
+    MenuItem* _itemList;
+    int _itemCount;
+    OLED& _oled;
+};
+
+
+
+
+
+
+/*
+class Menu;
+
+class MenuItem {
+public:
   /// @brief Constructor - provide index and label
-  /// @param index 
   /// @param label 
-  MenuItem(int index, const char* label, Menu* parent);
+  MenuItem(const char* label, Menu* parent);
 
   virtual void display(OLED& oled);
 
@@ -50,11 +97,10 @@ private:
 class ActionItem : public MenuItem {
 public:
   /// @brief Constructor - provide index, label, pointer to the object to action, and the callback function
-  /// @param index 
   /// @param label 
   /// @param objectPointer 
   /// @param callback 
-  ActionItem(int index, const char* label, void *objectPointer, void (*callback)(), Menu* parent);
+  ActionItem(const char* label, void *objectPointer, void (*callback)(), Menu* parent);
 
   void display(OLED& oled) override;
 
@@ -67,11 +113,10 @@ private:
 class EntryItem : public MenuItem {
 public:
   /// @brief Constructor - provide index, label, instruction line, and the callback to send the entered number to
-  /// @param index 
   /// @param label 
   /// @param instruction 
   /// @param callback 
-  EntryItem(int index, const char* label, const char* instruction, void (*callback)(), Menu* parent);
+  EntryItem(const char* label, const char* instruction, void (*callback)(), Menu* parent);
 
   void display(OLED& oled) override;
 
@@ -83,7 +128,7 @@ private:
 
 class SubmenuItem : public MenuItem {
 public:
-  SubmenuItem(int index, const char* label, Menu* submenu, Menu* parent);
+  SubmenuItem(const char* label, Menu* submenu, Menu* parent);
 
   Menu* getSubmenu();
 
@@ -94,14 +139,7 @@ private:
 
 };
 
-class ThrottleScreen : public MenuItem {
-public:
-
-private:
-
-};
-
-class FunctionScreen : public MenuItem {
+class FunctionMenu : public MenuItem {
 public:
 
 private:
@@ -111,14 +149,13 @@ private:
 class Menu {
 public:
   /// @brief Constructor for menu
-  /// @param label 
-  Menu(const char* label);
+  Menu();
 
   /// @brief Constructor for a submenu
   /// @param parent 
   /// @param index 
   /// @param label 
-  Menu(Menu* parent, int index, const char* label);
+  Menu(Menu* parent, const char* label);
 
   /// @brief Add MenuItem object to the list
   /// @param item 
@@ -138,7 +175,6 @@ public:
   void navigate(char key, KeyState keyState);
 
 private:
-  const char* _label;
   MenuItem* _firstItem;
   Menu* _firstSubmenu;
   int _itemCount;
@@ -162,8 +198,7 @@ private:
   Menu* _currentMenu;
   OLED* _oled;
 
-  MenuItem* _findTopLevelMenu(MenuItem* item);
-
 };
+*/
 
 #endif

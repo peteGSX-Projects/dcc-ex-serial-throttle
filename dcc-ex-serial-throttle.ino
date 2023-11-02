@@ -52,7 +52,8 @@ void setup() {
   // dccexProtocol.setDelegate(&dccexCallbacks);
   // dccexProtocol.connect(&CLIENT);
   // createStaticMenus();
-  menuSystem.begin();
+  createMenus();
+  // menuSystem.begin();
 }
 
 /***********************************************************************************

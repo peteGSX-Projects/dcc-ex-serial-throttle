@@ -20,10 +20,42 @@
 #include <Arduino.h>
 #include "MenuSystem.h"
 
+MenuItem::MenuItem(const char* label) {
+  _label=label;
+  _next=nullptr;
+}
+
+FunctionMenuItem::FunctionMenuItem(const char* label, void (*function)())
+  : MenuItem(label), _function(function) {}
+
+Submenu::Submenu(const char* label)
+  : MenuItem(label) {}
+
+Menu::Menu(OLED& oled) {
+  _oled=oled;
+  _itemList=nullptr;
+  _itemCount=0;
+}
+
+void Menu::addMenuItem(MenuItem* item) {
+  if (this->_itemList==nullptr) {
+    this->_itemList=item;
+  } else {
+    MenuItem* current=this->_itemList;
+    while (current->_next!=nullptr) {
+      current=current->_next;
+    }
+    current->_next=item;
+  }
+  _itemCount++;
+}
+
+
+
+/*
 // class MenuItem
 // Public functions
-MenuItem::MenuItem(int index, const char* label, Menu* parent) {
-  _index=index;
+MenuItem::MenuItem(const char* label, Menu* parent) {
   _label=label;
   _parent=parent;
   _next=nullptr;
@@ -34,16 +66,16 @@ Menu* MenuItem::getParent() {
 }
 
 // class ActionItem
-ActionItem::ActionItem(int index, const char* label, void *objectPointer, void (*callback)(), Menu* parent)
-  : MenuItem(index, label, parent), _objectPointer(objectPointer), _callback(callback) {}
+ActionItem::ActionItem(const char* label, void *objectPointer, void (*callback)(), Menu* parent)
+  : MenuItem(label, parent), _objectPointer(objectPointer), _callback(callback) {}
 
 // class EntryItem
-EntryItem::EntryItem(int index, const char* label, const char* instruction, void(*callback)(), Menu* parent)
-  : MenuItem(index, label, parent), _instruction(instruction), _callback(callback) {}
+EntryItem::EntryItem(const char* label, const char* instruction, void(*callback)(), Menu* parent)
+  : MenuItem(label, parent), _instruction(instruction), _callback(callback) {}
 
 // class SubmenuItem
-SubmenuItem::SubmenuItem(int index, const char* label, Menu* submenu, Menu* parent)
-  : MenuItem(index, label, parent), _submenu(submenu) {}
+SubmenuItem::SubmenuItem(const char* label, Menu* submenu, Menu* parent)
+  : MenuItem(label, parent), _submenu(submenu) {}
 
 Menu* SubmenuItem::getSubmenu() {
   return _submenu;
@@ -58,14 +90,13 @@ void SubmenuItem::display(OLED& oled) {
 
 // class Menu
 // Public functions
-Menu::Menu(const char* label) {
-  _label=label;
+Menu::Menu() {
   _firstItem=nullptr;
   _itemCount=0;
 }
 
-Menu::Menu(Menu* parent, int index, const char* label) {
-  SubmenuItem* newItem=new SubmenuItem(index, label, this, parent);
+Menu::Menu(Menu* parent, const char* label) {
+  SubmenuItem* newItem=new SubmenuItem(label, this, parent);
   parent->addItem(newItem);
 }
 
@@ -95,23 +126,6 @@ void Menu::navigate(char key, KeyState keyState) {
 
 }
 
-// class HomeScreen
-// HomeScreen::HomeScreen() {}
-
-// void HomeScreen::display(OLED& oled) {
-//   oled.clear();
-//   oled.set1X();
-//   oled.setFont(OLED_FONT);
-//   oled.setCursor(0, 0);
-//   oled.print(F("Home screen"));
-//   oled.setCursor(0, 7);
-//   oled.print(F("* Menu"));
-// }
-
-// void HomeScreen::handleKeys(char key, KeyState keyState) {
-
-// }
-
 // class MenuSystem
 MenuSystem::MenuSystem(OLED* oled) {
   _oled=oled;
@@ -131,17 +145,6 @@ void MenuSystem::setMenu(Menu* menu) {
 }
 
 void MenuSystem::begin() {
-  MenuItem* currentItem=_findTopLevelMenu(_currentMenu);
-  if (currentItem) {
-    _currentMenu=dynamic_cast<Menu*>(currentItem);
-    _currentMenu->display();
-  }
+  
 }
-
-MenuItem* MenuSystem::_findTopLevelMenu(MenuItem* menuItem) {
-  if (!menuItem->getParent()) {
-    return menuItem;
-  } else {
-    return _findTopLevelMenu(menuItem->getParent());
-  }
-}
+*/
