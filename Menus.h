@@ -26,6 +26,8 @@
 
 // extern MenuSystem menuSystem;
 
+extern Menu mainMenu;
+
 void createMenus();
 
 #endif

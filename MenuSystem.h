@@ -28,43 +28,46 @@ class Menu;
 
 class MenuItem {
 public:
-    MenuItem(const char* label);
-    virtual void select() = 0;
-protected:
-    const char* _label;
-    MenuItem* _next;
-
-    friend class Menu;
-
-};
-
-class FunctionMenuItem : public MenuItem {
-public:
-    FunctionMenuItem(const char* label, void (*function)());
-    void select() override;
+  MenuItem(const char* label);
+  // virtual void select() = 0;
 private:
-    void (*_function)();
-};
+  const char* _label;
+  MenuItem* _next;
 
-class Submenu : public MenuItem {
-public:
-    Submenu(const char* label);
-    void select() override;
-    void setMenu(Menu* submenu);
-private:
-    Menu* _submenu;
+  friend class Menu;
+
 };
 
 class Menu {
 public:
-    Menu(OLED& oled);
-    void addMenuItem(MenuItem* item);
-    void display();
+  Menu(OLED& oled, const char* label);
+  void addMenuItem(MenuItem* item);
+  void display();
 private:
-    MenuItem* _itemList;
-    int _itemCount;
-    OLED& _oled;
+  OLED& _oled;
+  const char* _label;
+  MenuItem* _itemList;
+  int _itemCount;
+  
 };
+
+
+
+
+
+// class MenuSystem {
+// public:
+//   MenuSystem(OLED& oled);
+
+//   void setRootMenu(Menu* rootMenu);
+
+//   void navigate(char key, KeyState keyState);
+
+// private:
+//   OLED& _oled;
+//   Menu* _currentMenu;
+
+// };
 
 
 

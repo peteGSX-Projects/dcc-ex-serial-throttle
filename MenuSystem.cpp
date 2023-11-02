@@ -25,19 +25,14 @@ MenuItem::MenuItem(const char* label) {
   _next=nullptr;
 }
 
-FunctionMenuItem::FunctionMenuItem(const char* label, void (*function)())
-  : MenuItem(label), _function(function) {}
-
-Submenu::Submenu(const char* label)
-  : MenuItem(label) {}
-
-Menu::Menu(OLED& oled) {
-  _oled=oled;
+Menu::Menu(OLED& oled, const char* label)
+  : _oled(oled), _label(label) {
   _itemList=nullptr;
   _itemCount=0;
 }
 
 void Menu::addMenuItem(MenuItem* item) {
+  CONSOLE.println(item->_label);
   if (this->_itemList==nullptr) {
     this->_itemList=item;
   } else {
@@ -48,6 +43,35 @@ void Menu::addMenuItem(MenuItem* item) {
     current->_next=item;
   }
   _itemCount++;
+}
+
+void Menu::display() {
+  _oled.clear();
+  _oled.setFont(OLED_FONT);
+  _oled.setCursor(0, 0);
+  _oled.print(_label);
+  int i=0;
+  int column = 0;
+  int row = 1;
+  for (MenuItem* item=_itemList; item; item=item->_next) {
+    _oled.setCursor(column, row);
+    _oled.print(i);
+    _oled.print(F(" "));
+    _oled.print(item->_label);
+    // If next key would be 10, make it 0
+    row++;
+    // 6th row means row 1 in second column
+    if (row > 5) {
+      row = 1;
+      column = 65;
+    }
+  }
+  _oled.setCursor(0, 7);
+  _oled.print(F("* Menu"));
+  if (_itemCount>10) {
+    _oled.setCursor(0, 65);
+    _oled.print(F("# Next Page"));
+  }
 }
 
 

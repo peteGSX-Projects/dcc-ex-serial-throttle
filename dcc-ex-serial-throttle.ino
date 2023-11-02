@@ -53,6 +53,7 @@ void setup() {
   // dccexProtocol.connect(&CLIENT);
   // createStaticMenus();
   createMenus();
+  mainMenu.display();
   // menuSystem.begin();
 }
 
