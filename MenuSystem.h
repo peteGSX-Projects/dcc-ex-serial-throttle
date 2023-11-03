@@ -24,8 +24,6 @@
 #include "defines.h"
 #include "Keypad.h"
 
-class Menu;
-
 class MenuItem {
 public:
   enum ItemType {
@@ -37,7 +35,10 @@ public:
   MenuItem(const char* label, ItemType type=ItemType::Normal);
   int getIndex() const;
   virtual void execute() {};
-private:
+  virtual void display(OLED& oled) {};
+  virtual void handleKeys(char key, KeyState keyState) {};
+
+protected:
   const char* _label;
   ItemType _type;
   MenuItem* _next;
@@ -59,6 +60,22 @@ private:
 
 };
 
+class EntryMenuItem : public MenuItem {
+public:
+  typedef void (*Action)(int number);
+  EntryMenuItem(const char* label, const char* instruction, Action action);
+
+  void execute() override;
+  void display(OLED& oled) override;
+  void handleKeys(char key, KeyState keyState) override;
+
+private:
+  const char* _instruction;
+  Action _action;
+  int _inputNumber;
+
+};
+
 class Menu {
 public:
   Menu(OLED& oled, const char* label);
@@ -66,6 +83,8 @@ public:
   MenuItem* getItemAtIndex(int index);
   void display();
   void handleKeys(char key, KeyState keyState);
+  void setSelectedItem(MenuItem* item);
+
 private:
   OLED& _oled;
   const char* _label;
@@ -73,9 +92,11 @@ private:
   int _itemCount;
   int _currentPage;
   int _itemsPerPage;
+  MenuItem* _selectedItem;
   
 };
 
+#endif
 
 
 
@@ -228,5 +249,3 @@ private:
 
 };
 */
-
-#endif

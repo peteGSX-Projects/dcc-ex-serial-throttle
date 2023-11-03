@@ -43,6 +43,32 @@ void ActionMenuItem::execute() {
   }
 }
 
+// class EntryMenuItem
+EntryMenuItem::EntryMenuItem(const char* label, const char* instruction, Action action)
+  : MenuItem(label, ItemType::Entry), _instruction(instruction), _action(action), _inputNumber(0) {
+}
+
+void EntryMenuItem::display(OLED& oled) {
+  oled.clear();
+  oled.set1X();
+  oled.setCursor(0, 0);
+  oled.print(_label);
+  oled.setCursor(0, 1);
+  oled.print(_instruction);
+  oled.setCursor(0, 3);
+  oled.print("#####");
+  oled.setCursor(0, 7);
+  oled.print("* Back");
+  oled.setCursor(70, 7);
+  oled.print("# Confirm");
+}
+
+void EntryMenuItem::handleKeys(char key, KeyState keyState) {
+  if (keyState==PRESSED) {
+    
+  }
+}
+
 // class Menu
 Menu::Menu(OLED& oled, const char* label)
   : _oled(oled), _label(label) {
@@ -77,40 +103,41 @@ MenuItem* Menu::getItemAtIndex(int index) {
 }
 
 void Menu::display() {
-  int startIndex=_currentPage*_itemsPerPage;
-  int endIndex=min(startIndex+_itemsPerPage, _itemCount);
-  
-  _oled.clear();
-  _oled.setFont(OLED_FONT);
-  _oled.setCursor(0, 0);
-  _oled.print(_label);
-  int i=0;
-  int column=0;
-  int row=1;
-  for (int index=startIndex; index<endIndex; index++) {
-    MenuItem* item=getItemAtIndex(index);
+
+    int startIndex=_currentPage*_itemsPerPage;
+    int endIndex=min(startIndex+_itemsPerPage, _itemCount);
     
-    _oled.setCursor(column, row);
-    _oled.print(i);
-    _oled.print(F(" "));
-    _oled.print(item->_label);
-    // If next key would be 10, make it 0
-    row++;
-    i++;
-    // 6th row means row 1 in second column
-    if (row > 5) {
-      row = 1;
-      column = 65;
+    _oled.clear();
+    _oled.setFont(OLED_FONT);
+    _oled.setCursor(0, 0);
+    _oled.print(_label);
+    int i=0;
+    int column=0;
+    int row=1;
+    for (int index=startIndex; index<endIndex; index++) {
+      MenuItem* item=getItemAtIndex(index);
+      
+      _oled.setCursor(column, row);
+      _oled.print(i);
+      _oled.print(F(" "));
+      _oled.print(item->_label);
+      // If next key would be 10, make it 0
+      row++;
+      i++;
+      // 6th row means row 1 in second column
+      if (row > 5) {
+        row = 1;
+        column = 65;
+      }
     }
-  }
-  _oled.setCursor(0, 7);
-  _oled.print(F("* Menu"));
-  if (_itemCount>_itemsPerPage) {
-    _oled.setCursor(70, 7);
-    _oled.print(F("# Page "));
-    int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
-    _oled.print(nextPage);
-  }
+    _oled.setCursor(0, 7);
+    _oled.print(F("* Menu"));
+    if (_itemCount>_itemsPerPage) {
+      _oled.setCursor(70, 7);
+      _oled.print(F("# Page "));
+      int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
+      _oled.print(nextPage);
+    }
 }
 
 void Menu::handleKeys(char key, KeyState keyState) {
@@ -149,6 +176,11 @@ void Menu::handleKeys(char key, KeyState keyState) {
         break;
     }
   }
+}
+
+void Menu::setSelectedItem(MenuItem* item) {
+  _selectedItem=item;
+  display();
 }
 
 
