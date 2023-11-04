@@ -66,8 +66,8 @@ public:
   /// @return 
   int getIndex() const;
   
-  /// @brief Execute method of this object
-  virtual void execute() {};
+  /// @brief What happens when the item is selected from a menu
+  virtual void select(OLED& oled) {};
   
   /// @brief Display method of this object
   /// @param oled 
@@ -101,12 +101,27 @@ protected:
 class ActionMenuItem : public MenuItemBase {
 public:
   typedef void (*Action)();
-  ActionMenuItem(const char* label, Action action=nullptr);
+  typedef void (*ActionWithObject)(void*);
 
-  void execute() override;
+  /// @brief Constructor for an action item
+  /// @param label 
+  /// @param action 
+  ActionMenuItem(const char* label, Action action=nullptr);
+  
+  /// @brief Constructor for an action item associated with an object
+  /// @param label 
+  /// @param action 
+  /// @param objectPointer 
+  ActionMenuItem(const char* label, ActionWithObject action=nullptr, void* objectPointer=nullptr);
+
+  /// @brief Execute the associated function when selected
+  /// @param oled 
+  void select(OLED& oled) override;
 
 private:
   Action _action;
+  ActionWithObject _actionWithObject;
+  void* _objectPointer;
 
 };
 
@@ -115,7 +130,7 @@ public:
   typedef void (*Action)(int number);
   EntryMenuItem(const char* label, const char* instruction, Action action);
 
-  // void execute() override;
+  void select(OLED& oled) override;
   void display(OLED& oled) override;
   void handleKeys(char key, KeyState keyState, OLED& oled) override;
 
@@ -123,12 +138,16 @@ private:
   const char* _instruction;
   Action _action;
   int _inputNumber;
+  char _inputBuffer[6];
+  int _inputIndex;
+  int _inputKeyColumn;
 
 };
 
 class Menu : public MenuItemBase {
 public:
   Menu(const char* label);
+  void select(OLED& oled) override;
   void display(OLED& oled) override;
   void handleKeys(char key, KeyState keyState, OLED& oled) override;
   void addMenuItem(MenuItemBase* item);

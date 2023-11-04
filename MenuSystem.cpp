@@ -65,12 +65,23 @@ void MenuItemBase::setParent(MenuItemBase* parent) {
 
 // class ActionMenuItem
 ActionMenuItem::ActionMenuItem(const char* label, Action action)
-  : MenuItemBase(label, ItemType::Action) {
+  : MenuItemBase(label, MenuItemBase::Action) {
     _action=action;
+    _actionWithObject=nullptr;
+    _objectPointer=nullptr;
   }
 
-void ActionMenuItem::execute() {
-  if (_action) {
+ActionMenuItem::ActionMenuItem(const char* label, ActionWithObject action, void* objectPointer)
+  : MenuItemBase(label, MenuItemBase::Action) {
+    _action=nullptr;
+    _actionWithObject=action;
+    _objectPointer=objectPointer;
+  }
+
+void ActionMenuItem::select(OLED& oled) {
+  if (_objectPointer) {
+    _actionWithObject(_objectPointer);
+  } else {
     _action();
   }
 }
@@ -78,6 +89,15 @@ void ActionMenuItem::execute() {
 // class EntryMenuItem
 EntryMenuItem::EntryMenuItem(const char* label, const char* instruction, Action action)
   : MenuItemBase(label, ItemType::Entry), _instruction(instruction), _action(action), _inputNumber(0) {
+  _inputIndex=0;
+  _inputKeyColumn=0;
+}
+
+void EntryMenuItem::select(OLED& oled) {
+  _menuSystem->setCurrentItem(this);
+  _inputIndex=0;
+  _inputKeyColumn=0;
+  this->display(oled);
 }
 
 void EntryMenuItem::display(OLED& oled) {
@@ -106,6 +126,26 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
         break;
       
       case '#':
+        if (_inputIndex>0) {
+          int number=atoi(_inputBuffer);
+          _inputIndex=0;
+          memset(_inputBuffer, 0, sizeof(_inputBuffer));
+          _inputKeyColumn=0;
+          if (number < 1 || number > 10239) {
+            oled.setCursor(0, 3);
+            oled.print("#####");
+            oled.setCursor(0, 6);
+            oled.print("INVALID ADDRESS");
+          // } else if (throttle1.addressInUse(number) || throttle2.addressInUse(number) || throttle3.addressInUse(number)) {
+          //   oled.setCursor(0, 3);
+          //   oled.print("#####");
+          //   oled.setCursor(0, 6);
+          //   oled.print("ADDRESS IN USE");
+          } else {
+            // currentThrottle->setLocoAddress(number, LocoSourceEntry);
+            _menuSystem->goHome();
+          }
+        }
         break;
       
       case '0':
@@ -118,6 +158,12 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
       case '7':
       case '8':
       case '9':
+        if (_inputIndex<5) {
+          _inputBuffer[_inputIndex++]=key;
+          oled.setCursor(_inputKeyColumn, 3);
+          oled.print(key);
+          _inputKeyColumn+=6;
+        }
         break;
       
       default:
@@ -133,6 +179,11 @@ Menu::Menu(const char* label)
   _itemCount=0;
   _currentPage=0;
   _itemsPerPage=10;
+}
+
+void Menu::select(OLED& oled) {
+  _menuSystem->setCurrentItem(this);
+  this->display(oled);
 }
 
 void Menu::display(OLED& oled) {
@@ -189,23 +240,7 @@ void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
         itemIndex+=_currentPage*_itemsPerPage;
         MenuItemBase* item=getItemAtIndex(itemIndex);
         if (item) {
-          MenuItemBase::ItemType type=item->getType();
-          switch (type) {
-            case MenuItemBase::Action:
-              item->execute();
-              break;
-
-            case MenuItemBase::Menu:
-            case MenuItemBase::Entry:
-              _menuSystem->setCurrentItem(item);
-              item->display(oled);
-              break;
-
-            default:
-              CONSOLE.print(F("Selected item "));
-              CONSOLE.println(itemIndex);
-              break;
-          }
+          item->select(oled);
         }
         break;
       }
