@@ -53,22 +53,22 @@ void keypadEvent(KeypadEvent key) {
       break;
     case HOLD:
       keyPress = false;
-      CONSOLE.print(key);
-      CONSOLE.println(F(" held"));
+      // CONSOLE.print(key);
+      // CONSOLE.println(F(" held"));
       displayKey(key, HOLD);
-      mainMenu.handleKeys(key, HOLD);
+      menuSystem.handleKeys(key, HOLD);
       break;
     case RELEASED:
       if (keyPress == true) {
-        CONSOLE.print(key);
-        CONSOLE.println(F(" pressed"));
+        // CONSOLE.print(key);
+        // CONSOLE.println(F(" pressed"));
         displayKey(key, PRESSED);
-        mainMenu.handleKeys(key, PRESSED);
+        menuSystem.handleKeys(key, PRESSED);
       } else {
-        CONSOLE.print(key);
-        CONSOLE.println(F(" released"));
+        // CONSOLE.print(key);
+        // CONSOLE.println(F(" released"));
         displayKey(key, RELEASED);
-        mainMenu.handleKeys(key, RELEASED);
+        menuSystem.handleKeys(key, RELEASED);
       }
       break;
     case IDLE:

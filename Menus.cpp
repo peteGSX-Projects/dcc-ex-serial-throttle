@@ -20,29 +20,27 @@
 #include <Arduino.h>
 #include "Menus.h"
 
-// MenuSystem menuSystem(oled);
-
-Menu mainMenu(oled, "Main Menu");
+MenuSystem menuSystem(display);
 
 void createMenus() {
-  mainMenu.addMenuItem(new ActionMenuItem("Test D1", dummyAction1));
-  mainMenu.addMenuItem(new ActionMenuItem("Test D2", dummyAction2));
+  ThrottleScreen* throttle=new ThrottleScreen();
+  menuSystem.setHome(throttle);
+  Menu* home=new Menu("Home");
+  throttle->setMenu(home);
+  char label[15];
+  home->addMenuItem(new ActionMenuItem("Test D1", dummyAction1));
+  home->addMenuItem(new ActionMenuItem("Test D2", dummyAction2));
+  home->addMenuItem(new EntryMenuItem("Entry", "Instruction", nullptr));
   for (int i=0; i<15; i++) {
-    char label[15];
     sprintf(label, "Test %d", i);
-    mainMenu.addMenuItem(new MenuItem(label));
+    home->addMenuItem(new MenuItemBase(label, MenuItemBase::Normal));
   }
-  // mainMenu.addMenuItem(new MenuItem("Test 1"));
-  // mainMenu.addMenuItem(new MenuItem("Test 2"));
-  // mainMenu.addMenuItem(new MenuItem("Test 3"));
-  // mainMenu.addMenuItem(new MenuItem("Test 4"));
-  // mainMenu.addMenuItem(new MenuItem("Test 5"));
-  // mainMenu.addMenuItem(new MenuItem("Test 6"));
-  // mainMenu.addMenuItem(new MenuItem("Test 7"));
-  // mainMenu.addMenuItem(new MenuItem("Test 8"));
-  // mainMenu.addMenuItem(new MenuItem("Test 9"));
-  // mainMenu.addMenuItem(new MenuItem("Test 10"));
-  
+  Menu* submenu=new Menu("Submenu");
+  home->addMenuItem(submenu);
+  for (int i=0; i<15; i++) {
+    sprintf(label, "STest %d", i);
+    submenu->addMenuItem(new MenuItemBase(label, MenuItemBase::Normal));
+  }
 }
 
 void dummyAction1() {

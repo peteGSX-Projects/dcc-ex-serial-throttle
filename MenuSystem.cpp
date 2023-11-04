@@ -20,20 +20,52 @@
 #include <Arduino.h>
 #include "MenuSystem.h"
 
+MenuSystem* MenuItemBase::_menuSystem=nullptr;
+
 // class MenuItem
-MenuItem::MenuItem(const char* label, ItemType type) : _type(type) {
+MenuItemBase::MenuItemBase(const char* label, MenuItemBase::ItemType type)
+  : _type(type) {
   _label=strdup(label);
+  _parent=nullptr;
   _next=nullptr;
   _index=-1;
 }
 
-int MenuItem::getIndex() const {
+const char* MenuItemBase::getLabel() const {
+  return _label;
+}
+
+MenuItemBase::ItemType MenuItemBase::getType() {
+  return _type;
+}
+
+void MenuItemBase::setNext(MenuItemBase* next) {
+  _next=next;
+}
+
+MenuItemBase* MenuItemBase::getNext() const {
+  return _next;
+}
+
+void MenuItemBase::setIndex(int index) {
+  _index=index;
+}
+
+int MenuItemBase::getIndex() const {
   return _index;
+}
+
+void MenuItemBase::setMenuSystem(MenuSystem* menuSystem) {
+  _menuSystem=menuSystem;
+}
+
+void MenuItemBase::setParent(MenuItemBase* parent) {
+  _parent=parent;
 }
 
 // class ActionMenuItem
 ActionMenuItem::ActionMenuItem(const char* label, Action action)
-  : MenuItem(label, ItemType::Action) {
+  : MenuItemBase(label, ItemType::Action) {
     _action=action;
   }
 
@@ -45,7 +77,7 @@ void ActionMenuItem::execute() {
 
 // class EntryMenuItem
 EntryMenuItem::EntryMenuItem(const char* label, const char* instruction, Action action)
-  : MenuItem(label, ItemType::Entry), _instruction(instruction), _action(action), _inputNumber(0) {
+  : MenuItemBase(label, ItemType::Entry), _instruction(instruction), _action(action), _inputNumber(0) {
 }
 
 void EntryMenuItem::display(OLED& oled) {
@@ -63,84 +95,84 @@ void EntryMenuItem::display(OLED& oled) {
   oled.print("# Confirm");
 }
 
-void EntryMenuItem::handleKeys(char key, KeyState keyState) {
+void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
   if (keyState==PRESSED) {
-    
+    switch(key) {
+      case '*':
+        if (_parent) {
+          _menuSystem->setCurrentItem(_parent);
+          _parent->display(oled);
+        }
+        break;
+      
+      case '#':
+        break;
+      
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        break;
+      
+      default:
+        break;
+    }
   }
 }
 
 // class Menu
-Menu::Menu(OLED& oled, const char* label)
-  : _oled(oled), _label(label) {
+Menu::Menu(const char* label)
+  : MenuItemBase(label, MenuItemBase::Menu) {
   _itemList=nullptr;
   _itemCount=0;
   _currentPage=0;
   _itemsPerPage=10;
 }
 
-void Menu::addMenuItem(MenuItem* item) {
-  CONSOLE.println(item->_label);
-  if (this->_itemList==nullptr) {
-    this->_itemList=item;
-  } else {
-    MenuItem* current=this->_itemList;
-    while (current->_next!=nullptr) {
-      current=current->_next;
-    }
-    current->_next=item;
-  }
-  item->_index=_itemCount;
-  _itemCount++;
-}
-
-MenuItem* Menu::getItemAtIndex(int index) {
-  for (MenuItem* item=_itemList; item; item=item->_next) {
-    if (item->getIndex()==index) {
-      return item;
-    }
-  }
-  return nullptr;
-}
-
-void Menu::display() {
-
-    int startIndex=_currentPage*_itemsPerPage;
-    int endIndex=min(startIndex+_itemsPerPage, _itemCount);
+void Menu::display(OLED& oled) {
+  int startIndex=_currentPage*_itemsPerPage;
+  int endIndex=min(startIndex+_itemsPerPage, _itemCount);
+  
+  oled.clear();
+  oled.setFont(OLED_FONT);
+  oled.setCursor(0, 0);
+  oled.print(_label);
+  int i=0;
+  int column=0;
+  int row=1;
+  for (int index=startIndex; index<endIndex; index++) {
+    MenuItemBase* item=getItemAtIndex(index);
     
-    _oled.clear();
-    _oled.setFont(OLED_FONT);
-    _oled.setCursor(0, 0);
-    _oled.print(_label);
-    int i=0;
-    int column=0;
-    int row=1;
-    for (int index=startIndex; index<endIndex; index++) {
-      MenuItem* item=getItemAtIndex(index);
-      
-      _oled.setCursor(column, row);
-      _oled.print(i);
-      _oled.print(F(" "));
-      _oled.print(item->_label);
-      // If next key would be 10, make it 0
-      row++;
-      i++;
-      // 6th row means row 1 in second column
-      if (row > 5) {
-        row = 1;
-        column = 65;
-      }
+    oled.setCursor(column, row);
+    oled.print(i);
+    oled.print(F(" "));
+    oled.print(item->getLabel());
+    // If next key would be 10, make it 0
+    row++;
+    i++;
+    // 6th row means row 1 in second column
+    if (row > 5) {
+      row = 1;
+      column = 65;
     }
-    _oled.setCursor(0, 7);
-    _oled.print(F("* Menu"));
-    if (_itemCount>_itemsPerPage) {
-      _oled.setCursor(70, 7);
-      _oled.print(F("# Page "));
-      int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
-      _oled.print(nextPage);
-    }
+  }
+  oled.setCursor(0, 7);
+  oled.print(F("* Back"));
+  if (_itemCount>_itemsPerPage) {
+    oled.setCursor(70, 7);
+    oled.print(F("# Page "));
+    int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
+    oled.print(nextPage);
+  }
 }
 
-void Menu::handleKeys(char key, KeyState keyState) {
+void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
   if (keyState==PRESSED) {
     switch (key) {
       case '0':
@@ -155,21 +187,39 @@ void Menu::handleKeys(char key, KeyState keyState) {
       case '9': {
         int itemIndex=key-'0';
         itemIndex+=_currentPage*_itemsPerPage;
-        MenuItem* item=getItemAtIndex(itemIndex);
+        MenuItemBase* item=getItemAtIndex(itemIndex);
         if (item) {
-          if (item->_type==MenuItem::Action) {
-            item->execute();
-          } else {
-            CONSOLE.print(F("Selected item "));
-            CONSOLE.println(itemIndex);
+          MenuItemBase::ItemType type=item->getType();
+          switch (type) {
+            case MenuItemBase::Action:
+              item->execute();
+              break;
+
+            case MenuItemBase::Menu:
+            case MenuItemBase::Entry:
+              _menuSystem->setCurrentItem(item);
+              item->display(oled);
+              break;
+
+            default:
+              CONSOLE.print(F("Selected item "));
+              CONSOLE.println(itemIndex);
+              break;
           }
         }
         break;
       }
+
+      case '*':
+        if (this->_parent) {
+          _menuSystem->setCurrentItem(this->_parent);
+          _parent->display(oled);
+        }
+        break;
       
       case '#':
         _currentPage=(_currentPage+1) % ((int)ceil(_itemCount/(float)_itemsPerPage));
-        display();
+        display(oled);
         break;
       
       default:
@@ -178,10 +228,90 @@ void Menu::handleKeys(char key, KeyState keyState) {
   }
 }
 
-void Menu::setSelectedItem(MenuItem* item) {
-  _selectedItem=item;
-  display();
+void Menu::addMenuItem(MenuItemBase* item) {
+  CONSOLE.println(item->getLabel());
+  if (this->_itemList==nullptr) {
+    this->_itemList=item;
+  } else {
+    MenuItemBase* current=this->_itemList;
+    while (current->getNext()!=nullptr) {
+      current=current->getNext();
+    }
+    current->setNext(item);
+  }
+  item->setIndex(_itemCount);
+  item->setParent(this);
+  _itemCount++;
 }
+
+MenuItemBase* Menu::getItemAtIndex(int index) {
+  for (MenuItemBase* item=_itemList; item; item=item->getNext()) {
+    if (item->getIndex()==index) {
+      return item;
+    }
+  }
+  return nullptr;
+}
+
+// class ThrottleScreen
+ThrottleScreen::ThrottleScreen()
+  : MenuItemBase(nullptr, MenuItemBase::Throttle) {}
+
+void ThrottleScreen::display(OLED& oled) {
+  oled.clear();
+  oled.setCursor(0, 0);
+  oled.print(F("Throttles here"));
+  oled.setCursor(0, 7);
+  oled.print(F("* Menu"));
+}
+
+void ThrottleScreen::handleKeys(char key, KeyState keyState, OLED& oled) {
+  if (_menu) {
+    _menuSystem->setCurrentItem(_menu);
+    _menu->display(oled);
+  }
+}
+
+void ThrottleScreen::setMenu(MenuItemBase* menu) {
+  _menu=menu;
+  _menu->setParent(this);
+}
+
+// class MenuSystem
+MenuSystem::MenuSystem(OLED& oled)
+  : _oled(oled) {
+    _currentItem=nullptr;
+    _home=nullptr;
+  }
+
+void MenuSystem::display() {
+  if (_currentItem) {
+    _currentItem->display(_oled);
+  }
+}
+
+void MenuSystem::handleKeys(char key, KeyState keyState) {
+  if (_currentItem) {
+    _currentItem->handleKeys(key, keyState, _oled);
+  }
+}
+
+void MenuSystem::setHome(MenuItemBase* home) {
+  _home=home;
+  _currentItem=home;
+  MenuItemBase::setMenuSystem(this);
+}
+
+void MenuSystem::goHome() {
+  _currentItem=_home;
+  _home->display(_oled);
+}
+
+void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
+  _currentItem=currentItem;
+}
+
+
 
 
 

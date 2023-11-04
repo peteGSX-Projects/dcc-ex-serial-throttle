@@ -26,7 +26,7 @@
 #include "Throttle.h"
 #include "Keypad.h"
 
-extern OLED oled;
+extern OLED display;
 
 void displayStartupInfo();
 void displayKey(char key, KeyState keyState);

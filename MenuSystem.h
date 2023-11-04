@@ -24,31 +24,81 @@
 #include "defines.h"
 #include "Keypad.h"
 
-class MenuItem {
+class MenuSystem;
+
+class MenuItemBase {
 public:
+  /// @brief Type of item for the object
   enum ItemType {
     Normal,
     Action,
     Entry,
+    Menu,
     Throttle,
   };
-  MenuItem(const char* label, ItemType type=ItemType::Normal);
+
+  /// @brief Constructor
+  /// @param label 
+  /// @param type 
+  MenuItemBase(const char* label, MenuItemBase::ItemType type);
+  
+  /// @brief Get the object's label
+  /// @return 
+  const char* getLabel() const;
+
+  /// @brief Get the item type of the object
+  /// @return 
+  ItemType getType();
+
+  /// @brief Set the next object in the list
+  /// @param next 
+  void setNext(MenuItemBase* next);
+
+  /// @brief Get the next object
+  /// @return 
+  MenuItemBase* getNext() const;
+  
+  /// @brief Set the objects index
+  /// @param index 
+  void setIndex(int index);
+
+  /// @brief Get the index value of this object
+  /// @return 
   int getIndex() const;
+  
+  /// @brief Execute method of this object
   virtual void execute() {};
+  
+  /// @brief Display method of this object
+  /// @param oled 
   virtual void display(OLED& oled) {};
-  virtual void handleKeys(char key, KeyState keyState) {};
+  
+  /// @brief Keypad input processing of this object
+  /// @param key 
+  /// @param keyState 
+  virtual void handleKeys(char key, KeyState keyState, OLED& oled) {};
+  
+  /// @brief Sets the static attribute for referencing the menu system
+  /// @param menuSystem 
+  static void setMenuSystem(MenuSystem* menuSystem);
+
+  /// @brief Set the parent object
+  /// @param parent 
+  void setParent(MenuItemBase* parent);
 
 protected:
   const char* _label;
   ItemType _type;
-  MenuItem* _next;
+  MenuItemBase* _next;
   int _index;
+  MenuItemBase* _parent;
+  static MenuSystem* _menuSystem;
 
-  friend class Menu;
+  friend class MenuSystem;
 
 };
 
-class ActionMenuItem : public MenuItem {
+class ActionMenuItem : public MenuItemBase {
 public:
   typedef void (*Action)();
   ActionMenuItem(const char* label, Action action=nullptr);
@@ -60,14 +110,14 @@ private:
 
 };
 
-class EntryMenuItem : public MenuItem {
+class EntryMenuItem : public MenuItemBase {
 public:
   typedef void (*Action)(int number);
   EntryMenuItem(const char* label, const char* instruction, Action action);
 
-  void execute() override;
+  // void execute() override;
   void display(OLED& oled) override;
-  void handleKeys(char key, KeyState keyState) override;
+  void handleKeys(char key, KeyState keyState, OLED& oled) override;
 
 private:
   const char* _instruction;
@@ -76,23 +126,48 @@ private:
 
 };
 
-class Menu {
+class Menu : public MenuItemBase {
 public:
-  Menu(OLED& oled, const char* label);
-  void addMenuItem(MenuItem* item);
-  MenuItem* getItemAtIndex(int index);
-  void display();
-  void handleKeys(char key, KeyState keyState);
-  void setSelectedItem(MenuItem* item);
+  Menu(const char* label);
+  void display(OLED& oled) override;
+  void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  void addMenuItem(MenuItemBase* item);
+  MenuItemBase* getItemAtIndex(int index);
+  void setSelectedItem(MenuItemBase* item);
 
 private:
-  OLED& _oled;
-  const char* _label;
-  MenuItem* _itemList;
+  MenuItemBase* _itemList;
   int _itemCount;
   int _currentPage;
   int _itemsPerPage;
-  MenuItem* _selectedItem;
+
+};
+
+class ThrottleScreen : public MenuItemBase {
+public:
+  ThrottleScreen();
+  void display(OLED& oled) override;
+  void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  void setMenu(MenuItemBase* menu);
+
+private:
+  MenuItemBase* _menu;
+
+};
+
+class MenuSystem {
+public:
+  MenuSystem(OLED& oled);
+  void display();
+  void handleKeys(char key, KeyState keyState);
+  void setHome(MenuItemBase* home);
+  void goHome();
+  void setCurrentItem(MenuItemBase* currentItem);
+
+private:
+  OLED& _oled;
+  MenuItemBase* _currentItem;
+  MenuItemBase* _home;
   
 };
 

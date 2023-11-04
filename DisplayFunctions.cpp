@@ -28,7 +28,7 @@ Set up OLED libraries and object
 // #ifdef USE_OLED_I2C
 // SSD1306AsciiAvrI2c oled;
 // #endif
-OLED oled;
+OLED display;
 
 void displayStartupInfo() {
   // Set up serial and display basic config
@@ -39,33 +39,33 @@ void displayStartupInfo() {
   // Serial.println(F(" samples"));
   // Set up OLED
 #ifdef USE_OLED_SPI
-  oled.begin(OLED_TYPE, CS_PIN, DC_PIN);
+  display.begin(OLED_TYPE, CS_PIN, DC_PIN);
 #endif
 #ifdef USE_OLED_I2C
-  oled.begin(OLED_TYPE, OLED_ADDRESS);
+  display.begin(OLED_TYPE, OLED_ADDRESS);
 #endif
-  oled.setFont(OLED_FONT);
-  oled.clear();
-  oled.setCursor(0, 0);
-  oled.set1X();
-  oled.print("DCC-EX");
-  oled.setCursor(0, 2);
-  oled.print("Serial Throttle");
-  oled.setCursor(0, 4);
-  oled.print(VERSION);
+  display.setFont(OLED_FONT);
+  display.clear();
+  display.setCursor(0, 0);
+  display.set1X();
+  display.print("DCC-EX");
+  display.setCursor(0, 2);
+  display.print("Serial Throttle");
+  display.setCursor(0, 4);
+  display.print(VERSION);
 }
 
 void displayKey(char key, KeyState keyState) {
-  oled.clear(55, 69, 7, 7);
-  oled.setCursor(55, 7);
-  oled.set1X();
-  oled.print(key);
+  display.clear(55, 69, 7, 7);
+  display.setCursor(55, 7);
+  display.set1X();
+  display.print(key);
   if (keyState==HOLD) {
-    oled.print(F("H"));
+    display.print(F("H"));
   } else if (keyState==RELEASED) {
-    oled.print(F("R"));
+    display.print(F("R"));
   } else {
-    oled.print(F("P"));
+    display.print(F("P"));
   }
 }
 
