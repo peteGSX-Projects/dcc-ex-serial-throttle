@@ -25,22 +25,34 @@ MenuSystem menuSystem(display);
 void createMenus() {
   ThrottleScreen* throttle=new ThrottleScreen();
   menuSystem.setHome(throttle);
-  Menu* home=new Menu("Home");
-  throttle->setMenu(home);
-  char label[15];
-  home->addMenuItem(new ActionMenuItem("Test D1", dummyAction1));
-  home->addMenuItem(new ActionMenuItem("Test D2", dummyAction2));
-  home->addMenuItem(new EntryMenuItem("Entry", "Instruction", nullptr));
-  for (int i=0; i<15; i++) {
-    sprintf(label, "Test %d", i);
-    home->addMenuItem(new MenuItemBase(label, MenuItemBase::Normal));
+  Menu* mainMenu=new Menu("Main Menu");
+  throttle->setMenu(mainMenu);
+  Menu* throttleList=new Menu("Throttles");
+  mainMenu->addMenuItem(throttleList);
+  char label[11];
+  for (int i=1; i<4; i++) {
+    sprintf(label, "Throttle %d", i);
+    Menu* throttleMenu=new Menu(label);
+    throttleList->addMenuItem(throttleMenu);
+    throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr, nullptr));
+    throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Remove loco", nullptr, nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Display consist", nullptr, nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", nullptr, nullptr));
+    CONSOLE.println(throttleMenu->getLabel());
   }
-  Menu* submenu=new Menu("Submenu");
-  home->addMenuItem(submenu);
-  for (int i=0; i<15; i++) {
-    sprintf(label, "STest %d", i);
-    submenu->addMenuItem(new MenuItemBase(label, MenuItemBase::Normal));
-  }
+  mainMenu->addMenuItem(new Menu("Turnouts"));
+  mainMenu->addMenuItem(new Menu("Routes"));
+  mainMenu->addMenuItem(new Menu("Turntables"));
+  mainMenu->addMenuItem(new Menu("Roster"));
+  Menu* tracksMenu=new Menu("Tracks");
+  mainMenu->addMenuItem(tracksMenu);
+  tracksMenu->addMenuItem(new ActionMenuItem("Power On", nullptr));
+  tracksMenu->addMenuItem(new ActionMenuItem("Power Off", nullptr));
+  tracksMenu->addMenuItem(new ActionMenuItem("Join", nullptr));
+  tracksMenu->addMenuItem(new ActionMenuItem("Unjoin", nullptr));
+  Menu* trackManager=new Menu("TrackManager");
+  tracksMenu->addMenuItem(trackManager);
 }
 
 void dummyAction1() {

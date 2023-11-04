@@ -106,13 +106,13 @@ public:
   /// @brief Constructor for an action item
   /// @param label 
   /// @param action 
-  ActionMenuItem(const char* label, Action action=nullptr);
+  ActionMenuItem(const char* label, Action action);
   
   /// @brief Constructor for an action item associated with an object
   /// @param label 
   /// @param action 
   /// @param objectPointer 
-  ActionMenuItem(const char* label, ActionWithObject action=nullptr, void* objectPointer=nullptr);
+  ActionMenuItem(const char* label, ActionWithObject action, void* objectPointer);
 
   /// @brief Execute the associated function when selected
   /// @param oled 

@@ -79,9 +79,9 @@ ActionMenuItem::ActionMenuItem(const char* label, ActionWithObject action, void*
   }
 
 void ActionMenuItem::select(OLED& oled) {
-  if (_objectPointer) {
+  if (_actionWithObject && _objectPointer) {
     _actionWithObject(_objectPointer);
-  } else {
+  } else if (_action) {
     _action();
   }
 }
