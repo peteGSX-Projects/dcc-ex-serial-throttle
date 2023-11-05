@@ -24,11 +24,10 @@
 #include "MenuSystem.h"
 #include "DisplayFunctions.h"
 
+// Main menu system
 extern MenuSystem menuSystem;
 
+// Create the menu structure
 void createMenus();
-
-void dummyAction1();
-void dummyAction2();
 
 #endif

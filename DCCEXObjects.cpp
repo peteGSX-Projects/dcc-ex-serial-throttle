@@ -21,9 +21,10 @@
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
+#include "StaticMenus.h"
 
 DCCEXProtocol dccexProtocol(3);
-// DCCEXCallbacks dccexCallbacks;
+DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
 bool connected = false;
@@ -36,25 +37,24 @@ bool gotRoutes = false;
 bool gotTurnouts = false;
 bool gotTurntables = false;
 
-/*
 // Function to validate a connection to the CS has been made
 void validateConnection() {
   if (!connected) {
     if (!connectionRequested) {
       connectionRequested = true;
       dccexProtocol.sendServerDetailsRequest();
-      oled.clear();
-      oled.setCursor(0, 0);
-      oled.print("Connecting to DCC-EX");
-      oled.setCursor(0, 2);
+      display.clear();
+      display.setCursor(0, 0);
+      display.print("Connecting to DCC-EX");
+      display.setCursor(0, 2);
     } else if (dccexProtocol.isServerDetailsReceived()) {
       connected = true;
-      currentMenuPtr->display();
+      menuSystem.display();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
       dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
       connectionRetries--;
-      oled.print(".");
+      display.print(".");
     } else if (connectionRetries == 0 && !errorDisplayed) {
       errorDisplayed = true;
       displayConnectionError();
@@ -67,10 +67,10 @@ void validateConnection() {
 void updateRoster() {
   if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
     gotRoster = true;
-    int i=0;
+    Menu* rMenu=menuSystem.findMenuByLabel("Roster");
+    if (!rMenu) return;
     for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
-      rosterList.addActionItem(i, loco->getName(), loco, setLocoFromRoster);
-      i++;
+      rMenu->addMenuItem(new ActionMenuItem(loco->getName(), nullptr));
     }
   }
 }
@@ -80,10 +80,10 @@ void updateRoster() {
 void updateRoutes() {
   if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
     gotRoutes = true;
-    int i=0;
+    Menu* rtMenu=menuSystem.findMenuByLabel("Routes");
+    if (!rtMenu) return;
     for (Route* r=dccexProtocol.routes->getFirst(); r; r=r->getNext()) {
-      routeList.addActionItem(i, r->getName(), r, noAction);
-      i++;
+      rtMenu->addMenuItem(new ActionMenuItem(r->getName(), nullptr));
     }
   }
 }
@@ -93,10 +93,9 @@ void updateRoutes() {
 void updateTurnouts() {
   if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
     gotTurnouts=true;
-    int i=0;
+    Menu* tMenu=menuSystem.findMenuByLabel("Turnouts");
     for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
-      turnoutList.addActionItem(i, t->getName(), t, toggleTurnout);
-      i++;
+      tMenu->addMenuItem(new ActionMenuItem(t->getName(), toggleTurnout, t));
     }
   }
 }
@@ -106,19 +105,17 @@ void updateTurnouts() {
 void updateTurntables() {
   if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
     gotTurntables=true;
-    int i=0;
+    Menu* ttMenu=menuSystem.findMenuByLabel("Turntables");
+    if (!ttMenu) return;
     for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
       char* ttName=tt->getName();
       CONSOLE.println(ttName);
-      Menu* ttMenu=new Menu(ttName, &turntableList);
-      turntableList.addMenu(i, ttName, ttMenu);
-      i++;
-      int j=0;
+      Menu* newTTMenu=new Menu(ttName);
+      ttMenu->addMenuItem(newTTMenu);
       for (TurntableIndex* idx=tt->getIndexList(); idx; idx=idx->getNext()) {
         char* idxName=idx->getName();
         CONSOLE.println(idxName);
-        // ttMenu->addActionItem(j, idxName, idx, nullptr);
-        j++;
+        newTTMenu->addMenuItem(new ActionMenuItem(idxName, rotateTurntable, idx));
       }
     }
   }
@@ -127,13 +124,26 @@ void updateTurntables() {
 // Function to toggle a turnout
 // If closed, will throw, if thrown, will close
 void toggleTurnout() {
-  if (currentMenuPtr != nullptr) {
-    Turnout* turnout = static_cast<Turnout*>(currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectPointer);
-    int turnoutId = turnout->getId();
-    CONSOLE.print(F("Toggle turnout "));
-    CONSOLE.println(turnoutId);
-    dccexProtocol.toggleTurnout(turnoutId);
-  }
+  if (!menuSystem.getCurrentActionItem()) return;
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  Turnout* turnout=static_cast<Turnout*>(object);
+  if (!turnout) return;
+  int turnoutId = turnout->getId();
+  dccexProtocol.toggleTurnout(turnoutId);
+}
+
+// Function to rotate a turntable
+void rotateTurntable() {
+  if (!menuSystem.getCurrentActionItem()) return;
+  CONSOLE.println(F("Got action item"));
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  TurntableIndex* index=static_cast<TurntableIndex*>(object);
+  if (!index) return;
+  CONSOLE.println(F("Got index"));
+  int ttId=index->getTTId();
+  int indexId=index->getId();
+  CONSOLE.println(indexId);
+  dccexProtocol.sendTurntableAction(ttId, indexId, 0);
 }
 
 // Function to turn track power on or off
@@ -159,4 +169,3 @@ void setJoinTracks() {
   //   }
   // }
 }
-*/

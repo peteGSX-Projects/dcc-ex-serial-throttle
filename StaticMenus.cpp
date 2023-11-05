@@ -18,7 +18,7 @@
 */
 
 #include <Arduino.h>
-#include "Menus.h"
+#include "StaticMenus.h"
 
 MenuSystem menuSystem(display);
 
@@ -34,12 +34,11 @@ void createMenus() {
     sprintf(label, "Throttle %d", i);
     Menu* throttleMenu=new Menu(label);
     throttleList->addMenuItem(throttleMenu);
-    throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr, nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Remove loco", nullptr, nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Display consist", nullptr, nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", nullptr, nullptr));
-    CONSOLE.println(throttleMenu->getLabel());
+    throttleMenu->addMenuItem(new ActionMenuItem("Remove loco", nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Display consist", nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", nullptr));
   }
   mainMenu->addMenuItem(new Menu("Turnouts"));
   mainMenu->addMenuItem(new Menu("Routes"));
@@ -53,12 +52,4 @@ void createMenus() {
   tracksMenu->addMenuItem(new ActionMenuItem("Unjoin", nullptr));
   Menu* trackManager=new Menu("TrackManager");
   tracksMenu->addMenuItem(trackManager);
-}
-
-void dummyAction1() {
-  CONSOLE.println("Selected dummy action 1");
-}
-
-void dummyAction2() {
-  CONSOLE.println("Selected dummy action 2");
 }

@@ -26,11 +26,10 @@ Include the required libraries
 
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "Menus.h"
+#include "StaticMenus.h"
 // #include "SerialFunctions.h"
-// #include "DCCEXObjects.h"
-// #include "Menu.h"
-// #include "Throttle.h"
+#include "DCCEXObjects.h"
+#include "Throttle.h"
 
 /***********************************************************************************
 Main setup function
@@ -48,27 +47,25 @@ void setup() {
   displayStartupInfo();
   delay(2000);
   setupKeypad();
-  // dccexProtocol.setLogStream(&CONSOLE);
-  // dccexProtocol.setDelegate(&dccexCallbacks);
-  // dccexProtocol.connect(&CLIENT);
-  // createStaticMenus();
+  dccexProtocol.setLogStream(&CONSOLE);
+  dccexProtocol.setDelegate(&dccexCallbacks);
+  dccexProtocol.connect(&CLIENT);
   createMenus();
-  menuSystem.display();
 }
 
 /***********************************************************************************
 Main loop
 ***********************************************************************************/
 void loop() {
-  // dccexProtocol.check();
-  // validateConnection();
-  // if (connected) {
-  //   dccexProtocol.getLists(true, true, true, true);
-  //   updateRoster();
-  //   updateRoutes();
-  //   updateTurnouts();
-  //   updateTurntables();
-  // }
+  dccexProtocol.check();
+  validateConnection();
+  if (connected) {
+    dccexProtocol.getLists(true, true, true, true);
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
+  }
   // throttle1.process();
   // throttle2.process();
   // throttle3.process();
@@ -76,10 +73,6 @@ void loop() {
   // if (throttle2.speedChanged()) displayThrottle2Speed();
   // if (throttle3.speedChanged()) displayThrottle3Speed();
   keypad.getKey();
-  // char key = keypad.getKey();
-  // if (key) {
-  //   currentMenuPtr->handleKeyPress(key);
-  // }
   // getSerialInput();
 }
 

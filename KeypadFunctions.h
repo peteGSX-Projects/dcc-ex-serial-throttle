@@ -24,7 +24,7 @@
 #include "Keypad.h"
 #include "defines.h"
 #include "DisplayFunctions.h"
-#include "Menus.h"
+#include "StaticMenus.h"
 
 extern Keypad keypad;
 

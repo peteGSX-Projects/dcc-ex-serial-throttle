@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "Keypad.h"
+#include "DCCEXProtocol.h"
 
 class MenuSystem;
 
@@ -101,26 +102,22 @@ protected:
 class ActionMenuItem : public MenuItemBase {
 public:
   typedef void (*Action)();
-  typedef void (*ActionWithObject)(void*);
 
   /// @brief Constructor for an action item
   /// @param label 
   /// @param action 
-  ActionMenuItem(const char* label, Action action);
+  ActionMenuItem(const char* label, Action action, void* objectPointer=nullptr);
   
-  /// @brief Constructor for an action item associated with an object
-  /// @param label 
-  /// @param action 
-  /// @param objectPointer 
-  ActionMenuItem(const char* label, ActionWithObject action, void* objectPointer);
-
-  /// @brief Execute the associated function when selected
+  /// @brief What happens when the item is selected from a menu
   /// @param oled 
   void select(OLED& oled) override;
 
+  /// @brief Get the associated object pointer for this item
+  /// @return 
+  void* getObjectPointer();
+
 private:
   Action _action;
-  ActionWithObject _actionWithObject;
   void* _objectPointer;
 
 };
@@ -128,10 +125,25 @@ private:
 class EntryMenuItem : public MenuItemBase {
 public:
   typedef void (*Action)(int number);
+  
+  /// @brief Constructor for a user input entry item
+  /// @param label 
+  /// @param instruction 
+  /// @param action 
   EntryMenuItem(const char* label, const char* instruction, Action action);
 
+  /// @brief What happens when the item is selected from a menu
+  /// @param oled 
   void select(OLED& oled) override;
+  
+  /// @brief Display the user entry screen
+  /// @param oled 
   void display(OLED& oled) override;
+  
+  /// @brief Handle user input via keypad
+  /// @param key 
+  /// @param keyState 
+  /// @param oled 
   void handleKeys(char key, KeyState keyState, OLED& oled) override;
 
 private:
@@ -146,13 +158,36 @@ private:
 
 class Menu : public MenuItemBase {
 public:
+  /// @brief Constructor for a menu
+  /// @param label 
   Menu(const char* label);
+  
+  /// @brief What happens when the item is selected from a menu
+  /// @param oled 
   void select(OLED& oled) override;
+  
+  /// @brief Display the menu
+  /// @param oled 
   void display(OLED& oled) override;
+
+  /// @brief Respond to user input
+  /// @param key 
+  /// @param keyState 
+  /// @param oled 
   void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  
+  /// @brief Add a menu item
+  /// @param item ActionMenuItem, EntryMenuItem, Menu, ThrottleScreen
   void addMenuItem(MenuItemBase* item);
+
+  /// @brief Get the object in this menu at the specified index
+  /// @param index 
+  /// @return 
   MenuItemBase* getItemAtIndex(int index);
-  void setSelectedItem(MenuItemBase* item);
+
+  /// @brief Get the menu item list
+  /// @return 
+  MenuItemBase* getItemList();
 
 private:
   MenuItemBase* _itemList;
@@ -164,10 +199,26 @@ private:
 
 class ThrottleScreen : public MenuItemBase {
 public:
+  /// @brief  Constructor for the throttle screen
   ThrottleScreen();
+  
+  /// @brief Display the throttle screen
+  /// @param oled 
   void display(OLED& oled) override;
+
+  /// @brief Respond to user input
+  /// @param key 
+  /// @param keyState 
+  /// @param oled 
   void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  
+  /// @brief Set the menu to display when * pressed
+  /// @param menu 
   void setMenu(MenuItemBase* menu);
+
+  /// @brief Get the child menu object
+  /// @return 
+  MenuItemBase* getMenu();
 
 private:
   MenuItemBase* _menu;
@@ -176,170 +227,50 @@ private:
 
 class MenuSystem {
 public:
+  /// @brief Constructor for the menu system
+  /// @param oled 
   MenuSystem(OLED& oled);
+  
+  /// @brief Display the currently selected item
   void display();
+  
+  /// @brief Pass user input to the currently selected item
+  /// @param key 
+  /// @param keyState 
   void handleKeys(char key, KeyState keyState);
+  
+  /// @brief Set the home menu item
+  /// @param home 
   void setHome(MenuItemBase* home);
+  
+  /// @brief Return to the specified home item
   void goHome();
+
+  /// @brief Set the currently selected item
+  /// @param currentItem 
   void setCurrentItem(MenuItemBase* currentItem);
+
+  /// @brief Find a menu by its label attribute
+  /// @param label 
+  /// @return 
+  Menu* findMenuByLabel(const char* label);
+
+  /// @brief Set the current action item for callbacks to query
+  /// @param item 
+  void setCurrentActionItem(ActionMenuItem* item);
+
+  /// @brief Get the currently selected action item
+  /// @return 
+  ActionMenuItem* getCurrentActionItem();
 
 private:
   OLED& _oled;
   MenuItemBase* _currentItem;
   MenuItemBase* _home;
+  ActionMenuItem* _currentActionItem;
+
+  Menu* _findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem);
   
 };
 
 #endif
-
-
-
-
-// class MenuSystem {
-// public:
-//   MenuSystem(OLED& oled);
-
-//   void setRootMenu(Menu* rootMenu);
-
-//   void navigate(char key, KeyState keyState);
-
-// private:
-//   OLED& _oled;
-//   Menu* _currentMenu;
-
-// };
-
-
-
-
-
-
-/*
-class Menu;
-
-class MenuItem {
-public:
-  /// @brief Constructor - provide index and label
-  /// @param label 
-  MenuItem(const char* label, Menu* parent);
-
-  virtual void display(OLED& oled);
-
-  Menu* getParent();
-
-private:
-  int _index;
-  const char* _label;
-  MenuItem* _next;
-  Menu* _parent;
-
-  friend class Menu;
-
-};
-
-class ActionItem : public MenuItem {
-public:
-  /// @brief Constructor - provide index, label, pointer to the object to action, and the callback function
-  /// @param label 
-  /// @param objectPointer 
-  /// @param callback 
-  ActionItem(const char* label, void *objectPointer, void (*callback)(), Menu* parent);
-
-  void display(OLED& oled) override;
-
-private:
-  void* _objectPointer;
-  void (*_callback)();
-
-};
-
-class EntryItem : public MenuItem {
-public:
-  /// @brief Constructor - provide index, label, instruction line, and the callback to send the entered number to
-  /// @param label 
-  /// @param instruction 
-  /// @param callback 
-  EntryItem(const char* label, const char* instruction, void (*callback)(), Menu* parent);
-
-  void display(OLED& oled) override;
-
-private:
-  const char* _instruction;
-  void (*_callback)();
-
-};
-
-class SubmenuItem : public MenuItem {
-public:
-  SubmenuItem(const char* label, Menu* submenu, Menu* parent);
-
-  Menu* getSubmenu();
-
-  void display(OLED& oled) override;
-
-private:
-  Menu* _submenu;
-
-};
-
-class FunctionMenu : public MenuItem {
-public:
-
-private:
-
-};
-
-class Menu {
-public:
-  /// @brief Constructor for menu
-  Menu();
-
-  /// @brief Constructor for a submenu
-  /// @param parent 
-  /// @param index 
-  /// @param label 
-  Menu(Menu* parent, const char* label);
-
-  /// @brief Add MenuItem object to the list
-  /// @param item 
-  void addItem(MenuItem* item);
-
-  /// @brief Get count of menu items in the menu
-  /// @return 
-  int getItemCount();
-
-  /// @brief Display menu
-  /// @param oled 
-  void display(OLED& oled);
-
-  /// @brief Navigate the menu
-  /// @param key 
-  /// @param keyState 
-  void navigate(char key, KeyState keyState);
-
-private:
-  MenuItem* _firstItem;
-  Menu* _firstSubmenu;
-  int _itemCount;
-
-};
-
-class MenuSystem {
-public:
-  /// @brief Constructor
-  MenuSystem(OLED* oled);
-
-  void display();
-
-  void navigate(char key, KeyState keyState);
-
-  void setMenu(Menu* menu);
-
-  void begin();
-
-private:
-  Menu* _currentMenu;
-  OLED* _oled;
-
-};
-*/

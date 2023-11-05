@@ -26,19 +26,18 @@
 #include "Menu.h"
 
 extern DCCEXProtocol dccexProtocol;
-// extern DCCEXCallbacks dccexCallbacks;
+extern DCCEXCallbacks dccexCallbacks;
 
 extern bool connected;
 
-/*
 void validateConnection();
 void updateRoster();
 void updateRoutes();
 void updateTurnouts();
 void updateTurntables();
 void toggleTurnout();
-void setTrackPower();
-void setJoinTracks();
-*/
+void rotateTurntable();
+// void setTrackPower();
+// void setJoinTracks();
 
 #endif

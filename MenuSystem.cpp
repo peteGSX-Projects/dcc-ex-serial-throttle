@@ -64,26 +64,21 @@ void MenuItemBase::setParent(MenuItemBase* parent) {
 }
 
 // class ActionMenuItem
-ActionMenuItem::ActionMenuItem(const char* label, Action action)
+ActionMenuItem::ActionMenuItem(const char* label, Action action, void* objectPointer)
   : MenuItemBase(label, MenuItemBase::Action) {
     _action=action;
-    _actionWithObject=nullptr;
-    _objectPointer=nullptr;
-  }
-
-ActionMenuItem::ActionMenuItem(const char* label, ActionWithObject action, void* objectPointer)
-  : MenuItemBase(label, MenuItemBase::Action) {
-    _action=nullptr;
-    _actionWithObject=action;
     _objectPointer=objectPointer;
   }
 
 void ActionMenuItem::select(OLED& oled) {
-  if (_actionWithObject && _objectPointer) {
-    _actionWithObject(_objectPointer);
-  } else if (_action) {
+  _menuSystem->setCurrentActionItem(this);
+  if (_action) {
     _action();
   }
+}
+
+void* ActionMenuItem::getObjectPointer() {
+  return _objectPointer;
 }
 
 // class EntryMenuItem
@@ -264,7 +259,6 @@ void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
 }
 
 void Menu::addMenuItem(MenuItemBase* item) {
-  CONSOLE.println(item->getLabel());
   if (this->_itemList==nullptr) {
     this->_itemList=item;
   } else {
@@ -286,6 +280,10 @@ MenuItemBase* Menu::getItemAtIndex(int index) {
     }
   }
   return nullptr;
+}
+
+MenuItemBase* Menu::getItemList() {
+  return _itemList;
 }
 
 // class ThrottleScreen
@@ -312,11 +310,16 @@ void ThrottleScreen::setMenu(MenuItemBase* menu) {
   _menu->setParent(this);
 }
 
+MenuItemBase* ThrottleScreen::getMenu() {
+  return _menu;
+}
+
 // class MenuSystem
 MenuSystem::MenuSystem(OLED& oled)
   : _oled(oled) {
     _currentItem=nullptr;
     _home=nullptr;
+    _currentActionItem=nullptr;
   }
 
 void MenuSystem::display() {
@@ -346,103 +349,36 @@ void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
   _currentItem=currentItem;
 }
 
-
-
-
-
-/*
-// class MenuItem
-// Public functions
-MenuItem::MenuItem(const char* label, Menu* parent) {
-  _label=label;
-  _parent=parent;
-  _next=nullptr;
+Menu* MenuSystem::findMenuByLabel(const char* label) {
+  ThrottleScreen* home=static_cast<ThrottleScreen*>(_home);
+  return _findMenuByLabelRecursive(label, home->getMenu());
 }
 
-Menu* MenuItem::getParent() {
-  return _parent;
-}
-
-// class ActionItem
-ActionItem::ActionItem(const char* label, void *objectPointer, void (*callback)(), Menu* parent)
-  : MenuItem(label, parent), _objectPointer(objectPointer), _callback(callback) {}
-
-// class EntryItem
-EntryItem::EntryItem(const char* label, const char* instruction, void(*callback)(), Menu* parent)
-  : MenuItem(label, parent), _instruction(instruction), _callback(callback) {}
-
-// class SubmenuItem
-SubmenuItem::SubmenuItem(const char* label, Menu* submenu, Menu* parent)
-  : MenuItem(label, parent), _submenu(submenu) {}
-
-Menu* SubmenuItem::getSubmenu() {
-  return _submenu;
-}
-
-void SubmenuItem::display(OLED& oled) {
-  oled.clear();
-  oled.setFont(OLED_FONT);
-  oled.setCursor(0, 0);
-  oled.print("Menu");
-}
-
-// class Menu
-// Public functions
-Menu::Menu() {
-  _firstItem=nullptr;
-  _itemCount=0;
-}
-
-Menu::Menu(Menu* parent, const char* label) {
-  SubmenuItem* newItem=new SubmenuItem(label, this, parent);
-  parent->addItem(newItem);
-}
-
-void Menu::addItem(MenuItem* item) {
-  if (this->_firstItem==nullptr) {
-    this->_firstItem=item;
-  } else {
-    MenuItem* current=this->_firstItem;
-    while (current->_next!=nullptr) {
-      current=current->_next;
-    }
-    current->_next=item;
+Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {
+  if (!currentMenuItem) {
+    return nullptr; // No items matched label
   }
-  _itemCount++;
+  if (currentMenuItem->getType()==MenuItemBase::Menu) {
+    Menu* currentMenu=static_cast<Menu*>(currentMenuItem);
+    if (strcmp(currentMenuItem->getLabel(), label)==0) {
+      return currentMenu;
+    }
+    MenuItemBase* item=currentMenu->getItemList();
+    while (item) {
+      Menu* foundMenu=_findMenuByLabelRecursive(label, item);
+      if (foundMenu) {
+        return foundMenu;
+      }
+      item=item->getNext();
+    }
+  }
+  return _findMenuByLabelRecursive(label, currentMenuItem->getNext());
 }
 
-int Menu::getItemCount() {
-  return _itemCount;
+void MenuSystem::setCurrentActionItem(ActionMenuItem *item) {
+  _currentActionItem=item;
 }
 
-void Menu::display(OLED& oled) {
-  MenuItem* item=_firstItem;
-  item->display(oled);
+ActionMenuItem* MenuSystem::getCurrentActionItem() {
+  return _currentActionItem;
 }
-
-void Menu::navigate(char key, KeyState keyState) {
-
-}
-
-// class MenuSystem
-MenuSystem::MenuSystem(OLED* oled) {
-  _oled=oled;
-  _currentMenu=nullptr;
-}
-
-void MenuSystem::display() {
-  _currentMenu->display(*_oled);
-}
-
-void MenuSystem::navigate(char key, KeyState keyState) {
-  _currentMenu->navigate(key, keyState);
-}
-
-void MenuSystem::setMenu(Menu* menu) {
-  _currentMenu=menu;
-}
-
-void MenuSystem::begin() {
-  
-}
-*/

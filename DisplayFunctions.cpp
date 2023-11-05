@@ -22,21 +22,12 @@
 /***********************************************************************************
 Set up OLED libraries and object
 ***********************************************************************************/
-// #ifdef USE_OLED_SPI
-// SSD1306AsciiSpi oled;
-// #endif
-// #ifdef USE_OLED_I2C
-// SSD1306AsciiAvrI2c oled;
-// #endif
 OLED display;
 
 void displayStartupInfo() {
   // Set up serial and display basic config
-  Serial.print(F("DCC-EX Serial Throttle "));
-  Serial.println(VERSION);
-  // Serial.print(F("Averaging inputs over "));
-  // Serial.print(SAMPLES);
-  // Serial.println(F(" samples"));
+  CONSOLE.print(F("DCC-EX Serial Throttle "));
+  CONSOLE.println(VERSION);
   // Set up OLED
 #ifdef USE_OLED_SPI
   display.begin(OLED_TYPE, CS_PIN, DC_PIN);
@@ -69,39 +60,46 @@ void displayKey(char key, KeyState keyState) {
   }
 }
 
+void displayConnectionError() {
+  display.clear();
+  display.setCursor(0, 0);
+  display.set1X();
+  display.print("Connection error");
+}
+
 /*
 void displayThrottleSpeed(int startCol, int endCol, int textCol, int speed) {
   if (currentMenuPtr->getParent() != nullptr) return;
-  oled.set2X();
-  oled.clear(startCol, endCol, 0, 2);
-  oled.setCursor(textCol, 0);
-  oled.print(speed);
+  display.set2X();
+  display.clear(startCol, endCol, 0, 2);
+  display.setCursor(textCol, 0);
+  display.print(speed);
 }
 
 void displayThrottleDirection(int startCol, int endCol, int textCol, bool direction) {
   if (currentMenuPtr->getParent() != nullptr) return;
-  oled.set1X();
-  oled.clear(startCol, endCol, 3, 4);
-  oled.setCursor(textCol, 3);
+  display.set1X();
+  display.clear(startCol, endCol, 3, 4);
+  display.setCursor(textCol, 3);
   if (direction == Forward) {
-    oled.print(F("Fwd"));
+    display.print(F("Fwd"));
   } else {
-    oled.print(F("Rev"));
+    display.print(F("Rev"));
   }
 }
 
 void displayThrottleAddress(int startCol, int endCol, int textCol, int address, bool isOverridden, bool isConsist) {
   if (currentMenuPtr->getParent() != nullptr) return;
-  oled.set1X();
-  oled.clear(startCol, endCol, 5, 5);
-  oled.setCursor(textCol, 5);
+  display.set1X();
+  display.clear(startCol, endCol, 5, 5);
+  display.setCursor(textCol, 5);
   if (isOverridden) {
-    oled.print("*");
+    display.print("*");
   } else {
-    oled.print(" ");
+    display.print(" ");
   }
-  oled.print(address);
-  if (isConsist) oled.print("c");
+  display.print(address);
+  if (isConsist) display.print("c");
 }
 
 void displayThrottle1Speed() {
@@ -141,7 +139,7 @@ void displayThrottle3Address() {
 }
 
 void displayHomeScreen() {
-  oled.clear();
+  display.clear();
   displayThrottle1Speed();
   displayThrottle2Speed();
   displayThrottle3Speed();
@@ -151,32 +149,27 @@ void displayHomeScreen() {
   displayThrottle1Address();
   displayThrottle2Address();
   displayThrottle3Address();
-  oled.setCursor(0, 7);
-  oled.print("* Menu");
+  display.setCursor(0, 7);
+  display.print("* Menu");
 } 
 
-void displayConnectionError() {
-  oled.clear();
-  oled.setCursor(0, 0);
-  oled.set1X();
-  oled.print("Connection error");
-}
+
 */
 
 /*
 Display EStop status
 */
 // void displayEStop() {
-//   oled.setCursor(0, 0);
-//   oled.clearToEOL();
-//   oled.setCursor(4, 1);
-//   oled.set1X();
-//   oled.print("ESTOP");
-//   oled.clearToEOL();
-//   oled.setCursor(46, 1);
-//   oled.print("ESTOP");
-//   oled.clearToEOL();
-//   oled.setCursor(88, 1);
-//   oled.print("ESTOP");
-//   oled.clearToEOL();
+//   display.setCursor(0, 0);
+//   display.clearToEOL();
+//   display.setCursor(4, 1);
+//   display.set1X();
+//   display.print("ESTOP");
+//   display.clearToEOL();
+//   display.setCursor(46, 1);
+//   display.print("ESTOP");
+//   display.clearToEOL();
+//   display.setCursor(88, 1);
+//   display.print("ESTOP");
+//   display.clearToEOL();
 // }
