@@ -46,8 +46,8 @@ void createMenus() {
   mainMenu->addMenuItem(new Menu("Roster"));
   Menu* tracksMenu=new Menu("Tracks");
   mainMenu->addMenuItem(tracksMenu);
-  tracksMenu->addMenuItem(new ActionMenuItem("Power On", nullptr));
-  tracksMenu->addMenuItem(new ActionMenuItem("Power Off", nullptr));
+  tracksMenu->addMenuItem(new ActionMenuItem("Power On", trackPowerOn));
+  tracksMenu->addMenuItem(new ActionMenuItem("Power Off", trackPowerOff));
   tracksMenu->addMenuItem(new ActionMenuItem("Join", nullptr));
   tracksMenu->addMenuItem(new ActionMenuItem("Unjoin", nullptr));
   Menu* trackManager=new Menu("TrackManager");

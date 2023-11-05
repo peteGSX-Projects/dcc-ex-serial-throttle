@@ -38,7 +38,6 @@ void setup() {
 #if defined(ARDUINO_BLUEPILL_F103C8)
   disableJTAG();
 #endif
-  pinMode(POT1_PIN, INPUT);
   // Set up serial and display basic config
   CONSOLE.begin(115200);
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)

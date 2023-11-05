@@ -17,30 +17,34 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DCCEXOBJECTS_H
-#define DCCEXOBJECTS_H
+#ifndef THROTTLESETUP_H
+#define THROTTLESETUP_H
 
 #include <Arduino.h>
-#include <DCCEXProtocol.h>
-#include "DCCEXCallbacks.h"
-#include "Menu.h"
 
-extern DCCEXProtocol dccexProtocol;
-extern DCCEXCallbacks dccexCallbacks;
+// If number of throttles not defined, define here as 3
+#ifndef NUM_THROTTLES
+#define NUM_THROTTLES 3
+#endif
 
-extern bool connected;
+extern const int numThrottles;
 
-void validateConnection();
-void updateRoster();
-void updateRoutes();
-void updateTurnouts();
-void updateTurntables();
-void toggleTurnout();
-void closeTurnout();
-void throwTurnout();
-void rotateTurntable();
-void trackPowerOn();
-void trackPowerOff();
-// void setJoinTracks();
+struct DisplayAttributes {
+  int startColumn;
+  int endColumn;
+  int startRow;
+  int endRow;
+  int textColumn;
+  int fontSize;
+};
+
+struct ThrottleSetup {
+  DisplayAttributes speed;
+  DisplayAttributes direction;
+  DisplayAttributes adress;
+  int potPin;
+};
+
+extern ThrottleSetup throttleSetup[NUM_THROTTLES];
 
 #endif

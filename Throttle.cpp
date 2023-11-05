@@ -20,7 +20,6 @@
 #include "Throttle.h"
 #include "defines.h"
 
-/*
 // Constructor, set input mode on construction
 Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList) {
   _potPin = potPin;
@@ -175,4 +174,3 @@ LocoNode* throttle3List = nullptr;
 Throttle throttle1(1, POT1_PIN, throttle1List);
 Throttle throttle2(2, POT2_PIN, throttle2List);
 Throttle throttle3(3, POT3_PIN, throttle3List);
-*/

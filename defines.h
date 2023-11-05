@@ -64,4 +64,13 @@ If we haven't got a custom config.h, use the example
 #define OLED SSD1306AsciiAvrI2c
 #endif
 
+/***********************************************************************************
+If we haven't got a custom UserThrottleSetup.h, use the default
+***********************************************************************************/
+#if __has_include ( "UserThrottleSetup.h")
+  #include "UserThrottleSetup.h"
+#else
+  #include "ThrottleSetup.h"
+#endif
+
 #endif

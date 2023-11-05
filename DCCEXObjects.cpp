@@ -132,6 +132,24 @@ void toggleTurnout() {
   dccexProtocol.toggleTurnout(turnoutId);
 }
 
+void closeTurnout() {
+  if (!menuSystem.getCurrentActionItem()) return;
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  Turnout* turnout=static_cast<Turnout*>(object);
+  if (!turnout) return;
+  int turnoutId = turnout->getId();
+  dccexProtocol.closeTurnout(turnoutId);
+}
+
+void throwTurnout() {
+  if (!menuSystem.getCurrentActionItem()) return;
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  Turnout* turnout=static_cast<Turnout*>(object);
+  if (!turnout) return;
+  int turnoutId = turnout->getId();
+  dccexProtocol.throwTurnout(turnoutId);
+}
+
 // Function to rotate a turntable
 void rotateTurntable() {
   if (!menuSystem.getCurrentActionItem()) return;
@@ -147,15 +165,12 @@ void rotateTurntable() {
 }
 
 // Function to turn track power on or off
-void setTrackPower() {
-  // if (currentMenuPtr != nullptr) {
-  //   int state = currentMenuPtr->getItem(currentMenuPtr->getSelectedItem()).objectId;
-  //   if (state == 1) {
-  //     dccexProtocol.sendTrackPower(PowerOn);
-  //   } else {
-  //     dccexProtocol.sendTrackPower(PowerOff);
-  //   }
-  // }
+void trackPowerOn() {
+  dccexProtocol.sendTrackPower(PowerOn);
+}
+
+void trackPowerOff() {
+  dccexProtocol.sendTrackPower(PowerOff);
 }
 
 // Function to join or unjoin tracks
