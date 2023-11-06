@@ -323,6 +323,49 @@ void ThrottleScreen::handleKeys(char key, KeyState keyState, OLED& oled) {
           _menu->display(oled);
           break;
 
+        case'1': {
+          auto th=_menuSystem->getThrottles()[0];
+          int speed=th->getSpeed();
+          int address=th->getLocoAddress();
+          if (speed==0 && address!=0) {
+            th->setDirection(!th->getDirection());
+            th->displayDirection();
+          }
+          break;
+        }
+
+        if (NUM_THROTTLES>1) {
+          case '2': { // Reverse key
+            auto th=_menuSystem->getThrottles()[1];
+            int speed=th->getSpeed();
+            int address=th->getLocoAddress();
+            if (speed==0 && address!=0) {
+              th->setDirection(!th->getDirection());
+              th->displayDirection();
+            }
+            break;
+          }
+
+          case '5': // Light (press)/horn (hold) key
+            break;
+
+          case '8': // Display functions key
+            break;
+        }
+        
+        if (NUM_THROTTLES>2) {
+          case '3': {
+            auto th=_menuSystem->getThrottles()[2];
+            int speed=th->getSpeed();
+            int address=th->getLocoAddress();
+            if (speed==0 && address!=0) {
+              th->setDirection(!th->getDirection());
+              th->displayDirection();
+            }
+            break;
+          }
+        }
+        
         default:
           break;
       }
