@@ -23,7 +23,7 @@
 #include "DCCEXObjects.h"
 #include "StaticMenus.h"
 
-DCCEXProtocol dccexProtocol(3);
+DCCEXProtocol dccexProtocol(NUM_THROTTLES);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested = false;
