@@ -30,9 +30,9 @@ void createMenus() {
   Menu* throttleList=new Menu("Throttles");
   mainMenu->addMenuItem(throttleList);
   char label[11];
-  for (int i=1; i<4; i++) {
-    sprintf(label, "Throttle %d", i);
-    Menu* throttleMenu=new Menu(label);
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    sprintf(label, "Throttle %d", i+1);
+    Menu* throttleMenu=new ThrottleMenu(label, i);
     throttleList->addMenuItem(throttleMenu);
     throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));

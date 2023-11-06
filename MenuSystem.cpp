@@ -111,6 +111,8 @@ void EntryMenuItem::display(OLED& oled) {
 }
 
 void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
+  CONSOLE.print(F("Throttle context: "));
+  CONSOLE.println(_menuSystem->getCurrentThrottle());
   if (keyState==PRESSED) {
     switch(key) {
       case '*':
@@ -131,14 +133,21 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
             oled.print("#####");
             oled.setCursor(0, 6);
             oled.print("INVALID ADDRESS");
-          // } else if (throttle1.addressInUse(number) || throttle2.addressInUse(number) || throttle3.addressInUse(number)) {
-          //   oled.setCursor(0, 3);
-          //   oled.print("#####");
-          //   oled.setCursor(0, 6);
-          //   oled.print("ADDRESS IN USE");
           } else {
-            // currentThrottle->setLocoAddress(number, LocoSourceEntry);
-            _menuSystem->goHome();
+            bool inUse=false;
+            for (int i=0; i<NUM_THROTTLES; i++) {
+              if (_menuSystem->getThrottles()[i]->addressInUse(number)) inUse=true;
+            }
+            if (inUse) {
+              oled.setCursor(0, 3);
+              oled.print("#####");
+              oled.setCursor(0, 6);
+              oled.print("ADDRESS IN USE");
+            } else {
+              int throttle=_menuSystem->getCurrentThrottle();
+              _menuSystem->getThrottles()[throttle]->setLocoAddress(number, LocoSourceEntry);
+              _menuSystem->goHome();
+            }
           }
         }
         break;
@@ -243,7 +252,7 @@ void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
       case '*':
         if (this->_parent) {
           _menuSystem->setCurrentItem(this->_parent);
-          _parent->display(oled);
+          _parent->select(oled);
         }
         break;
       
@@ -286,22 +295,38 @@ MenuItemBase* Menu::getItemList() {
   return _itemList;
 }
 
+ThrottleMenu::ThrottleMenu(const char* label, int throttleNumber)
+  : Menu(label) {
+  _throttleNumber=throttleNumber;
+}
+
+void ThrottleMenu::select(OLED& oled) {
+  _menuSystem->setCurrentItem(this);
+  _menuSystem->setCurrentThrottle(_throttleNumber);
+  this->display(oled);
+}
+
 // class ThrottleScreen
 ThrottleScreen::ThrottleScreen()
   : MenuItemBase(nullptr, MenuItemBase::Throttle) {}
 
-void ThrottleScreen::display(OLED& oled) {
-  oled.clear();
-  oled.setCursor(0, 0);
-  oled.print(F("Throttles here"));
-  oled.setCursor(0, 7);
-  oled.print(F("* Menu"));
+void ThrottleScreen::select(OLED& oled) {
+  _menuSystem->goHome();
 }
 
 void ThrottleScreen::handleKeys(char key, KeyState keyState, OLED& oled) {
   if (_menu) {
-    _menuSystem->setCurrentItem(_menu);
-    _menu->display(oled);
+    if (keyState==PRESSED) {
+      switch(key) {
+        case '*':
+          _menuSystem->setCurrentItem(_menu);
+          _menu->display(oled);
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }
 
@@ -320,6 +345,8 @@ MenuSystem::MenuSystem(OLED& oled)
     _currentItem=nullptr;
     _home=nullptr;
     _currentActionItem=nullptr;
+    _throttles=nullptr;
+    _currentThrottle=-1;
   }
 
 void MenuSystem::display() {
@@ -342,7 +369,14 @@ void MenuSystem::setHome(MenuItemBase* home) {
 
 void MenuSystem::goHome() {
   _currentItem=_home;
-  _home->display(_oled);
+  _oled.clear();
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    _throttles[i]->displaySpeed();
+    _throttles[i]->displayDirection();
+    _throttles[i]->displayAddress();
+  }
+  _oled.setCursor(0, 7);
+  _oled.print(F("* Menu"));
 }
 
 void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
@@ -381,4 +415,20 @@ void MenuSystem::setCurrentActionItem(ActionMenuItem *item) {
 
 ActionMenuItem* MenuSystem::getCurrentActionItem() {
   return _currentActionItem;
+}
+
+void MenuSystem::setThrottles(Throttle** throttles) {
+  _throttles=throttles;
+}
+
+Throttle** MenuSystem::getThrottles() {
+  return _throttles;
+}
+
+void MenuSystem::setCurrentThrottle(int throttle) {
+  _currentThrottle=throttle;
+}
+
+int MenuSystem::getCurrentThrottle() {
+  return _currentThrottle;
 }

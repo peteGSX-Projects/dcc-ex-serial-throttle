@@ -24,6 +24,7 @@
 #include "defines.h"
 #include "Keypad.h"
 #include "DCCEXProtocol.h"
+#include "Throttle.h"
 
 class MenuSystem;
 
@@ -197,6 +198,17 @@ private:
 
 };
 
+class ThrottleMenu : public Menu {
+public:
+  ThrottleMenu(const char* label, int throttleNumber);
+
+  void select(OLED& oled) override;
+
+private:
+  int _throttleNumber;
+
+};
+
 class ThrottleScreen : public MenuItemBase {
 public:
   /// @brief  Constructor for the throttle screen
@@ -204,7 +216,7 @@ public:
   
   /// @brief Display the throttle screen
   /// @param oled 
-  void display(OLED& oled) override;
+  void select(OLED& oled) override;
 
   /// @brief Respond to user input
   /// @param key 
@@ -263,11 +275,29 @@ public:
   /// @return 
   ActionMenuItem* getCurrentActionItem();
 
+  /// @brief Set the pointer to the throttles array
+  /// @param throttles 
+  void setThrottles(Throttle** throttles);
+
+  /// @brief Get the throttle array pointer
+  /// @return 
+  Throttle** getThrottles();
+
+  /// @brief Set the current throttle being managed
+  /// @param throttle 
+  void setCurrentThrottle(int throttle);
+
+  /// @brief Get the current throttle being managed
+  /// @return 
+  int getCurrentThrottle();
+
 private:
   OLED& _oled;
   MenuItemBase* _currentItem;
   MenuItemBase* _home;
   ActionMenuItem* _currentActionItem;
+  Throttle** _throttles;
+  int _currentThrottle;
 
   Menu* _findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem);
   

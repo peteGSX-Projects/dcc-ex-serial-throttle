@@ -30,6 +30,10 @@ Include the required libraries
 // #include "SerialFunctions.h"
 #include "DCCEXObjects.h"
 #include "Throttle.h"
+#include "ThrottleSetup.h"
+
+// Array to hold all throttle objects to process
+Throttle* throttles[NUM_THROTTLES];
 
 /***********************************************************************************
 Main setup function
@@ -46,10 +50,13 @@ void setup() {
   displayStartupInfo();
   delay(2000);
   setupKeypad();
+  setupThrottles();
+  menuSystem.setThrottles(throttles);
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
   createMenus();
+  menuSystem.goHome();
 }
 
 /***********************************************************************************
@@ -57,27 +64,25 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  validateConnection();
-  if (connected) {
-    dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
+  // validateConnection();
+  // if (connected) {
+  //   dccexProtocol.getLists(true, true, true, true);
+  //   updateRoster();
+  //   updateRoutes();
+  //   updateTurnouts();
+  //   updateTurntables();
+  // }
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    throttles[i]->process();
+    if (throttles[i]->speedChanged()) {
+      throttles[i]->displaySpeed();
+    }
   }
-  // throttle1.process();
-  // throttle2.process();
-  // throttle3.process();
-  // if (throttle1.speedChanged()) displayThrottle1Speed();
-  // if (throttle2.speedChanged()) displayThrottle2Speed();
-  // if (throttle3.speedChanged()) displayThrottle3Speed();
   keypad.getKey();
   // getSerialInput();
 }
 
-/*
-Disabling JTAG is required to avoid pin conflicts on Bluepill
-*/
+// Disabling JTAG is required to avoid pin conflicts on Bluepill
 #if defined(ARDUINO_BLUEPILL_F103C8)
 void disableJTAG() {
   // Disable JTAG and enable SWD by clearing the SWJ_CFG bits
@@ -87,3 +92,10 @@ void disableJTAG() {
   // AFIO->MAPR2 &= ~(AFIO_MAPR2_SWJ_CFG);
 }
 #endif
+
+// Setup the correct number of throttles as defined
+void setupThrottles() {
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    throttles[i]=new Throttle(i, throttleSetup[i].potPin, nullptr, display);
+  }
+}

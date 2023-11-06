@@ -40,6 +40,11 @@ If we haven't got a custom config.h, use the example
 #define CONNECT_RETRIES 5
 #endif
 
+// If number of throttles not defined, define here as 3
+#ifndef NUM_THROTTLES
+#define NUM_THROTTLES 3
+#endif
+
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #undef CONSOLE
 #undef CLIENT
@@ -62,15 +67,6 @@ If we haven't got a custom config.h, use the example
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiAvrI2c.h"
 #define OLED SSD1306AsciiAvrI2c
-#endif
-
-/***********************************************************************************
-If we haven't got a custom UserThrottleSetup.h, use the default
-***********************************************************************************/
-#if __has_include ( "UserThrottleSetup.h")
-  #include "UserThrottleSetup.h"
-#else
-  #include "ThrottleSetup.h"
 #endif
 
 #endif

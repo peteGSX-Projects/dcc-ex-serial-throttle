@@ -21,13 +21,7 @@
 #define THROTTLESETUP_H
 
 #include <Arduino.h>
-
-// If number of throttles not defined, define here as 3
-#ifndef NUM_THROTTLES
-#define NUM_THROTTLES 3
-#endif
-
-extern const int numThrottles;
+#include "defines.h"
 
 struct DisplayAttributes {
   int startColumn;
@@ -35,13 +29,12 @@ struct DisplayAttributes {
   int startRow;
   int endRow;
   int textColumn;
-  int fontSize;
 };
 
 struct ThrottleSetup {
   DisplayAttributes speed;
   DisplayAttributes direction;
-  DisplayAttributes adress;
+  DisplayAttributes address;
   int potPin;
 };
 

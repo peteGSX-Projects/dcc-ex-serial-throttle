@@ -23,8 +23,7 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXObjects.h"
-
-const uint8_t SAMPLES = SLIDER_SAMPLES;
+#include "ThrottleSetup.h"
 
 struct LocoNode {
   Loco* loco;
@@ -33,43 +32,98 @@ struct LocoNode {
 
 class Throttle {
 public:
-  // Constructor
-  Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList);
+  struct ThrottleAddressList {
+    LocoNode* addressList;
+  };
+  
+  /// @brief Constructor
+  /// @param throttleNumber 
+  /// @param potPin 
+  /// @param initialLocoList 
+  Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList, OLED& oled);
 
+  /// @brief Process analogue input for speed
   void process();
-  uint8_t getThrottleNumber();
-  void setLocoAddress(uint16_t address, LocoSource source);
-  uint16_t getLocoAddress();
+  
+  /// @brief Get the number of this throttle
+  /// @return 
+  int getThrottleNumber();
+  
+  /// @brief Set the loco address and source for this throttle
+  /// @param address 
+  /// @param source 
+  void setLocoAddress(int address, LocoSource source);
+  
+  /// @brief Get the loco address for this throttle
+  /// @return 
+  int getLocoAddress();
+  
+  /// @brief Check if the throttle speed has changed
+  /// @return 
   bool speedChanged();
-  uint8_t getSpeed();
+  
+  /// @brief Get the current speed of this throttle
+  /// @return 
+  int getSpeed();
+  
+  /// @brief Check if this throttle controls a consist
+  /// @return 
   bool isConsist();
-  void forgetLoco(uint16_t address);
+  
+  /// @brief Forget the loco associated with this throttle
+  /// @param address 
+  void forgetLoco(int address);
+  
+  /// @brief Set the direction for this throttle
+  /// @param direction 
   void setDirection(bool direction);
+  
+  /// @brief Get the current direction for this throttle
+  /// @return 
   bool getDirection();
+  
+  /// @brief Check if another throttle has overridden the speed/direction
+  /// @return 
   bool isOverridden();
-  bool addressInUse(uint16_t address);
+  
+  /// @brief Check if the specified address is in use by this throttle
+  /// @param address 
+  /// @return 
+  bool addressInUse(int address);
+
+  /// @brief Display the speed on screen for this throttle
+  void displaySpeed();
+
+  /// @brief Display the direction on screen for this throttle
+  void displayDirection();
+
+  /// @brief Display the address on screen for this throttle
+  void displayAddress();
+
+  /// @brief Display EStop for this throttle instead of speed
+  void displayEStop();
 
 private:
-  uint8_t _potPin;  // pin the potentiometer is on for this throttle
-  uint8_t _currentIndex = 0;
-  uint8_t _valueCount = 0;
-  uint16_t _sum = 0;
-  uint16_t _values[SAMPLES];
-  uint8_t _speed = 0;
-  uint16_t _rollingAverage = 0;
+  int _potPin;  // pin the potentiometer is on for this throttle
+  int _currentIndex = 0;
+  int _valueCount = 0;
+  int _sum = 0;
+  int _values[SLIDER_SAMPLES];
+  int _speed = 0;
+  int _rollingAverage = 0;
   bool _speedChanged = false;
-  uint16_t _locoAddress = 0;
-  uint8_t _throttleNumber;
+  int _locoAddress = 0;
+  int _throttleNumber;
   bool _direction = Forward;  // Default to forward
   bool _isOverridden = false;
   LocoNode* _locoList = nullptr;  // Linked list containing Locos
+  OLED& _oled;
+
+  /// @brief Helper function to get the direction name
+  /// @param direction 
+  /// @return 
+  Direction _getDirectionName(bool direction);
 
 };
-
-Direction getDirectionName(bool direction);
-
-extern Throttle throttle1;
-extern Throttle throttle2;
-extern Throttle throttle3;
 
 #endif
