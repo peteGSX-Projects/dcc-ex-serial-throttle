@@ -20,57 +20,51 @@
 #include "Throttle.h"
 #include "defines.h"
 
-/*
-Constructor, set input mode on construction
-*/
-Throttle::Throttle(uint8_t throttleNumber, uint8_t potPin, LocoNode* initialLocoList) {
-  _potPin = potPin;
+// Constructor, set input mode on construction
+Throttle::Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList, OLED& oled)
+  : _oled(oled) {
+  _potPin=potPin;
   pinMode(_potPin, INPUT);
-  _throttleNumber = throttleNumber;
-  _locoList = initialLocoList;
+  _throttleNumber=throttleNumber;
+  _locoList=initialLocoList;
 }
 
-/*
-Process throttle object:
-- Average potentiometer input over samples
-- If average has changed, update display and loco speed
-*/
+// Process throttle object:
+// - Average potentiometer input over samples
+// - If average has changed, update display and loco speed
 void Throttle::process() {
   if (_locoAddress == 0) return;
-  uint16_t _instantValue = analogRead(_potPin);
+  int _instantValue = analogRead(_potPin);
   _sum += _instantValue;
-  if (_valueCount == SAMPLES) _sum -= _values[_currentIndex];
+  if (_valueCount == SLIDER_SAMPLES) _sum -= _values[_currentIndex];
   _values[_currentIndex] = _instantValue;
-  if (++_currentIndex >= SAMPLES) _currentIndex = 0;
-  if (_valueCount < SAMPLES) _valueCount += 1;
+  if (++_currentIndex >= SLIDER_SAMPLES) _currentIndex = 0;
+  if (_valueCount < SLIDER_SAMPLES) _valueCount += 1;
   _rollingAverage = _sum/_valueCount;
   _speedChanged = false;
   if (_speed != map(_rollingAverage, POT_MIN, POT_MAX, 0, 126)) {
     _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
     _speedChanged = true;
     if (dccexProtocol.throttle[_throttleNumber].getLocoCount() > 0) {
-      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
     }
   }
 }
 
-/*
-Return this throttle's number (for display purposes)
-*/
-uint8_t Throttle::getThrottleNumber() {
+// Return this throttle's number (for display purposes)
+int Throttle::getThrottleNumber() {
   return _throttleNumber;
 }
 
-/*
-Associate a loco object with this throttle
-Sends the initial speed and direction to the CS also
-*/
-void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
+// Associate a loco object with this throttle
+// Sends the initial speed and direction to the CS also
+void Throttle::setLocoAddress(int address, LocoSource source) {
   if (_locoAddress > 0) this->forgetLoco(_locoAddress);
   _locoAddress = address;
-  if (throttle1.addressInUse(_locoAddress)) return;
-  if (throttle2.addressInUse(_locoAddress)) return;
-  if (throttle3.addressInUse(_locoAddress)) return;
+  if (addressInUse(_locoAddress)) return;
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    
+  }
   Loco* newLoco = new Loco(address, source);
   LocoNode* newNode = new LocoNode;
   newNode->loco = newLoco;
@@ -86,43 +80,33 @@ void Throttle::setLocoAddress(uint16_t address, LocoSource source) {
     currentNode->next = newNode;
   }
   dccexProtocol.throttle[_throttleNumber].addFromEntry(_locoAddress, FacingForward);
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
 }
 
-/*
-Return the current loco address
-*/
-uint16_t Throttle::getLocoAddress() {
+// Return the current loco address
+int Throttle::getLocoAddress() {
   return _locoAddress;
 }
 
-/*
-Flag if throttle is a consist or not
-*/
+// Flag if throttle is a consist or not
 bool Throttle::isConsist() {
   return (dccexProtocol.throttle[_throttleNumber].getLocoCount()>1) ? true : false;
 }
 
-/*
-Function to flag if the speed has changed
-Sends new speed to the CS also
-*/
+// Function to flag if the speed has changed
+// Sends new speed to the CS also
 bool Throttle::speedChanged() {
   return _speedChanged;
 }
 
-/*
-Returns the current speed
-*/
-uint8_t Throttle::getSpeed() {
+// Returns the current speed
+int Throttle::getSpeed() {
   return map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
 }
 
-/*
-Forgets the acquired loco
-This needs to delete any Loco or Consist objects in use
-*/
-void Throttle::forgetLoco(uint16_t address) {
+// Forgets the acquired loco
+// This needs to delete any Loco or Consist objects in use
+void Throttle::forgetLoco(int address) {
   LocoNode* previousNode = nullptr;
   LocoNode* currentNode = _locoList;
 
@@ -143,62 +127,116 @@ void Throttle::forgetLoco(uint16_t address) {
   }
 }
 
-/*
-Sets the direction if speed = 0
-1 = reverse
-0 = forward
-Sends the change to the CS also
-*/
+// Sets the direction if speed = 0
+// 1 = reverse
+// 0 = forward
+// Sends the change to the CS also
 void Throttle::setDirection(bool direction){
   if (_speed > 0) return;
   _direction = direction;
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
 }
 
-/*
-Get current throttle direction
-1 = reverse
-0 = forward
-*/
+// Get current throttle direction
+// 1 = reverse
+// 0 = forward
 bool Throttle::getDirection() {
   return _direction;
 }
 
-/*
-True if throttle speed and/or direction has been overridden by another throttle
-*/
+// True if throttle speed and/or direction has been overridden by another throttle
 bool Throttle::isOverridden() {
   return _isOverridden;
 }
 
-/*
-Function to check if the specified address is in use by this throttle
-By design, checks consists as well
-*/
-bool Throttle::addressInUse(uint16_t address) {
-  LocoNode* currentNode = _locoList;
-  while (currentNode != nullptr) {
-    if (currentNode->loco->getAddress() == address) {
+// Function to check if the specified address is in use by this throttle
+// By design, checks consists as well
+bool Throttle::addressInUse(int address) {
+  LocoNode* currentNode=_locoList;
+  while (currentNode!=nullptr) {
+    if (currentNode->loco->getAddress()==address) {
       return true;
     }
-    currentNode = currentNode->next;
+    currentNode=currentNode->next;
   }
   return false;
 }
 
-/*
-Helper function to convert direction bool to Direction char
-*/
-Direction getDirectionName(bool direction) {
-  return (direction) ? Forward : Reverse;
+void Throttle::displaySpeed() {
+  _oled.set2X();
+  _oled.clear(
+    throttleSetup[_throttleNumber].speed.startColumn,
+    throttleSetup[_throttleNumber].speed.endColumn,
+    throttleSetup[_throttleNumber].speed.startRow,
+    throttleSetup[_throttleNumber].speed.endRow
+  );
+  _oled.setCursor(
+    throttleSetup[_throttleNumber].speed.textColumn,
+    throttleSetup[_throttleNumber].speed.startRow
+  );
+  _oled.print(_speed);
 }
 
-// Create Loco linked lists
-LocoNode* throttle1List = nullptr;
-LocoNode* throttle2List = nullptr;
-LocoNode* throttle3List = nullptr;
+void Throttle::displayDirection() {
+  _oled.set1X();
+  _oled.clear(
+    throttleSetup[_throttleNumber].direction.startColumn,
+    throttleSetup[_throttleNumber].direction.endColumn,
+    throttleSetup[_throttleNumber].direction.startRow,
+    throttleSetup[_throttleNumber].direction.endRow
+  );
+  _oled.setCursor(
+    throttleSetup[_throttleNumber].direction.textColumn,
+    throttleSetup[_throttleNumber].direction.startRow
+  );
+  if (_direction==Forward) {
+    _oled.print(F("Fwd"));
+  } else {
+    _oled.print(F("Rev"));
+  }
+}
 
-// Create throttle objects
-Throttle throttle1(1, POT1_PIN, throttle1List);
-Throttle throttle2(2, POT2_PIN, throttle2List);
-Throttle throttle3(3, POT3_PIN, throttle3List);
+void Throttle::displayAddress() {
+  CONSOLE.print(F("Display address for throttle "));
+  CONSOLE.println(_throttleNumber);
+  _oled.set1X();
+  _oled.clear(
+    throttleSetup[_throttleNumber].address.startColumn,
+    throttleSetup[_throttleNumber].address.endColumn,
+    throttleSetup[_throttleNumber].address.startRow,
+    throttleSetup[_throttleNumber].address.endRow
+  );
+  _oled.setCursor(
+    throttleSetup[_throttleNumber].address.textColumn,
+    throttleSetup[_throttleNumber].address.startRow
+  );
+  if (_isOverridden) {
+    _oled.print(F("*"));
+  } else {
+    _oled.print(F(" "));
+  }
+  _oled.print(_locoAddress);
+  if (isConsist()) {
+    _oled.print(F("c"));
+  }
+}
+
+void Throttle::displayEStop() {
+  _oled.set1X();
+  _oled.clear(
+    throttleSetup[_throttleNumber].speed.startColumn,
+    throttleSetup[_throttleNumber].speed.endColumn,
+    throttleSetup[_throttleNumber].speed.startRow,
+    throttleSetup[_throttleNumber].speed.endRow
+  );
+  _oled.setCursor(
+    throttleSetup[_throttleNumber].speed.textColumn,
+    throttleSetup[_throttleNumber].speed.startRow
+  );
+  _oled.print(F("ESTOP"));
+}
+
+// Helper function to convert direction bool to Direction char
+Direction Throttle::_getDirectionName(bool direction) {
+  return (direction) ? Forward : Reverse;
+}

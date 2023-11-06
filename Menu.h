@@ -39,6 +39,7 @@ item plus space between.
 #include "Throttle.h"
 #include "Keypad.h"
 
+/*
 enum MenuItemType {
   MENU,
   ACTION,
@@ -60,9 +61,7 @@ struct MenuItem {
     index(idx), label(label), menuItemType(menuItemType), objectPointer(objectPointer), callback(callback), next(nullptr) {}
 };
 
-/*
-Menu class
-*/
+// Menu class
 class Menu {
 public:
   // Constructor
@@ -159,5 +158,6 @@ void forgetLoco();
 void selectFromRoster();
 void setLocoFromRoster();
 void noAction();    // For menu items that just display info
+*/
 
 #endif

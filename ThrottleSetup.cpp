@@ -17,33 +17,25 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPLAYFUNCTIONS_H
-#define DISPLAYFUNCTIONS_H
+#include "ThrottleSetup.h"
 
-#include <Arduino.h>
-#include "defines.h"
-#include "version.h"
-#include "Throttle.h"
-#include "Keypad.h"
-
-extern OLED display;
-
-void displayStartupInfo();
-void displayKey(char key, KeyState keyState);
-void displayConnectionError();
-
-// void displayHomeScreen();
-
-// void displayThrottle1Speed();
-// void displayThrottle1Direction();
-// void displayThrottle2Address();
-// void displayThrottle2Speed();
-// void displayThrottle2Direction();
-// void displayThrottle2Address();
-// void displayThrottle3Speed();
-// void displayThrottle3Direction();
-// void displayThrottle3Address();
-
-// void displayEStop();
-
-#endif
+ThrottleSetup throttleSetup[NUM_THROTTLES]={
+  { // Throttle 0
+    {0, 45, 0, 2, 4},  // Speed display attributes
+    {0, 51, 3, 4, 10}, // Direction display attributes
+    {0, 42, 5, 5, 0}, // Address display attributes
+    PA0,  // Pot pin
+  },
+  { // Throttle 1
+    {46, 87, 0, 2, 46},
+    {52, 93, 3, 4, 52},
+    {43, 86, 5, 5, 43},
+    PA1,
+  },
+  { // Throttle 2
+    {88, 128, 0, 2, 88},
+    {94, 128, 3, 4, 94},
+    {87, 128, 5, 5, 87},
+    PA2,
+  },
+};

@@ -40,6 +40,11 @@ If we haven't got a custom config.h, use the example
 #define CONNECT_RETRIES 5
 #endif
 
+// If number of throttles not defined, define here as 3
+#ifndef NUM_THROTTLES
+#define NUM_THROTTLES 3
+#endif
+
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F411CE)
 #undef CONSOLE
 #undef CLIENT
@@ -50,6 +55,18 @@ If we haven't got a custom config.h, use the example
 #undef CLIENT
 #define CONSOLE Serial
 #define CLIENT Serial
+#endif
+
+#ifdef USE_OLED_SPI
+#include <SPI.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiSpi.h"
+#define OLED SSD1306AsciiSpi
+#endif
+#ifdef USE_OLED_I2C
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
+#define OLED SSD1306AsciiAvrI2c
 #endif
 
 #endif

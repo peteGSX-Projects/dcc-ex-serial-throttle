@@ -17,33 +17,17 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPLAYFUNCTIONS_H
-#define DISPLAYFUNCTIONS_H
+#ifndef MENUS_H
+#define MENUS_H
 
 #include <Arduino.h>
-#include "defines.h"
-#include "version.h"
-#include "Throttle.h"
-#include "Keypad.h"
+#include "MenuSystem.h"
+#include "DisplayFunctions.h"
 
-extern OLED display;
+// Main menu system
+extern MenuSystem menuSystem;
 
-void displayStartupInfo();
-void displayKey(char key, KeyState keyState);
-void displayConnectionError();
-
-// void displayHomeScreen();
-
-// void displayThrottle1Speed();
-// void displayThrottle1Direction();
-// void displayThrottle2Address();
-// void displayThrottle2Speed();
-// void displayThrottle2Direction();
-// void displayThrottle2Address();
-// void displayThrottle3Speed();
-// void displayThrottle3Direction();
-// void displayThrottle3Address();
-
-// void displayEStop();
+// Create the menu structure
+void createMenus();
 
 #endif

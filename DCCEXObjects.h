@@ -36,7 +36,11 @@ void updateRoutes();
 void updateTurnouts();
 void updateTurntables();
 void toggleTurnout();
-void setTrackPower();
-void setJoinTracks();
+void closeTurnout();
+void throwTurnout();
+void rotateTurntable();
+void trackPowerOn();
+void trackPowerOff();
+// void setJoinTracks();
 
 #endif
