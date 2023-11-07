@@ -31,6 +31,7 @@
 #define DCCEX_FONT u8g2_font_12x6LED_tf
 #define ANIMALS u8g2_font_unifont_t_animals
 #define EMOJIS u8g2_font_unifont_t_emoticons
+#define MENU_FONT u8g2_font_4x6_tf
 
 const int EmojiSadFace=0x0055;
 const int AnimalCat=0x0028;

@@ -195,36 +195,45 @@ void Menu::display(OLED& oled) {
   int endIndex=min(startIndex+_itemsPerPage, _itemCount);
   
   oled.clear();
-  oled.setFont(DEFAULT_FONT);
-  oled.setCursor(0, 0);
-  oled.print(_label);
+  oled.setFont(MENU_FONT);
+  oled.drawStr(0, 6, _label);
+  oled.drawHLine(0, 7, 128);
   int i=0;
-  int column=0;
-  int row=1;
+  // int column=0;
+  // int row=1;
+  int X=0;
+  int Y=13;
   for (int index=startIndex; index<endIndex; index++) {
     MenuItemBase* item=getItemAtIndex(index);
     
-    oled.setCursor(column, row);
-    oled.print(i);
-    oled.print(F(" "));
-    oled.print(item->getLabel());
+    // oled.setCursor(column, row);
+    // oled.print(i);
+    // oled.print(F(" "));
+    // oled.print(item->getLabel());
+
     // If next key would be 10, make it 0
-    row++;
+    // row++;
+    Y+=6;
     i++;
     // 6th row means row 1 in second column
-    if (row > 5) {
-      row = 1;
-      column = 65;
+    // if (row > 5) {
+    //   row = 1;
+    //   column = 65;
+    // }
+    if (i>4) {
+      X=65;
+      Y=6;
     }
   }
-  oled.setCursor(0, 7);
-  oled.print(F("* Back"));
+  // oled.setCursor(0, 7);
+  // oled.print(F("* Back"));
   if (_itemCount>_itemsPerPage) {
-    oled.setCursor(70, 7);
-    oled.print(F("# Page "));
+    // oled.setCursor(70, 7);
+    // oled.print(F("# Page "));
     int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
-    oled.print(nextPage);
+    // oled.print(nextPage);
   }
+  oled.sendBuffer();
 }
 
 void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
