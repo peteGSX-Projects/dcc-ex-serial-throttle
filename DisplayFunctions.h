@@ -26,6 +26,15 @@
 #include "Throttle.h"
 #include "Keypad.h"
 
+// Fonts in use
+#define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tf
+#define DCCEX_FONT u8g2_font_12x6LED_tf
+#define ANIMALS u8g2_font_unifont_t_animals
+#define EMOJIS u8g2_font_unifont_t_emoticons
+
+const int EmojiSadFace=0x0055;
+const int AnimalCat=0x0028;
+
 extern OLED display;
 
 void displayStartupInfo();

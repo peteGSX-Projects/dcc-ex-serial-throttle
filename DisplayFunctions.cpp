@@ -29,25 +29,14 @@ void displayStartupInfo() {
   CONSOLE.print(F("DCC-EX Serial Throttle "));
   CONSOLE.println(VERSION);
   // Set up OLED
-// #ifdef USE_OLED_SPI
-//   display.begin(OLED_TYPE, CS_PIN, DC_PIN);
-// #endif
-// #ifdef USE_OLED_I2C
-//   display.begin(OLED_TYPE, OLED_ADDRESS);
-// #endif
   display.begin();
-  display.setFont(OLED_FONT);
+  display.setFont(DEFAULT_FONT);
   display.clear();
-  // display.setCursor(0, 0);
-  // display.set1X();
-  // display.print("DCC-EX");
-  // display.setCursor(0, 2);
-  // display.print("Serial Throttle");
-  // display.setCursor(0, 4);
-  // display.print(VERSION);
-  display.drawStr(0, 10, "DCC-EX");
-  display.drawStr(0, 20, "Serial Throttle");
-  display.drawStr(0, 30, VERSION);
+  display.setFont(DCCEX_FONT);
+  display.drawStr(0, 15, "DCC-EX");
+  display.setFont(DEFAULT_FONT);
+  display.drawStr(0, 24, "Serial Throttle");
+  display.drawStr(0, 33, VERSION);
   display.sendBuffer();
 }
 
@@ -67,7 +56,9 @@ void displayKey(char key, KeyState keyState) {
 
 void displayConnectionError() {
   display.clear();
-  display.setCursor(0, 0);
-  // display.set1X();
-  display.print("Connection error");
+  display.setFont(DEFAULT_FONT);
+  display.drawStr(30, 10, "Connection error");
+  display.setFont(EMOJIS);
+  display.drawGlyphX2(48, 50, EmojiSadFace);
+  display.sendBuffer();
 }

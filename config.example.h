@@ -38,8 +38,7 @@
 //  Comment out the section not in use.
 // 
 // Common OLED settings
-// #define OLED_FONT System5x7
-#define OLED_FONT u8g2_font_NokiaSmallPlain_tf
+#define OLED_FONT System5x7
 
 // Uncomment from the line below for SPI
 #define USE_OLED_SPI

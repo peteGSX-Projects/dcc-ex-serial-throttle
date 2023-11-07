@@ -195,7 +195,7 @@ void Menu::display(OLED& oled) {
   int endIndex=min(startIndex+_itemsPerPage, _itemCount);
   
   oled.clear();
-  oled.setFont(OLED_FONT);
+  oled.setFont(DEFAULT_FONT);
   oled.setCursor(0, 0);
   oled.print(_label);
   int i=0;
