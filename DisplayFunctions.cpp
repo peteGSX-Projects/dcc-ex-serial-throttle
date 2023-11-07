@@ -38,13 +38,16 @@ void displayStartupInfo() {
   display.begin();
   display.setFont(OLED_FONT);
   display.clear();
-  display.setCursor(0, 0);
+  // display.setCursor(0, 0);
   // display.set1X();
-  display.print("DCC-EX");
-  display.setCursor(0, 2);
-  display.print("Serial Throttle");
-  display.setCursor(0, 4);
-  display.print(VERSION);
+  // display.print("DCC-EX");
+  // display.setCursor(0, 2);
+  // display.print("Serial Throttle");
+  // display.setCursor(0, 4);
+  // display.print(VERSION);
+  display.drawStr(0, 10, "DCC-EX");
+  display.drawStr(0, 20, "Serial Throttle");
+  display.drawStr(0, 30, VERSION);
   display.sendBuffer();
 }
 

@@ -418,8 +418,10 @@ void MenuSystem::goHome() {
     _throttles[i]->displayDirection();
     _throttles[i]->displayAddress();
   }
+  _oled.drawHLine(0, 55, 128);
   _oled.setCursor(0, 7);
   _oled.print(F("* Menu"));
+  _oled.sendBuffer();
 }
 
 void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
