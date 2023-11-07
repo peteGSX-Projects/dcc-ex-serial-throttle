@@ -32,18 +32,4 @@ void displayStartupInfo();
 void displayKey(char key, KeyState keyState);
 void displayConnectionError();
 
-// void displayHomeScreen();
-
-// void displayThrottle1Speed();
-// void displayThrottle1Direction();
-// void displayThrottle2Address();
-// void displayThrottle2Speed();
-// void displayThrottle2Direction();
-// void displayThrottle2Address();
-// void displayThrottle3Speed();
-// void displayThrottle3Direction();
-// void displayThrottle3Address();
-
-// void displayEStop();
-
 #endif
