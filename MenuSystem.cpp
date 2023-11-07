@@ -97,7 +97,7 @@ void EntryMenuItem::select(OLED& oled) {
 
 void EntryMenuItem::display(OLED& oled) {
   oled.clear();
-  oled.set1X();
+  // oled.set1X();
   oled.setCursor(0, 0);
   oled.print(_label);
   oled.setCursor(0, 1);
