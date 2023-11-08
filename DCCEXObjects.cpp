@@ -122,7 +122,7 @@ void updateTurntables() {
       CONSOLE.println(ttName);
       Menu* newTTMenu=new Menu(ttName);
       ttMenu->addMenuItem(newTTMenu);
-      for (TurntableIndex* idx=tt->getFirstIndex(); idx; idx=idx->getNext()) {
+      for (TurntableIndex* idx=tt->getFirstIndex(); idx; idx=idx->getNextIndex()) {
         char* idxName=idx->getName();
         CONSOLE.println(idxName);
         newTTMenu->addMenuItem(new ActionMenuItem(idxName, rotateTurntable, idx));
