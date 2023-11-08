@@ -39,6 +39,15 @@ public:
     Throttle,
   };
 
+  enum ObjectType {
+    LocoType,
+    RosterType,
+    RouteType,
+    TurnoutType,
+    TurntableType,
+    TurntableIndexType,
+  };
+
   /// @brief Constructor
   /// @param label 
   /// @param type 
@@ -88,6 +97,10 @@ public:
   /// @param parent 
   void setParent(MenuItemBase* parent);
 
+  ObjectType getObjectType();
+
+  int getObjectId();
+
 protected:
   char* _label;
   ItemType _type;
@@ -95,6 +108,8 @@ protected:
   int _index;
   MenuItemBase* _parent;
   static MenuSystem* _menuSystem;
+  ObjectType _objectType;
+  int _objectId;
 
   friend class MenuSystem;
 
