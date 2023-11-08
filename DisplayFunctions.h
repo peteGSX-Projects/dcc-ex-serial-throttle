@@ -25,6 +25,17 @@
 #include "version.h"
 #include "Throttle.h"
 #include "Keypad.h"
+#include "ThrottleSetup.h"
+
+// Fonts in use
+#define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tf
+#define DCCEX_FONT u8g2_font_12x6LED_tf
+#define MENU_TITLE_FONT u8g2_font_5x8_tf
+#define MENU_ITEM_FONT u8g2_font_5x8_tf
+#define SPEED_FONT u8g2_font_tenstamps_mn
+#define DIRECTION_FONT u8g2_font_5x8_tf
+#define ADDRESS_FONT u8g2_font_5x8_tf
+#define ESTOP_FONT u8g2_font_5x8_tf
 
 extern OLED display;
 
@@ -32,18 +43,25 @@ void displayStartupInfo();
 void displayKey(char key, KeyState keyState);
 void displayConnectionError();
 
-// void displayHomeScreen();
+/// @brief Display speed for the specified throttle
+/// @param throttle 
+/// @param speed 
+void displayThrottleSpeed(int throttle, int speed, bool isHome);
 
-// void displayThrottle1Speed();
-// void displayThrottle1Direction();
-// void displayThrottle2Address();
-// void displayThrottle2Speed();
-// void displayThrottle2Direction();
-// void displayThrottle2Address();
-// void displayThrottle3Speed();
-// void displayThrottle3Direction();
-// void displayThrottle3Address();
+/// @brief Display direction for the specified throttle
+/// @param throttle 
+/// @param direction 
+void displayThrottleDirection(int throttle, Direction direction);
 
-// void displayEStop();
+/// @brief Dislay address for the specified throttle
+/// @param throttle 
+/// @param address 
+/// @param isOverridden 
+/// @param isConsist 
+void displayThrottleAddress(int throttle, int address, bool isOverridden, bool isConsist);
+
+/// @brief Display EStop for the specified throttle
+/// @param throttle 
+void displayThrottleEStop(int throttle);
 
 #endif

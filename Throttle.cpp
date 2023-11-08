@@ -162,78 +162,20 @@ bool Throttle::addressInUse(int address) {
   return false;
 }
 
-void Throttle::displaySpeed() {
-  _oled.set2X();
-  _oled.clear(
-    throttleSetup[_throttleNumber].speed.startColumn,
-    throttleSetup[_throttleNumber].speed.endColumn,
-    throttleSetup[_throttleNumber].speed.startRow,
-    throttleSetup[_throttleNumber].speed.endRow
-  );
-  _oled.setCursor(
-    throttleSetup[_throttleNumber].speed.textColumn,
-    throttleSetup[_throttleNumber].speed.startRow
-  );
-  _oled.print(_speed);
+void Throttle::displaySpeed(bool isHome) {
+  displayThrottleSpeed(_throttleNumber, _speed, isHome);
 }
 
 void Throttle::displayDirection() {
-  _oled.set1X();
-  _oled.clear(
-    throttleSetup[_throttleNumber].direction.startColumn,
-    throttleSetup[_throttleNumber].direction.endColumn,
-    throttleSetup[_throttleNumber].direction.startRow,
-    throttleSetup[_throttleNumber].direction.endRow
-  );
-  _oled.setCursor(
-    throttleSetup[_throttleNumber].direction.textColumn,
-    throttleSetup[_throttleNumber].direction.startRow
-  );
-  if (_direction==Forward) {
-    _oled.print(F("Fwd"));
-  } else {
-    _oled.print(F("Rev"));
-  }
+  displayThrottleDirection(_throttleNumber, _getDirectionName(_direction));
 }
 
 void Throttle::displayAddress() {
-  CONSOLE.print(F("Display address for throttle "));
-  CONSOLE.println(_throttleNumber);
-  _oled.set1X();
-  _oled.clear(
-    throttleSetup[_throttleNumber].address.startColumn,
-    throttleSetup[_throttleNumber].address.endColumn,
-    throttleSetup[_throttleNumber].address.startRow,
-    throttleSetup[_throttleNumber].address.endRow
-  );
-  _oled.setCursor(
-    throttleSetup[_throttleNumber].address.textColumn,
-    throttleSetup[_throttleNumber].address.startRow
-  );
-  if (_isOverridden) {
-    _oled.print(F("*"));
-  } else {
-    _oled.print(F(" "));
-  }
-  _oled.print(_locoAddress);
-  if (isConsist()) {
-    _oled.print(F("c"));
-  }
+  displayThrottleAddress(_throttleNumber, _locoAddress, _isOverridden, isConsist());
 }
 
 void Throttle::displayEStop() {
-  _oled.set1X();
-  _oled.clear(
-    throttleSetup[_throttleNumber].speed.startColumn,
-    throttleSetup[_throttleNumber].speed.endColumn,
-    throttleSetup[_throttleNumber].speed.startRow,
-    throttleSetup[_throttleNumber].speed.endRow
-  );
-  _oled.setCursor(
-    throttleSetup[_throttleNumber].speed.textColumn,
-    throttleSetup[_throttleNumber].speed.startRow
-  );
-  _oled.print(F("ESTOP"));
+  displayThrottleEStop(_throttleNumber);
 }
 
 // Helper function to convert direction bool to Direction char

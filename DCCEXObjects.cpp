@@ -26,16 +26,18 @@
 DCCEXProtocol dccexProtocol(NUM_THROTTLES);
 DCCEXCallbacks dccexCallbacks;
 
-bool connectionRequested = false;
-bool connected = false;
-bool errorDisplayed = false;
-uint8_t connectionRetries = CONNECT_RETRIES;
-unsigned long retryDelay = 1000;
-unsigned long lastRetry = 0;
-bool gotRoster = false;
-bool gotRoutes = false;
-bool gotTurnouts = false;
-bool gotTurntables = false;
+bool connectionRequested=false;
+bool connected=false;
+bool errorDisplayed=false;
+uint8_t connectionRetries=CONNECT_RETRIES;
+unsigned long retryDelay=1000;
+unsigned long lastRetry=0;
+bool gotRoster=false;
+bool gotRoutes=false;
+bool gotTurnouts=false;
+bool gotTurntables=false;
+int progressX=0;
+int progressY=30;
 
 // Function to validate a connection to the CS has been made
 void validateConnection() {
@@ -44,9 +46,9 @@ void validateConnection() {
       connectionRequested = true;
       dccexProtocol.sendServerDetailsRequest();
       display.clear();
-      display.setCursor(0, 0);
-      display.print("Connecting to DCC-EX");
-      display.setCursor(0, 2);
+      display.setFont(DEFAULT_FONT);
+      display.drawStr(0, 10, "Connecting to DCC-EX...");
+      display.sendBuffer();
     } else if (dccexProtocol.isServerDetailsReceived()) {
       connected = true;
       menuSystem.display();
@@ -54,7 +56,15 @@ void validateConnection() {
       dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
       connectionRetries--;
+      display.setFont(DEFAULT_FONT);
+      display.setCursor(progressX, progressY);
       display.print(".");
+      display.sendBuffer();
+      progressX+=5;
+      if (progressX>122) {
+        progressY+=8;
+        progressX=0;
+      }
     } else if (connectionRetries == 0 && !errorDisplayed) {
       errorDisplayed = true;
       displayConnectionError();

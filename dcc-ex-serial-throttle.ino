@@ -31,6 +31,7 @@ Include the required libraries
 #include "DCCEXObjects.h"
 #include "Throttle.h"
 #include "ThrottleSetup.h"
+#include "MenuSystem.h"
 
 // Array to hold all throttle objects to process
 Throttle* throttles[NUM_THROTTLES];
@@ -75,7 +76,7 @@ void loop() {
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
     if (throttles[i]->speedChanged()) {
-      throttles[i]->displaySpeed();
+      throttles[i]->displaySpeed(menuSystem.isHome());
     }
   }
   keypad.getKey();
