@@ -168,7 +168,7 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
         if (_inputIndex<5) {
           _inputBuffer[_inputIndex++]=key;
           oled.setCursor(_inputKeyColumn, 26);
-          oled.print(F(" "));
+          oled.print(" ");
           oled.setCursor(_inputKeyColumn, 26);
           oled.print(key);
           oled.sendBuffer();
@@ -228,10 +228,10 @@ void Menu::display(OLED& oled) {
   }
   oled.drawHLine(0, 54, 128);
   oled.setCursor(0, 63);
-  oled.print(F("* Back"));
+  oled.print("* Back");
   if (_itemCount>_itemsPerPage) {
     oled.setCursor(70, 63);
-    oled.print(F("# Page "));
+    oled.print("# Page ");
     int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
     oled.print(nextPage);
   }
@@ -425,14 +425,14 @@ void MenuSystem::goHome() {
   _currentItem=_home;
   _oled.clear();
   for (int i=0; i<NUM_THROTTLES; i++) {
-    _throttles[i]->displaySpeed();
+    _throttles[i]->displaySpeed(true);
     _throttles[i]->displayDirection();
     _throttles[i]->displayAddress();
   }
   _oled.drawHLine(0, 55, 128);
   _oled.setFont(MENU_ITEM_FONT);
   _oled.setCursor(0, 63);
-  _oled.print(F("* Menu"));
+  _oled.print("* Menu");
   _oled.sendBuffer();
 }
 
@@ -488,4 +488,9 @@ void MenuSystem::setCurrentThrottle(int throttle) {
 
 int MenuSystem::getCurrentThrottle() {
   return _currentThrottle;
+}
+
+bool MenuSystem::isHome() {
+  if (_currentItem==_home) return true;
+  return false;
 }

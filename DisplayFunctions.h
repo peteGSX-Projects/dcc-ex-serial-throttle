@@ -30,17 +30,12 @@
 // Fonts in use
 #define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tf
 #define DCCEX_FONT u8g2_font_12x6LED_tf
-#define ANIMALS u8g2_font_unifont_t_animals
-#define EMOJIS u8g2_font_unifont_t_emoticons
 #define MENU_TITLE_FONT u8g2_font_5x8_tf
 #define MENU_ITEM_FONT u8g2_font_5x8_tf
 #define SPEED_FONT u8g2_font_NokiaSmallPlain_tf
 #define DIRECTION_FONT u8g2_font_5x8_tf
 #define ADDRESS_FONT u8g2_font_5x8_tf
 #define ESTOP_FONT u8g2_font_5x8_tf
-
-const int EmojiSadFace=0x0055;
-const int AnimalCat=0x0028;
 
 extern OLED display;
 
@@ -51,7 +46,7 @@ void displayConnectionError();
 /// @brief Display speed for the specified throttle
 /// @param throttle 
 /// @param speed 
-void displayThrottleSpeed(int throttle, int speed);
+void displayThrottleSpeed(int throttle, int speed, bool isHome);
 
 /// @brief Display direction for the specified throttle
 /// @param throttle 

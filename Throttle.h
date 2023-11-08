@@ -92,7 +92,7 @@ public:
   bool addressInUse(int address);
 
   /// @brief Display the speed on screen for this throttle
-  void displaySpeed();
+  void displaySpeed(bool isHome);
 
   /// @brief Display the direction on screen for this throttle
   void displayDirection();

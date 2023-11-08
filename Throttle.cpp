@@ -162,8 +162,8 @@ bool Throttle::addressInUse(int address) {
   return false;
 }
 
-void Throttle::displaySpeed() {
-  displayThrottleSpeed(_throttleNumber, _speed);
+void Throttle::displaySpeed(bool isHome) {
+  displayThrottleSpeed(_throttleNumber, _speed, isHome);
 }
 
 void Throttle::displayDirection() {

@@ -291,6 +291,10 @@ public:
   /// @return 
   int getCurrentThrottle();
 
+  /// @brief Check if the menu system is on the home screen
+  /// @return 
+  bool isHome();
+
 private:
   OLED& _oled;
   MenuItemBase* _currentItem;

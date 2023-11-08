@@ -24,11 +24,8 @@
 #include "defines.h"
 
 struct DisplayAttributes {
-  int startColumn;
-  int endColumn;
-  int startRow;
-  int endRow;
-  int textColumn;
+  int X;
+  int Y;
 };
 
 struct ThrottleSetup {

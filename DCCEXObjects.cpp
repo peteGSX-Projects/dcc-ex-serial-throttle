@@ -56,12 +56,13 @@ void validateConnection() {
       dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
       connectionRetries--;
-      display.setFont(ANIMALS);
-      display.drawGlyph(progressX, progressY, AnimalCat);
+      display.setFont(DEFAULT_FONT);
+      display.setCursor(progressX, progressY);
+      display.print(".");
       display.sendBuffer();
-      progressX+=16;
-      if (progressX>112) {
-        progressY+=16;
+      progressX+=5;
+      if (progressX>122) {
+        progressY+=8;
         progressX=0;
       }
     } else if (connectionRetries == 0 && !errorDisplayed) {

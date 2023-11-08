@@ -43,15 +43,15 @@ void displayStartupInfo() {
 void displayKey(char key, KeyState keyState) {
   display.setFont(MENU_ITEM_FONT);
   display.setCursor(55, 63);
-  display.print(F("  "));
+  display.print("  ");
   display.setCursor(55, 63);
   display.print(key);
   if (keyState==HOLD) {
-    display.print(F("H"));
+    display.print("H");
   } else if (keyState==RELEASED) {
-    display.print(F("R"));
+    display.print("R");
   } else {
-    display.print(F("P"));
+    display.print("P");
   }
   display.sendBuffer();
 }
@@ -60,31 +60,41 @@ void displayConnectionError() {
   display.clear();
   display.setFont(DEFAULT_FONT);
   display.drawStr(30, 10, "Connection error");
-  display.setFont(EMOJIS);
-  display.drawGlyphX2(48, 50, EmojiSadFace);
   display.sendBuffer();
 }
 
-void displayThrottleSpeed(int throttle, int speed) {
-  display.setFont(SPEED_FONT);
-  display.setCursor(
-    throttleSetup[throttle].speed.textColumn,
-    throttleSetup[throttle].speed.startRow
-  );
-  display.print(speed);
-  display.sendBuffer();
+void displayThrottleSpeed(int throttle, int speed, bool isHome) {
+  if (isHome) {
+    display.setFont(SPEED_FONT);
+    display.setCursor(
+      throttleSetup[throttle].speed.X,
+      throttleSetup[throttle].speed.Y
+    );
+    display.print("   ");
+    display.setCursor(
+      throttleSetup[throttle].speed.X,
+      throttleSetup[throttle].speed.Y
+    );
+    display.print(speed);
+    display.sendBuffer();
+  }
 }
 
 void displayThrottleDirection(int throttle, Direction direction) {
   display.setFont(DIRECTION_FONT);
   display.setCursor(
-    throttleSetup[throttle].direction.textColumn,
-    throttleSetup[throttle].direction.startRow
+    throttleSetup[throttle].direction.X,
+    throttleSetup[throttle].direction.Y
+  );
+  display.print("   ");
+  display.setCursor(
+    throttleSetup[throttle].direction.X,
+    throttleSetup[throttle].direction.Y
   );
   if (direction==Forward) {
-    display.print(F("Fwd"));
+    display.print("Fwd");
   } else {
-    display.print(F("Rev"));
+    display.print("Rev");
   }
   display.sendBuffer();
 }
@@ -92,17 +102,22 @@ void displayThrottleDirection(int throttle, Direction direction) {
 void displayThrottleAddress(int throttle, int address, bool isOverridden, bool isConsist) {
   display.setFont(ADDRESS_FONT);
   display.setCursor(
-    throttleSetup[throttle].address.textColumn,
-    throttleSetup[throttle].address.startRow
+    throttleSetup[throttle].address.X,
+    throttleSetup[throttle].address.Y
+  );
+  display.print("       ");
+  display.setCursor(
+    throttleSetup[throttle].address.X,
+    throttleSetup[throttle].address.Y
   );
   if (isOverridden) {
-    display.print(F("*"));
+    display.print("*");
   } else {
-    display.print(F(" "));
+    display.print(" ");
   }
   display.print(address);
   if (isConsist) {
-    display.print(F("c"));
+    display.print("c");
   }
   display.sendBuffer();
 }
@@ -110,9 +125,9 @@ void displayThrottleAddress(int throttle, int address, bool isOverridden, bool i
 void displayThrottleEStop(int throttle) {
   display.setFont(ESTOP_FONT);
   display.setCursor(
-    throttleSetup[throttle].speed.textColumn,
-    throttleSetup[throttle].speed.startRow
+    throttleSetup[throttle].speed.X,
+    throttleSetup[throttle].speed.Y
   );
-  display.print(F("ESTOP"));
+  display.print("ESTOP");
   display.sendBuffer();
 }

@@ -21,21 +21,21 @@
 
 ThrottleSetup throttleSetup[NUM_THROTTLES]={
   { // Throttle 0
-    {0, 45, 0, 2, 4},  // Speed display attributes
-    {0, 51, 3, 4, 10}, // Direction display attributes
-    {0, 42, 5, 5, 0}, // Address display attributes
+    {4, 30},
+    {10, 40},
+    {0, 50},
     PA0,  // Pot pin
   },
   { // Throttle 1
-    {46, 87, 0, 2, 46},
-    {52, 93, 3, 4, 52},
-    {43, 86, 5, 5, 43},
+    {46, 30},
+    {52, 40},
+    {43, 50},
     PA1,
   },
   { // Throttle 2
-    {88, 128, 0, 2, 88},
-    {94, 128, 3, 4, 94},
-    {87, 128, 5, 5, 87},
+    {88, 30},
+    {94, 40},
+    {87, 50},
     PA2,
   },
 };
