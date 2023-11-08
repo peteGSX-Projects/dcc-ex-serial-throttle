@@ -51,7 +51,7 @@ void validateConnection() {
       display.sendBuffer();
     } else if (dccexProtocol.isServerDetailsReceived()) {
       connected = true;
-      menuSystem.display();
+      menuSystem.goHome();
     } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
       dccexProtocol.sendServerDetailsRequest();
       lastRetry = millis();
