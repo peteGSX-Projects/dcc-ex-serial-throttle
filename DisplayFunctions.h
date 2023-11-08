@@ -32,7 +32,7 @@
 #define DCCEX_FONT u8g2_font_12x6LED_tf
 #define MENU_TITLE_FONT u8g2_font_5x8_tf
 #define MENU_ITEM_FONT u8g2_font_5x8_tf
-#define SPEED_FONT u8g2_font_NokiaSmallPlain_tf
+#define SPEED_FONT u8g2_font_tenstamps_mn
 #define DIRECTION_FONT u8g2_font_5x8_tf
 #define ADDRESS_FONT u8g2_font_5x8_tf
 #define ESTOP_FONT u8g2_font_5x8_tf
