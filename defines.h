@@ -71,4 +71,11 @@ If we haven't got a custom config.h, use the example
 // #define OLED SSD1306AsciiAvrI2c
 // #endif
 
+// These undefs don't work, need to comment out in /src/clib/u8g2.h
+// #undef U8G2_WITHOUT_HVLINE_SPEED_OPTIMIZATION
+// #undef U8G2_WITHOUT_INTERSECTION
+// #undef U8G2_WITHOUT_CLIP_WINDOW_SUPPORT
+// #undef U8G2_WITHOUT_FONT_ROTATION
+// #undef U8G2_WITHOUT_UNICODE
+
 #endif

@@ -28,14 +28,13 @@
 #include "ThrottleSetup.h"
 
 // Fonts in use
-#define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tf
-#define DCCEX_FONT u8g2_font_12x6LED_tf
-#define MENU_TITLE_FONT u8g2_font_5x8_tf
-#define MENU_ITEM_FONT u8g2_font_5x8_tf
-#define SPEED_FONT u8g2_font_tenstamps_mn
-#define DIRECTION_FONT u8g2_font_5x8_tf
-#define ADDRESS_FONT u8g2_font_5x8_tf
-#define ESTOP_FONT u8g2_font_5x8_tf
+#define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tr
+#define MENU_TITLE_FONT u8g2_font_5x8_mr
+#define MENU_ITEM_FONT u8g2_font_5x8_mr
+#define SPEED_FONT u8g2_font_spleen12x24_mn
+#define DIRECTION_FONT u8g2_font_6x10_mr
+#define ADDRESS_FONT u8g2_font_6x10_mr
+#define ESTOP_FONT u8g2_font_6x12_mr
 
 extern OLED display;
 

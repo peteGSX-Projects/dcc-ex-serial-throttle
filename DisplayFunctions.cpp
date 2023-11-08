@@ -32,7 +32,6 @@ void displayStartupInfo() {
   display.begin();
   display.setFont(DEFAULT_FONT);
   display.clear();
-  display.setFont(DCCEX_FONT);
   display.drawStr(0, 15, "DCC-EX");
   display.setFont(DEFAULT_FONT);
   display.drawStr(0, 24, "Serial Throttle");
