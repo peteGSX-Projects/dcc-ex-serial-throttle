@@ -23,11 +23,10 @@ Include the required libraries
 ***********************************************************************************/
 #include <Arduino.h>
 #include "defines.h"
-
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
 #include "StaticMenus.h"
-// #include "SerialFunctions.h"
+#include "SerialFunctions.h"
 #include "DCCEXObjects.h"
 #include "Throttle.h"
 #include "ThrottleSetup.h"
@@ -65,14 +64,14 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  validateConnection();
-  if (connected) {
-    dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
-  }
+  // validateConnection();
+  // if (connected) {
+  //   dccexProtocol.getLists(true, true, true, true);
+  //   updateRoster();
+  //   updateRoutes();
+  //   updateTurnouts();
+  //   updateTurntables();
+  // }
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
     if (throttles[i]->speedChanged()) {
@@ -80,7 +79,7 @@ void loop() {
     }
   }
   keypad.getKey();
-  // getSerialInput();
+  getSerialInput();
 }
 
 // Disabling JTAG is required to avoid pin conflicts on Bluepill

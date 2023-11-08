@@ -41,10 +41,6 @@ void setupKeypad() {
   keypad.setHoldTime(KEYPAD_HOLD);
 }
 
-// void processKeys() {
-//   keypad.getKey();
-// }
-
 // Function for a keypad event handler
 void keypadEvent(KeypadEvent key) {
   switch (keypad.getState()) {
@@ -53,21 +49,15 @@ void keypadEvent(KeypadEvent key) {
       break;
     case HOLD:
       keyPress = false;
-      // CONSOLE.print(key);
-      // CONSOLE.println(F(" held"));
-      displayKey(key, HOLD);
+      // displayKey(key, HOLD);
       menuSystem.handleKeys(key, HOLD);
       break;
     case RELEASED:
       if (keyPress == true) {
-        // CONSOLE.print(key);
-        // CONSOLE.println(F(" pressed"));
-        displayKey(key, PRESSED);
+        // displayKey(key, PRESSED);
         menuSystem.handleKeys(key, PRESSED);
       } else {
-        // CONSOLE.print(key);
-        // CONSOLE.println(F(" released"));
-        displayKey(key, RELEASED);
+        // displayKey(key, RELEASED);
         menuSystem.handleKeys(key, RELEASED);
       }
       break;

@@ -441,6 +441,9 @@ void MenuSystem::goHome() {
   _oled.setFont(MENU_ITEM_FONT);
   _oled.setCursor(0, 63);
   _oled.print("* Menu");
+  _oled.setCursor(60, 63);
+  _oled.print("Trk Power: ");
+  _displayPowerState();
   _oled.sendBuffer();
 }
 
@@ -451,27 +454,6 @@ void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
 Menu* MenuSystem::findMenuByLabel(const char* label) {
   ThrottleScreen* home=static_cast<ThrottleScreen*>(_home);
   return _findMenuByLabelRecursive(label, home->getMenu());
-}
-
-Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {
-  if (!currentMenuItem) {
-    return nullptr; // No items matched label
-  }
-  if (currentMenuItem->getType()==MenuItemBase::Menu) {
-    Menu* currentMenu=static_cast<Menu*>(currentMenuItem);
-    if (strcmp(currentMenuItem->getLabel(), label)==0) {
-      return currentMenu;
-    }
-    MenuItemBase* item=currentMenu->getItemList();
-    while (item) {
-      Menu* foundMenu=_findMenuByLabelRecursive(label, item);
-      if (foundMenu) {
-        return foundMenu;
-      }
-      item=item->getNext();
-    }
-  }
-  return _findMenuByLabelRecursive(label, currentMenuItem->getNext());
 }
 
 void MenuSystem::setCurrentActionItem(ActionMenuItem *item) {
@@ -501,4 +483,45 @@ int MenuSystem::getCurrentThrottle() {
 bool MenuSystem::isHome() {
   if (_currentItem==_home) return true;
   return false;
+}
+
+void MenuSystem::updatePowerState(TrackPower state) {
+  _powerState=state;
+  _displayPowerState();
+}
+
+Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {
+  if (!currentMenuItem) {
+    return nullptr; // No items matched label
+  }
+  if (currentMenuItem->getType()==MenuItemBase::Menu) {
+    Menu* currentMenu=static_cast<Menu*>(currentMenuItem);
+    if (strcmp(currentMenuItem->getLabel(), label)==0) {
+      return currentMenu;
+    }
+    MenuItemBase* item=currentMenu->getItemList();
+    while (item) {
+      Menu* foundMenu=_findMenuByLabelRecursive(label, item);
+      if (foundMenu) {
+        return foundMenu;
+      }
+      item=item->getNext();
+    }
+  }
+  return _findMenuByLabelRecursive(label, currentMenuItem->getNext());
+}
+
+void MenuSystem::_displayPowerState() {
+  _oled.setFont(MENU_ITEM_FONT);
+  _oled.setCursor(113, 63);
+  _oled.print("   ");
+  _oled.setCursor(113, 63);
+  if (_powerState==PowerOn) {
+    _oled.print("On");
+  } else if (_powerState==PowerOff) {
+    _oled.print("Off");
+  } else {
+    _oled.print("?");
+  }
+  _oled.sendBuffer();
 }

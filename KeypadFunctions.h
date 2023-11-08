@@ -29,10 +29,7 @@
 extern Keypad keypad;
 
 void setupKeypad();
-// void processKeys();
 void keypadEvent(KeypadEvent key);
-// void keyPressed(char key);
-// void keyHeld(char key);
-// void keyReleased(char key);
+
 
 #endif

@@ -310,6 +310,10 @@ public:
   /// @return 
   bool isHome();
 
+  /// @brief Update the current track power state
+  /// @param state 
+  void updatePowerState(TrackPower state);
+
 private:
   OLED& _oled;
   MenuItemBase* _currentItem;
@@ -317,8 +321,10 @@ private:
   ActionMenuItem* _currentActionItem;
   Throttle** _throttles;
   int _currentThrottle;
+  TrackPower _powerState=PowerUnknown;
 
   Menu* _findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem);
+  void _displayPowerState();
   
 };
 
