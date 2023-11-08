@@ -46,7 +46,7 @@ public:
   
   /// @brief Get the object's label
   /// @return 
-  const char* getLabel() const;
+  char* getLabel() const;
 
   /// @brief Get the item type of the object
   /// @return 
@@ -89,7 +89,7 @@ public:
   void setParent(MenuItemBase* parent);
 
 protected:
-  const char* _label;
+  char* _label;
   ItemType _type;
   MenuItemBase* _next;
   int _index;

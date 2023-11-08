@@ -25,13 +25,13 @@ MenuSystem* MenuItemBase::_menuSystem=nullptr;
 // class MenuItem
 MenuItemBase::MenuItemBase(const char* label, MenuItemBase::ItemType type)
   : _type(type) {
-  _label=strdup(label);
   _parent=nullptr;
   _next=nullptr;
   _index=-1;
+  _label=strdup(label);
 }
 
-const char* MenuItemBase::getLabel() const {
+char* MenuItemBase::getLabel() const {
   return _label;
 }
 
@@ -97,22 +97,23 @@ void EntryMenuItem::select(OLED& oled) {
 
 void EntryMenuItem::display(OLED& oled) {
   oled.clear();
-  // oled.set1X();
-  oled.setCursor(0, 0);
+  oled.setFont(MENU_TITLE_FONT);
+  oled.setCursor(0, 6);
   oled.print(_label);
-  oled.setCursor(0, 1);
+  oled.drawHLine(0, 7, 128);
+  oled.setCursor(0, 17);
   oled.print(_instruction);
-  oled.setCursor(0, 3);
+  oled.setCursor(0, 26);
   oled.print("#####");
-  oled.setCursor(0, 7);
+  oled.drawHLine(0, 54, 128);
+  oled.setCursor(0, 63);
   oled.print("* Back");
-  oled.setCursor(70, 7);
+  oled.setCursor(70, 63);
   oled.print("# Confirm");
+  oled.sendBuffer();
 }
 
 void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
-  CONSOLE.print(F("Throttle context: "));
-  CONSOLE.println(_menuSystem->getCurrentThrottle());
   if (keyState==PRESSED) {
     switch(key) {
       case '*':
@@ -129,20 +130,22 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
           memset(_inputBuffer, 0, sizeof(_inputBuffer));
           _inputKeyColumn=0;
           if (number < 1 || number > 10239) {
-            oled.setCursor(0, 3);
+            oled.setCursor(0, 26);
             oled.print("#####");
-            oled.setCursor(0, 6);
+            oled.setCursor(0, 35);
             oled.print("INVALID ADDRESS");
+            oled.sendBuffer();
           } else {
             bool inUse=false;
             for (int i=0; i<NUM_THROTTLES; i++) {
               if (_menuSystem->getThrottles()[i]->addressInUse(number)) inUse=true;
             }
             if (inUse) {
-              oled.setCursor(0, 3);
+              oled.setCursor(0, 26);
               oled.print("#####");
-              oled.setCursor(0, 6);
+              oled.setCursor(0, 35);
               oled.print("ADDRESS IN USE");
+              oled.sendBuffer();
             } else {
               int throttle=_menuSystem->getCurrentThrottle();
               _menuSystem->getThrottles()[throttle]->setLocoAddress(number, LocoSourceEntry);
@@ -164,9 +167,12 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
       case '9':
         if (_inputIndex<5) {
           _inputBuffer[_inputIndex++]=key;
-          oled.setCursor(_inputKeyColumn, 3);
+          oled.setCursor(_inputKeyColumn, 26);
+          oled.print(F(" "));
+          oled.setCursor(_inputKeyColumn, 26);
           oled.print(key);
-          _inputKeyColumn+=6;
+          oled.sendBuffer();
+          _inputKeyColumn+=5;
         }
         break;
       
@@ -195,43 +201,39 @@ void Menu::display(OLED& oled) {
   int endIndex=min(startIndex+_itemsPerPage, _itemCount);
   
   oled.clear();
-  oled.setFont(MENU_FONT);
-  oled.drawStr(0, 6, _label);
+  oled.setFont(MENU_TITLE_FONT);
+  oled.setCursor(0, 6);
+  oled.print(_label);
   oled.drawHLine(0, 7, 128);
   int i=0;
-  // int column=0;
-  // int row=1;
   int X=0;
-  int Y=13;
+  int Y=17;
+  oled.setFont(MENU_ITEM_FONT);
   for (int index=startIndex; index<endIndex; index++) {
     MenuItemBase* item=getItemAtIndex(index);
-    
-    // oled.setCursor(column, row);
-    // oled.print(i);
-    // oled.print(F(" "));
-    // oled.print(item->getLabel());
-
-    // If next key would be 10, make it 0
-    // row++;
-    Y+=6;
+    oled.setCursor(X, Y);
+    oled.print(i);
+    oled.setCursor(X+8, Y);
+    char* label=item->getLabel();
+    if (strlen(label)>10 && _itemCount>5) {
+      label[10]='\0';
+    }
+    oled.print(item->getLabel());
+    Y+=8;
     i++;
-    // 6th row means row 1 in second column
-    // if (row > 5) {
-    //   row = 1;
-    //   column = 65;
-    // }
-    if (i>4) {
-      X=65;
-      Y=6;
+    if (i==5) {
+      X=64;
+      Y=17;
     }
   }
-  // oled.setCursor(0, 7);
-  // oled.print(F("* Back"));
+  oled.drawHLine(0, 54, 128);
+  oled.setCursor(0, 63);
+  oled.print(F("* Back"));
   if (_itemCount>_itemsPerPage) {
-    // oled.setCursor(70, 7);
-    // oled.print(F("# Page "));
+    oled.setCursor(70, 63);
+    oled.print(F("# Page "));
     int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
-    // oled.print(nextPage);
+    oled.print(nextPage);
   }
   oled.sendBuffer();
 }
@@ -428,7 +430,8 @@ void MenuSystem::goHome() {
     _throttles[i]->displayAddress();
   }
   _oled.drawHLine(0, 55, 128);
-  _oled.setCursor(0, 7);
+  _oled.setFont(MENU_ITEM_FONT);
+  _oled.setCursor(0, 63);
   _oled.print(F("* Menu"));
   _oled.sendBuffer();
 }

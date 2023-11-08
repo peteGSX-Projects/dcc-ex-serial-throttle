@@ -23,7 +23,7 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXObjects.h"
-#include "ThrottleSetup.h"
+#include "DisplayFunctions.h"
 
 struct LocoNode {
   Loco* loco;

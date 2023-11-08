@@ -41,9 +41,10 @@ void displayStartupInfo() {
 }
 
 void displayKey(char key, KeyState keyState) {
-  // display.clear(55, 69, 7, 7);
-  display.setCursor(55, 7);
-  // display.set1X();
+  display.setFont(MENU_ITEM_FONT);
+  display.setCursor(55, 63);
+  display.print(F("  "));
+  display.setCursor(55, 63);
   display.print(key);
   if (keyState==HOLD) {
     display.print(F("H"));
@@ -52,6 +53,7 @@ void displayKey(char key, KeyState keyState) {
   } else {
     display.print(F("P"));
   }
+  display.sendBuffer();
 }
 
 void displayConnectionError() {
@@ -60,5 +62,57 @@ void displayConnectionError() {
   display.drawStr(30, 10, "Connection error");
   display.setFont(EMOJIS);
   display.drawGlyphX2(48, 50, EmojiSadFace);
+  display.sendBuffer();
+}
+
+void displayThrottleSpeed(int throttle, int speed) {
+  display.setFont(SPEED_FONT);
+  display.setCursor(
+    throttleSetup[throttle].speed.textColumn,
+    throttleSetup[throttle].speed.startRow
+  );
+  display.print(speed);
+  display.sendBuffer();
+}
+
+void displayThrottleDirection(int throttle, Direction direction) {
+  display.setFont(DIRECTION_FONT);
+  display.setCursor(
+    throttleSetup[throttle].direction.textColumn,
+    throttleSetup[throttle].direction.startRow
+  );
+  if (direction==Forward) {
+    display.print(F("Fwd"));
+  } else {
+    display.print(F("Rev"));
+  }
+  display.sendBuffer();
+}
+
+void displayThrottleAddress(int throttle, int address, bool isOverridden, bool isConsist) {
+  display.setFont(ADDRESS_FONT);
+  display.setCursor(
+    throttleSetup[throttle].address.textColumn,
+    throttleSetup[throttle].address.startRow
+  );
+  if (isOverridden) {
+    display.print(F("*"));
+  } else {
+    display.print(F(" "));
+  }
+  display.print(address);
+  if (isConsist) {
+    display.print(F("c"));
+  }
+  display.sendBuffer();
+}
+
+void displayThrottleEStop(int throttle) {
+  display.setFont(ESTOP_FONT);
+  display.setCursor(
+    throttleSetup[throttle].speed.textColumn,
+    throttleSetup[throttle].speed.startRow
+  );
+  display.print(F("ESTOP"));
   display.sendBuffer();
 }
