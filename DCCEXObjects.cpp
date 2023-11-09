@@ -23,7 +23,7 @@
 #include "DCCEXObjects.h"
 #include "StaticMenus.h"
 
-DCCEXProtocol dccexProtocol(NUM_THROTTLES, 2000);
+DCCEXProtocol dccexProtocol(NUM_THROTTLES);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested=false;
@@ -44,7 +44,7 @@ void validateConnection() {
   if (!connected) {
     if (!connectionRequested) {
       connectionRequested = true;
-      dccexProtocol.sendServerDetailsRequest();
+      // dccexProtocol.sendServerDetailsRequest();
       display.clear();
       display.setFont(DEFAULT_FONT);
       display.drawStr(0, 10, "Connecting to DCC-EX...");
