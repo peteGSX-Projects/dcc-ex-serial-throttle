@@ -23,7 +23,7 @@
 #include "DCCEXObjects.h"
 #include "StaticMenus.h"
 
-DCCEXProtocol dccexProtocol(NUM_THROTTLES);
+DCCEXProtocol dccexProtocol(NUM_THROTTLES, 2000);
 DCCEXCallbacks dccexCallbacks;
 
 bool connectionRequested=false;
@@ -119,12 +119,10 @@ void updateTurntables() {
     if (!ttMenu) return;
     for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
       char* ttName=tt->getName();
-      CONSOLE.println(ttName);
       Menu* newTTMenu=new Menu(ttName);
       ttMenu->addMenuItem(newTTMenu);
       for (TurntableIndex* idx=tt->getFirstIndex(); idx; idx=idx->getNextIndex()) {
         char* idxName=idx->getName();
-        CONSOLE.println(idxName);
         newTTMenu->addMenuItem(new ActionMenuItem(idxName, rotateTurntable, idx));
       }
     }
