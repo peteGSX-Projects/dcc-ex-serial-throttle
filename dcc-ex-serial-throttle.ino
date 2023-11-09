@@ -35,10 +35,6 @@ Include the required libraries
 // Array to hold all throttle objects to process
 Throttle* throttles[NUM_THROTTLES];
 
-unsigned long delayUntil=0;
-unsigned long retrievalDelay=1000;
-bool doOnce=true;
-
 /***********************************************************************************
 Main setup function
 ***********************************************************************************/
@@ -60,7 +56,6 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  delayUntil=millis()+retrievalDelay;
 }
 
 /***********************************************************************************
@@ -68,18 +63,7 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  // validateConnection();
-  // if (connected) {
-    // if (doOnce) {
-    //   doOnce=false;
-    //   dccexProtocol.sendTrackPower(PowerOn);
-    // }
-    dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
-  // }
+  getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
     if (throttles[i]->speedChanged()) {

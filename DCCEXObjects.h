@@ -27,9 +27,7 @@
 extern DCCEXProtocol dccexProtocol;
 extern DCCEXCallbacks dccexCallbacks;
 
-extern bool connected;
-
-void validateConnection();
+void getDCCEXObjects();
 void updateRoster();
 void updateRoutes();
 void updateTurnouts();

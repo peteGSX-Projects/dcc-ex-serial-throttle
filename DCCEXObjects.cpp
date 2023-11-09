@@ -26,9 +26,9 @@
 DCCEXProtocol dccexProtocol(NUM_THROTTLES);
 DCCEXCallbacks dccexCallbacks;
 
-bool connectionRequested=false;
-bool connected=false;
+bool retrievalDisplayed=false;
 bool errorDisplayed=false;
+bool homeDisplayed=false;
 uint8_t connectionRetries=CONNECT_RETRIES;
 unsigned long retryDelay=1000;
 unsigned long lastRetry=0;
@@ -39,21 +39,15 @@ bool gotTurntables=false;
 int progressX=0;
 int progressY=30;
 
-// Function to validate a connection to the CS has been made
-void validateConnection() {
-  if (!connected) {
-    if (!connectionRequested) {
-      connectionRequested = true;
-      dccexProtocol.sendServerDetailsRequest();
+void getDCCEXObjects() {
+  if (!dccexProtocol.isAllListsReceived() && connectionRetries>0) {
+    if (!retrievalDisplayed) {
       display.clear();
       display.setFont(DEFAULT_FONT);
-      display.drawStr(0, 10, "Connecting to DCC-EX...");
+      display.drawStr(0, 10, "Retrieving DCC-EX object lists");
       display.sendBuffer();
-    } else if (dccexProtocol.isServerDetailsReceived()) {
-      connected = true;
-      menuSystem.goHome();
-    } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
-      dccexProtocol.sendServerDetailsRequest();
+      retrievalDisplayed=true;
+    } else if (millis()-lastRetry>retryDelay && connectionRetries > 0) {
       lastRetry = millis();
       connectionRetries--;
       display.setFont(DEFAULT_FONT);
@@ -65,10 +59,18 @@ void validateConnection() {
         progressY+=8;
         progressX=0;
       }
-    } else if (connectionRetries == 0 && !errorDisplayed) {
-      errorDisplayed = true;
-      displayConnectionError();
     }
+    dccexProtocol.getLists(true, true, true, true);
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
+  }  else if (!dccexProtocol.isAllListsReceived() && connectionRetries==0 && !errorDisplayed) {
+    errorDisplayed = true;
+    displayConnectionError();
+  }  else if (dccexProtocol.isAllListsReceived() && !homeDisplayed) {
+    homeDisplayed=true;
+    menuSystem.goHome();
   }
 }
 
