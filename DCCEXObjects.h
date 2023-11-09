@@ -23,7 +23,6 @@
 #include <Arduino.h>
 #include <DCCEXProtocol.h>
 #include "DCCEXCallbacks.h"
-#include "Menu.h"
 
 extern DCCEXProtocol dccexProtocol;
 extern DCCEXCallbacks dccexCallbacks;
