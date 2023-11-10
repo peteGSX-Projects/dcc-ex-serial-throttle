@@ -56,6 +56,7 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
+  menuSystem.goHome();
 }
 
 /***********************************************************************************
@@ -63,7 +64,7 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  getDCCEXObjects();
+  // getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
     if (throttles[i]->speedChanged()) {

@@ -11,6 +11,12 @@ A serial throttle using three linear potentiometers, an OLED, and a 4 x 3 keypad
 
 ## Pins
 
+### Analog potentiometer inputs
+
+- PA0
+- PA1
+- PA2
+
 ### SPI
 
 - DC - PA3

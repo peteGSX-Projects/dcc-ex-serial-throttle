@@ -62,6 +62,23 @@ void displayConnectionError() {
   display.sendBuffer();
 }
 
+// void displayHome(TrackPower state) {
+//   display.clear();
+//   for (int i=0; i<NUM_THROTTLES; i++) {
+//     _throttles[i]->displaySpeed(true);
+//     _throttles[i]->displayDirection();
+//     _throttles[i]->displayAddress();
+//   }
+//   display.drawHLine(0, 55, 128);
+//   display.setFont(MENU_ITEM_FONT);
+//   display.setCursor(0, 63);
+//   display.print("* Menu");
+//   display.setCursor(60, 63);
+//   display.print("Trk Power: ");
+//   displayPowerState(state);
+//   display.sendBuffer();
+// }
+
 void displayThrottleSpeed(int throttle, int speed, bool isHome) {
   if (isHome) {
     display.setFont(SPEED_FONT);
@@ -128,5 +145,54 @@ void displayThrottleEStop(int throttle) {
     throttleSetup[throttle].speed.Y
   );
   display.print("ESTOP");
+  display.sendBuffer();
+}
+
+void displayPowerState(TrackPower state) {
+  display.setFont(MENU_ITEM_FONT);
+  display.setCursor(113, 63);
+  display.print("   ");
+  display.setCursor(113, 63);
+  if (state==PowerOn) {
+    display.print("On");
+  } else if (state==PowerOff) {
+    display.print("Off");
+  } else {
+    display.print("?");
+  }
+  display.sendBuffer();
+}
+
+void displayEntryMenuItem(char* label, const char* instruction) {
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  display.setCursor(0, 17);
+  display.print(instruction);
+  display.setCursor(0, 26);
+  display.print("#####");
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  display.setCursor(70, 63);
+  display.print("# Confirm");
+  display.sendBuffer();
+}
+
+void displayEntryError(const char* error) {
+  display.setCursor(0, 26);
+  display.print("#####");
+  display.setCursor(0, 35);
+  display.print(error);
+  display.sendBuffer();
+}
+
+void displayEntryKey(char key, int column) {
+  display.setCursor(column, 26);
+  display.print(" ");
+  display.setCursor(column, 26);
+  display.print(key);
   display.sendBuffer();
 }

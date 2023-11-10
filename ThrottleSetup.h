@@ -22,6 +22,7 @@
 
 #include <Arduino.h>
 #include "defines.h"
+// #include "Throttle.h"
 
 struct DisplayAttributes {
   int X;
@@ -36,5 +37,7 @@ struct ThrottleSetup {
 };
 
 extern ThrottleSetup throttleSetup[NUM_THROTTLES];
+// Array to hold all throttle objects to process
+// extern Throttle* throttles[NUM_THROTTLES];
 
 #endif

@@ -39,3 +39,5 @@ ThrottleSetup throttleSetup[NUM_THROTTLES]={
     PA2,
   },
 };
+
+// Throttle* throttles[NUM_THROTTLES];
