@@ -47,7 +47,7 @@ void getDCCEXObjects() {
       display.drawStr(0, 10, "Retrieving DCC-EX object lists");
       display.sendBuffer();
       retrievalDisplayed=true;
-    } else if (millis()-lastRetry>retryDelay && connectionRetries > 0) {
+    } else if (!dccexProtocol.isAllListsReceived() && millis()-lastRetry>retryDelay && connectionRetries > 0) {
       lastRetry = millis();
       connectionRetries--;
       display.setFont(DEFAULT_FONT);
