@@ -50,15 +50,27 @@ void keypadEvent(KeypadEvent key) {
     case HOLD:
       keyPress = false;
       // displayKey(key, HOLD);
-      menuSystem.handleKeys(key, HOLD);
+      if (menuSystem.isHome()) {
+        handleThrottleKeys(key, PRESSED);
+      } else {
+        menuSystem.handleKeys(key, HOLD);
+      }
       break;
     case RELEASED:
       if (keyPress == true) {
         // displayKey(key, PRESSED);
-        menuSystem.handleKeys(key, PRESSED);
+        if (menuSystem.isHome() && key!='*') {
+          handleThrottleKeys(key, PRESSED);
+        } else {
+          menuSystem.handleKeys(key, PRESSED);
+        }
       } else {
         // displayKey(key, RELEASED);
-        menuSystem.handleKeys(key, RELEASED);
+        if (menuSystem.isHome()) {
+          handleThrottleKeys(key, PRESSED);
+        } else {
+          menuSystem.handleKeys(key, RELEASED);
+        }
       }
       break;
     case IDLE:

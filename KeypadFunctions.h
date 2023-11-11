@@ -25,6 +25,7 @@
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "StaticMenus.h"
+#include "ThrottleSetup.h"
 
 extern Keypad keypad;
 

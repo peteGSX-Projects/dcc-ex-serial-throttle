@@ -22,10 +22,10 @@
 
 #include <Arduino.h>
 #include "defines.h"
-#include "version.h"
-#include "Throttle.h"
-#include "Keypad.h"
 #include "ThrottleSetup.h"
+#include "globals.h"
+#include "version.h"
+#include "Keypad.h"
 #include "DCCEXProtocol.h"
 
 // Fonts in use
@@ -37,14 +37,12 @@
 #define ADDRESS_FONT u8g2_font_6x10_mr
 #define ESTOP_FONT u8g2_font_6x12_mr
 
-extern OLED display;
-
 void displayStartupInfo();
 void displayKey(char key, KeyState keyState);
 void displayConnectionError();
 
 /// @brief Display the home throttle screen
-// void displayHome(TrackPower state);
+void displayHome(TrackPower state);
 
 /// @brief Display speed for the specified throttle
 /// @param throttle 
@@ -84,5 +82,13 @@ void displayEntryError(const char* error);
 /// @param key 
 /// @param column 
 void displayEntryKey(char key, int column);
+
+/// @brief Display menu items in 2 columns of 5
+/// @param label 
+/// @param currentPage 
+/// @param itemsPerPage 
+/// @param itemCount 
+/// @param items 
+void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * items[]);
 
 #endif

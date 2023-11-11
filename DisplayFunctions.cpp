@@ -62,22 +62,22 @@ void displayConnectionError() {
   display.sendBuffer();
 }
 
-// void displayHome(TrackPower state) {
-//   display.clear();
-//   for (int i=0; i<NUM_THROTTLES; i++) {
-//     _throttles[i]->displaySpeed(true);
-//     _throttles[i]->displayDirection();
-//     _throttles[i]->displayAddress();
-//   }
-//   display.drawHLine(0, 55, 128);
-//   display.setFont(MENU_ITEM_FONT);
-//   display.setCursor(0, 63);
-//   display.print("* Menu");
-//   display.setCursor(60, 63);
-//   display.print("Trk Power: ");
-//   displayPowerState(state);
-//   display.sendBuffer();
-// }
+void displayHome(TrackPower state) {
+  display.clear();
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
+    displayThrottleDirection(i, throttles[i]->getDirection());
+    displayThrottleAddress(i, throttles[i]->getLocoAddress(), false, false);
+  }
+  display.drawHLine(0, 55, 128);
+  display.setFont(MENU_ITEM_FONT);
+  display.setCursor(0, 63);
+  display.print("* Menu");
+  display.setCursor(60, 63);
+  display.print("Trk Power: ");
+  displayPowerState(state);
+  display.sendBuffer();
+}
 
 void displayThrottleSpeed(int throttle, int speed, bool isHome) {
   if (isHome) {
@@ -194,5 +194,43 @@ void displayEntryKey(char key, int column) {
   display.print(" ");
   display.setCursor(column, 26);
   display.print(key);
+  display.sendBuffer();
+}
+
+void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * itemList[]) {
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  // int i=0;
+  int X=0;
+  int Y=17;
+  display.setFont(MENU_ITEM_FONT);
+  for (int i=0; i<itemsPerPage; i++) {
+    if (itemList[i]) {
+      display.setCursor(X, Y);
+      display.print(i);
+      display.setCursor(X+8, Y);
+      if (strlen(itemList[i])>10 && itemCount>5) {
+        itemList[i][10]='\0';
+      }
+      display.print(itemList[i]);
+      Y+=8;
+      if (i==4) {
+        X=64;
+        Y=17;
+      }
+    }
+  }
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  if (itemCount>itemsPerPage) {
+    display.setCursor(70, 63);
+    display.print("# Page ");
+    int nextPage=(currentPage+1)%((int)ceil(itemCount/(float)itemsPerPage))+1;
+    display.print(nextPage);
+  }
   display.sendBuffer();
 }

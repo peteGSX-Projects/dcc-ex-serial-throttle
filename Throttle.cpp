@@ -18,11 +18,10 @@
 */
 
 #include "Throttle.h"
-#include "defines.h"
+// #include "defines.h"
 
 // Constructor, set input mode on construction
-Throttle::Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList, OLED& oled)
-  : _oled(oled) {
+Throttle::Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList) {
   _potPin=potPin;
   pinMode(_potPin, INPUT);
   _throttleNumber=throttleNumber;
@@ -46,7 +45,7 @@ void Throttle::process() {
     _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
     _speedChanged = true;
     if (dccexProtocol.throttle[_throttleNumber].getLocoCount() > 0) {
-      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
+      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
     }
   }
 }
@@ -80,7 +79,7 @@ void Throttle::setLocoAddress(int address, LocoSource source) {
     currentNode->next = newNode;
   }
   dccexProtocol.throttle[_throttleNumber].addFromEntry(_locoAddress, FacingForward);
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
 }
 
 // Return the current loco address
@@ -131,16 +130,16 @@ void Throttle::forgetLoco(int address) {
 // 1 = reverse
 // 0 = forward
 // Sends the change to the CS also
-void Throttle::setDirection(bool direction){
+void Throttle::setDirection(Direction direction){
   if (_speed > 0) return;
   _direction = direction;
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _getDirectionName(_direction));
+  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
 }
 
 // Get current throttle direction
 // 1 = reverse
 // 0 = forward
-bool Throttle::getDirection() {
+Direction Throttle::getDirection() {
   return _direction;
 }
 
@@ -160,25 +159,4 @@ bool Throttle::addressInUse(int address) {
     currentNode=currentNode->next;
   }
   return false;
-}
-
-void Throttle::displaySpeed(bool isHome) {
-  displayThrottleSpeed(_throttleNumber, _speed, isHome);
-}
-
-void Throttle::displayDirection() {
-  displayThrottleDirection(_throttleNumber, _getDirectionName(_direction));
-}
-
-void Throttle::displayAddress() {
-  displayThrottleAddress(_throttleNumber, _locoAddress, _isOverridden, isConsist());
-}
-
-void Throttle::displayEStop() {
-  displayThrottleEStop(_throttleNumber);
-}
-
-// Helper function to convert direction bool to Direction char
-Direction Throttle::_getDirectionName(bool direction) {
-  return (direction) ? Forward : Reverse;
 }

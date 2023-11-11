@@ -24,7 +24,8 @@
 #include "defines.h"
 #include "Keypad.h"
 #include "DCCEXProtocol.h"
-#include "Throttle.h"
+#include "DisplayFunctions.h"
+#include "DCCEXObjects.h"
 
 class MenuSystem;
 
@@ -78,16 +79,16 @@ public:
   int getIndex() const;
   
   /// @brief What happens when the item is selected from a menu
-  virtual void select(OLED& oled) {};
+    virtual void select() {};
   
   /// @brief Display method of this object
   /// @param oled 
-  virtual void display(OLED& oled) {};
+    virtual void display() {};
   
   /// @brief Keypad input processing of this object
   /// @param key 
   /// @param keyState 
-  virtual void handleKeys(char key, KeyState keyState, OLED& oled) {};
+    virtual void handleKeys(char key, KeyState keyState) {};
   
   /// @brief Sets the static attribute for referencing the menu system
   /// @param menuSystem 
@@ -125,8 +126,7 @@ public:
   ActionMenuItem(const char* label, Action action, void* objectPointer=nullptr);
   
   /// @brief What happens when the item is selected from a menu
-  /// @param oled 
-  void select(OLED& oled) override;
+  void select() override;
 
   /// @brief Get the associated object pointer for this item
   /// @return 
@@ -149,18 +149,15 @@ public:
   EntryMenuItem(const char* label, const char* instruction, Action action);
 
   /// @brief What happens when the item is selected from a menu
-  /// @param oled 
-  void select(OLED& oled) override;
+  void select() override;
   
   /// @brief Display the user entry screen
-  /// @param oled 
-  void display(OLED& oled) override;
+  void display() override;
   
   /// @brief Handle user input via keypad
   /// @param key 
   /// @param keyState 
-  /// @param oled 
-  void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  void handleKeys(char key, KeyState keyState) override;
 
 private:
   const char* _instruction;
@@ -179,18 +176,15 @@ public:
   Menu(const char* label);
   
   /// @brief What happens when the item is selected from a menu
-  /// @param oled 
-  void select(OLED& oled) override;
+  void select() override;
   
   /// @brief Display the menu
-  /// @param oled 
-  void display(OLED& oled) override;
+  void display() override;
 
   /// @brief Respond to user input
   /// @param key 
   /// @param keyState 
-  /// @param oled 
-  void handleKeys(char key, KeyState keyState, OLED& oled) override;
+  void handleKeys(char key, KeyState keyState) override;
   
   /// @brief Add a menu item
   /// @param item ActionMenuItem, EntryMenuItem, Menu, ThrottleScreen
@@ -217,7 +211,7 @@ class ThrottleMenu : public Menu {
 public:
   ThrottleMenu(const char* label, int throttleNumber);
 
-  void select(OLED& oled) override;
+  void select() override;
 
 private:
   int _throttleNumber;
@@ -230,15 +224,13 @@ public:
   ThrottleScreen();
   
   /// @brief Display the throttle screen
-  /// @param oled 
-  void select(OLED& oled) override;
+  void select() override;
 
   /// @brief Respond to user input
   /// @param key 
   /// @param keyState 
-  /// @param oled 
-  void handleKeys(char key, KeyState keyState, OLED& oled) override;
-  
+  void handleKeys(char key, KeyState keyState) override;
+
   /// @brief Set the menu to display when * pressed
   /// @param menu 
   void setMenu(MenuItemBase* menu);
@@ -255,8 +247,7 @@ private:
 class MenuSystem {
 public:
   /// @brief Constructor for the menu system
-  /// @param oled 
-  MenuSystem(OLED& oled);
+  MenuSystem();
   
   /// @brief Display the currently selected item
   void display();
@@ -290,14 +281,6 @@ public:
   /// @return 
   ActionMenuItem* getCurrentActionItem();
 
-  /// @brief Set the pointer to the throttles array
-  /// @param throttles 
-  void setThrottles(Throttle** throttles);
-
-  /// @brief Get the throttle array pointer
-  /// @return 
-  Throttle** getThrottles();
-
   /// @brief Set the current throttle being managed
   /// @param throttle 
   void setCurrentThrottle(int throttle);
@@ -315,11 +298,10 @@ public:
   void updatePowerState(TrackPower state);
 
 private:
-  OLED& _oled;
+  // OLED& _oled;
   MenuItemBase* _currentItem;
   MenuItemBase* _home;
   ActionMenuItem* _currentActionItem;
-  Throttle** _throttles;
   int _currentThrottle;
   TrackPower _powerState=PowerUnknown;
 

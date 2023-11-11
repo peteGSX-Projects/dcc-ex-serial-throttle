@@ -20,7 +20,8 @@
 #include <Arduino.h>
 #include "StaticMenus.h"
 
-MenuSystem menuSystem(display);
+// MenuSystem menuSystem(display);
+MenuSystem menuSystem;
 
 void createMenus() {
   ThrottleScreen* throttle=new ThrottleScreen();

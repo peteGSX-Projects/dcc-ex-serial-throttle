@@ -194,3 +194,13 @@ void setJoinTracks() {
   //   }
   // }
 }
+
+bool setLocoAddress(int throttle, int address) {
+  bool inUse=false;
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    if (throttles[i]->addressInUse(address)) inUse=true;
+  }
+  if (inUse) return false;
+  throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
+  return true;
+}

@@ -23,7 +23,6 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXObjects.h"
-#include "DisplayFunctions.h"
 
 struct LocoNode {
   Loco* loco;
@@ -40,7 +39,7 @@ public:
   /// @param throttleNumber 
   /// @param potPin 
   /// @param initialLocoList 
-  Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList, OLED& oled);
+  Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList);
 
   /// @brief Process analogue input for speed
   void process();
@@ -76,11 +75,11 @@ public:
   
   /// @brief Set the direction for this throttle
   /// @param direction 
-  void setDirection(bool direction);
+  void setDirection(Direction direction);
   
   /// @brief Get the current direction for this throttle
   /// @return 
-  bool getDirection();
+  Direction getDirection();
   
   /// @brief Check if another throttle has overridden the speed/direction
   /// @return 
@@ -90,18 +89,6 @@ public:
   /// @param address 
   /// @return 
   bool addressInUse(int address);
-
-  /// @brief Display the speed on screen for this throttle
-  void displaySpeed(bool isHome);
-
-  /// @brief Display the direction on screen for this throttle
-  void displayDirection();
-
-  /// @brief Display the address on screen for this throttle
-  void displayAddress();
-
-  /// @brief Display EStop for this throttle instead of speed
-  void displayEStop();
 
 private:
   int _potPin;  // pin the potentiometer is on for this throttle
@@ -114,15 +101,9 @@ private:
   bool _speedChanged = false;
   int _locoAddress = 0;
   int _throttleNumber;
-  bool _direction = Forward;  // Default to forward
+  Direction _direction = Forward;  // Default to forward
   bool _isOverridden = false;
   LocoNode* _locoList = nullptr;  // Linked list containing Locos
-  OLED& _oled;
-
-  /// @brief Helper function to get the direction name
-  /// @param direction 
-  /// @return 
-  Direction _getDirectionName(bool direction);
 
 };
 

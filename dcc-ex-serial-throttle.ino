@@ -25,15 +25,8 @@ Include the required libraries
 #include "defines.h"
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "StaticMenus.h"
 #include "SerialFunctions.h"
 #include "DCCEXObjects.h"
-#include "Throttle.h"
-#include "ThrottleSetup.h"
-#include "MenuSystem.h"
-
-// Array to hold all throttle objects to process
-Throttle* throttles[NUM_THROTTLES];
 
 /***********************************************************************************
 Main setup function
@@ -52,7 +45,6 @@ void setup() {
   setupKeypad();
   setupThrottles();
   createMenus();
-  menuSystem.setThrottles(throttles);
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
@@ -67,8 +59,8 @@ void loop() {
   getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
-    if (throttles[i]->speedChanged()) {
-      throttles[i]->displaySpeed(menuSystem.isHome());
+    if (throttles[i]->speedChanged() && menuSystem.isHome()) {
+      displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
     }
   }
   keypad.getKey();
@@ -85,10 +77,3 @@ void disableJTAG() {
   // AFIO->MAPR2 &= ~(AFIO_MAPR2_SWJ_CFG);
 }
 #endif
-
-// Setup the correct number of throttles as defined
-void setupThrottles() {
-  for (int i=0; i<NUM_THROTTLES; i++) {
-    throttles[i]=new Throttle(i, throttleSetup[i].potPin, nullptr, display);
-  }
-}
