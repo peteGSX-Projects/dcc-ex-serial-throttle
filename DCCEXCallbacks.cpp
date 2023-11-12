@@ -57,12 +57,7 @@ void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
 }
 
 void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool moving){ 
-  CONSOLE.print("Received turntable action: ");
-  CONSOLE.print(turntableId);
-  CONSOLE.print(" position: ");
-  CONSOLE.print(position);
-  CONSOLE.print(" moving: ");
-  CONSOLE.println(moving);
+  displayTurntableIndex(turntableId);
 }
 
 void DCCEXCallbacks::receivedTrackPower(TrackPower state) {

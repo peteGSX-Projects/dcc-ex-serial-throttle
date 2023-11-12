@@ -234,20 +234,13 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
   }
   display.sendBuffer();
   displayTurnoutStates();
+  // displayTurntableIndex();
 }
 
 void displayTurnoutStates() {
-  // int index=_currentPage*_itemsPerPage+i;
-  //   MenuItemBase* item=getItemAtIndex(index);
-  //   if (item) {
-  //     itemList[i]=item->getLabel();
-  //   } else {
-  //     itemList[i]=nullptr;
-  //   }
   Menu* tMenu=static_cast<Menu*>(menuSystem.getCurrentItem());
   if (tMenu && strcmp(tMenu->getLabel(), "Turnouts")==0) {
     int page=tMenu->getCurrentPage();
-    int count=tMenu->getItemCount();
     int ppage=tMenu->getItemsPerPage();
     int X=6;
     int Y=16;
@@ -264,6 +257,39 @@ void displayTurnoutStates() {
       display.print(" ");
       display.setCursor(X, Y);
       display.print(tThrown);
+      Y+=8;
+      if (i==4) {
+        X=70;
+        Y=16;
+      }
+    }
+    display.sendBuffer();
+  }
+}
+
+void displayTurntableIndex(int id) {
+  Turntable* tt;
+  if (id>0) {
+    tt=dccexProtocol.getTurntableById(id);
+  } else {
+    // How else to get index?
+  }
+  Menu* ttMenu=static_cast<Menu*>(menuSystem.getCurrentItem());
+  if (ttMenu && strcmp(tt->getName(), ttMenu->getLabel())==0) {
+    int page=ttMenu->getCurrentPage();
+    int ppage=ttMenu->getItemsPerPage();
+    int currentIndex=tt->getIndex();
+    int X=6;
+    int Y=16;
+    display.setFont(STATUS_FONT);
+    for (int i=0; i<ppage; i++) {
+      int index=page*ppage+i;
+      display.setCursor(X, Y);
+      display.print(" ");
+      display.setCursor(X, Y);
+      if (index==currentIndex) {
+        display.print("*");
+      }
       Y+=8;
       if (i==4) {
         X=70;

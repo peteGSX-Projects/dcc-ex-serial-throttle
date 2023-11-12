@@ -92,6 +92,10 @@ void displayEntryKey(char key, int column);
 /// @param items 
 void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * items[]);
 
+/// @brief Display the state beside each turnout in the menu
 void displayTurnoutStates();
+
+/// @brief Display which index of a turntable is currently selected
+void displayTurntableIndex(int id=0);
 
 #endif
