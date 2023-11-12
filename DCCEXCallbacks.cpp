@@ -20,6 +20,8 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXCallbacks.h"
+#include "DisplayFunctions.h"
+#include "StaticMenus.h"
 
 void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.print(uc);
@@ -51,10 +53,7 @@ void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) {
 }
 
 void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
-  CONSOLE.print("Received turnout action: ");
-  CONSOLE.print(turnoutId);
-  CONSOLE.print(" thrown: ");
-  CONSOLE.println(thrown);
+  displayTurnoutStates();
 }
 
 void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool moving){ 
@@ -67,6 +66,5 @@ void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool
 }
 
 void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
-  CONSOLE.print("Received track power state: ");
-  CONSOLE.println(state);
+  menuSystem.updatePowerState(state);
 }

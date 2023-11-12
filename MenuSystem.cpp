@@ -63,6 +63,14 @@ void MenuItemBase::setParent(MenuItemBase* parent) {
   _parent=parent;
 }
 
+MenuItemBase::ObjectType MenuItemBase::getObjectType() {
+  return _objectType;
+}
+
+int MenuItemBase::getObjectId() {
+  return _objectId;
+}
+
 // class ActionMenuItem
 ActionMenuItem::ActionMenuItem(const char* label, Action action, void* objectPointer)
   : MenuItemBase(label, MenuItemBase::Action) {
@@ -70,7 +78,7 @@ ActionMenuItem::ActionMenuItem(const char* label, Action action, void* objectPoi
     _objectPointer=objectPointer;
   }
 
-void ActionMenuItem::select(OLED& oled) {
+void ActionMenuItem::select() {
   _menuSystem->setCurrentActionItem(this);
   if (_action) {
     _action();
@@ -88,38 +96,24 @@ EntryMenuItem::EntryMenuItem(const char* label, const char* instruction, Action 
   _inputKeyColumn=0;
 }
 
-void EntryMenuItem::select(OLED& oled) {
+void EntryMenuItem::select() {
   _menuSystem->setCurrentItem(this);
   _inputIndex=0;
   _inputKeyColumn=0;
-  this->display(oled);
+  this->display();
 }
 
-void EntryMenuItem::display(OLED& oled) {
-  oled.clear();
-  oled.setFont(MENU_TITLE_FONT);
-  oled.setCursor(0, 6);
-  oled.print(_label);
-  oled.drawHLine(0, 7, 128);
-  oled.setCursor(0, 17);
-  oled.print(_instruction);
-  oled.setCursor(0, 26);
-  oled.print("#####");
-  oled.drawHLine(0, 54, 128);
-  oled.setCursor(0, 63);
-  oled.print("* Back");
-  oled.setCursor(70, 63);
-  oled.print("# Confirm");
-  oled.sendBuffer();
+void EntryMenuItem::display() {
+  displayEntryMenuItem(_label, _instruction);
 }
 
-void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
+void EntryMenuItem::handleKeys(char key, KeyState keyState) {
   if (keyState==PRESSED) {
     switch(key) {
       case '*':
         if (_parent) {
           _menuSystem->setCurrentItem(_parent);
-          _parent->display(oled);
+          _parent->display();
         }
         break;
       
@@ -130,26 +124,12 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
           memset(_inputBuffer, 0, sizeof(_inputBuffer));
           _inputKeyColumn=0;
           if (number < 1 || number > 10239) {
-            oled.setCursor(0, 26);
-            oled.print("#####");
-            oled.setCursor(0, 35);
-            oled.print("INVALID ADDRESS");
-            oled.sendBuffer();
+            displayEntryError("INVALID ADDRESS");
           } else {
-            bool inUse=false;
-            for (int i=0; i<NUM_THROTTLES; i++) {
-              if (_menuSystem->getThrottles()[i]->addressInUse(number)) inUse=true;
-            }
-            if (inUse) {
-              oled.setCursor(0, 26);
-              oled.print("#####");
-              oled.setCursor(0, 35);
-              oled.print("ADDRESS IN USE");
-              oled.sendBuffer();
-            } else {
-              int throttle=_menuSystem->getCurrentThrottle();
-              _menuSystem->getThrottles()[throttle]->setLocoAddress(number, LocoSourceEntry);
+            if (setLocoAddress(_menuSystem->getCurrentThrottle(), number)) {
               _menuSystem->goHome();
+            } else {
+              displayEntryError("ADDRESS IN USE");
             }
           }
         }
@@ -167,11 +147,7 @@ void EntryMenuItem::handleKeys(char key, KeyState keyState, OLED& oled) {
       case '9':
         if (_inputIndex<5) {
           _inputBuffer[_inputIndex++]=key;
-          oled.setCursor(_inputKeyColumn, 26);
-          oled.print(" ");
-          oled.setCursor(_inputKeyColumn, 26);
-          oled.print(key);
-          oled.sendBuffer();
+          displayEntryKey(key, _inputKeyColumn);
           _inputKeyColumn+=5;
         }
         break;
@@ -191,54 +167,28 @@ Menu::Menu(const char* label)
   _itemsPerPage=10;
 }
 
-void Menu::select(OLED& oled) {
+void Menu::select() {
   _menuSystem->setCurrentItem(this);
-  this->display(oled);
+  this->display();
 }
 
-void Menu::display(OLED& oled) {
-  int startIndex=_currentPage*_itemsPerPage;
-  int endIndex=min(startIndex+_itemsPerPage, _itemCount);
-  
-  oled.clear();
-  oled.setFont(MENU_TITLE_FONT);
-  oled.setCursor(0, 6);
-  oled.print(_label);
-  oled.drawHLine(0, 7, 128);
-  int i=0;
-  int X=0;
-  int Y=17;
-  oled.setFont(MENU_ITEM_FONT);
-  for (int index=startIndex; index<endIndex; index++) {
+void Menu::display() {
+  char* itemList[_itemsPerPage];
+
+  for (int i=0; i<_itemsPerPage; i++) {
+    int index=_currentPage*_itemsPerPage+i;
     MenuItemBase* item=getItemAtIndex(index);
-    oled.setCursor(X, Y);
-    oled.print(i);
-    oled.setCursor(X+8, Y);
-    char* label=item->getLabel();
-    if (strlen(label)>10 && _itemCount>5) {
-      label[10]='\0';
-    }
-    oled.print(item->getLabel());
-    Y+=8;
-    i++;
-    if (i==5) {
-      X=64;
-      Y=17;
+    if (item) {
+      itemList[i]=item->getLabel();
+    } else {
+      itemList[i]=nullptr;
     }
   }
-  oled.drawHLine(0, 54, 128);
-  oled.setCursor(0, 63);
-  oled.print("* Back");
-  if (_itemCount>_itemsPerPage) {
-    oled.setCursor(70, 63);
-    oled.print("# Page ");
-    int nextPage=(_currentPage+1)%((int)ceil(_itemCount/(float)_itemsPerPage))+1;
-    oled.print(nextPage);
-  }
-  oled.sendBuffer();
+
+  displayMenu(_label, _currentPage, _itemsPerPage, _itemCount, itemList);
 }
 
-void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
+void Menu::handleKeys(char key, KeyState keyState) {
   if (keyState==PRESSED) {
     switch (key) {
       case '0':
@@ -255,7 +205,7 @@ void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
         itemIndex+=_currentPage*_itemsPerPage;
         MenuItemBase* item=getItemAtIndex(itemIndex);
         if (item) {
-          item->select(oled);
+          item->select();
         }
         break;
       }
@@ -263,13 +213,13 @@ void Menu::handleKeys(char key, KeyState keyState, OLED& oled) {
       case '*':
         if (this->_parent) {
           _menuSystem->setCurrentItem(this->_parent);
-          _parent->select(oled);
+          _parent->select();
         }
         break;
       
       case '#':
         _currentPage=(_currentPage+1) % ((int)ceil(_itemCount/(float)_itemsPerPage));
-        display(oled);
+        display();
         break;
       
       default:
@@ -306,76 +256,45 @@ MenuItemBase* Menu::getItemList() {
   return _itemList;
 }
 
+int Menu::getItemCount() {
+  return _itemCount;
+}
+  
+int Menu::getCurrentPage() {
+  return _currentPage;
+}
+
+int Menu::getItemsPerPage() {
+  return _itemsPerPage;
+}
+
 ThrottleMenu::ThrottleMenu(const char* label, int throttleNumber)
   : Menu(label) {
   _throttleNumber=throttleNumber;
 }
 
-void ThrottleMenu::select(OLED& oled) {
+void ThrottleMenu::select() {
   _menuSystem->setCurrentItem(this);
   _menuSystem->setCurrentThrottle(_throttleNumber);
-  this->display(oled);
+  this->display();
 }
 
 // class ThrottleScreen
 ThrottleScreen::ThrottleScreen()
   : MenuItemBase(nullptr, MenuItemBase::Throttle) {}
 
-void ThrottleScreen::select(OLED& oled) {
+void ThrottleScreen::select() {
   _menuSystem->goHome();
 }
 
-void ThrottleScreen::handleKeys(char key, KeyState keyState, OLED& oled) {
+void ThrottleScreen::handleKeys(char key, KeyState keyState) {
   if (_menu) {
     if (keyState==PRESSED) {
       switch(key) {
         case '*':
           _menuSystem->setCurrentItem(_menu);
-          _menu->display(oled);
+          _menu->display();
           break;
-
-        case'1': {
-          auto th=_menuSystem->getThrottles()[0];
-          int speed=th->getSpeed();
-          int address=th->getLocoAddress();
-          if (speed==0 && address!=0) {
-            th->setDirection(!th->getDirection());
-            th->displayDirection();
-          }
-          break;
-        }
-
-        if (NUM_THROTTLES>1) {
-          case '2': { // Reverse key
-            auto th=_menuSystem->getThrottles()[1];
-            int speed=th->getSpeed();
-            int address=th->getLocoAddress();
-            if (speed==0 && address!=0) {
-              th->setDirection(!th->getDirection());
-              th->displayDirection();
-            }
-            break;
-          }
-
-          case '5': // Light (press)/horn (hold) key
-            break;
-
-          case '8': // Display functions key
-            break;
-        }
-        
-        if (NUM_THROTTLES>2) {
-          case '3': {
-            auto th=_menuSystem->getThrottles()[2];
-            int speed=th->getSpeed();
-            int address=th->getLocoAddress();
-            if (speed==0 && address!=0) {
-              th->setDirection(!th->getDirection());
-              th->displayDirection();
-            }
-            break;
-          }
-        }
         
         default:
           break;
@@ -394,24 +313,22 @@ MenuItemBase* ThrottleScreen::getMenu() {
 }
 
 // class MenuSystem
-MenuSystem::MenuSystem(OLED& oled)
-  : _oled(oled) {
+MenuSystem::MenuSystem() {
     _currentItem=nullptr;
     _home=nullptr;
     _currentActionItem=nullptr;
-    _throttles=nullptr;
     _currentThrottle=-1;
   }
 
 void MenuSystem::display() {
   if (_currentItem) {
-    _currentItem->display(_oled);
+    _currentItem->display();
   }
 }
 
 void MenuSystem::handleKeys(char key, KeyState keyState) {
   if (_currentItem) {
-    _currentItem->handleKeys(key, keyState, _oled);
+    _currentItem->handleKeys(key, keyState);
   }
 }
 
@@ -423,17 +340,7 @@ void MenuSystem::setHome(MenuItemBase* home) {
 
 void MenuSystem::goHome() {
   _currentItem=_home;
-  _oled.clear();
-  for (int i=0; i<NUM_THROTTLES; i++) {
-    _throttles[i]->displaySpeed(true);
-    _throttles[i]->displayDirection();
-    _throttles[i]->displayAddress();
-  }
-  _oled.drawHLine(0, 55, 128);
-  _oled.setFont(MENU_ITEM_FONT);
-  _oled.setCursor(0, 63);
-  _oled.print("* Menu");
-  _oled.sendBuffer();
+  displayHome(_powerState);
 }
 
 void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
@@ -443,6 +350,36 @@ void MenuSystem::setCurrentItem(MenuItemBase* currentItem) {
 Menu* MenuSystem::findMenuByLabel(const char* label) {
   ThrottleScreen* home=static_cast<ThrottleScreen*>(_home);
   return _findMenuByLabelRecursive(label, home->getMenu());
+}
+
+void MenuSystem::setCurrentActionItem(ActionMenuItem *item) {
+  _currentActionItem=item;
+}
+
+ActionMenuItem* MenuSystem::getCurrentActionItem() {
+  return _currentActionItem;
+}
+
+void MenuSystem::setCurrentThrottle(int throttle) {
+  _currentThrottle=throttle;
+}
+
+int MenuSystem::getCurrentThrottle() {
+  return _currentThrottle;
+}
+
+bool MenuSystem::isHome() {
+  if (_currentItem==_home) return true;
+  return false;
+}
+
+void MenuSystem::updatePowerState(TrackPower state) {
+  _powerState=state;
+  _displayPowerState();
+}
+
+MenuItemBase* MenuSystem::getCurrentItem() {
+  return _currentItem;
 }
 
 Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {
@@ -466,31 +403,8 @@ Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* cur
   return _findMenuByLabelRecursive(label, currentMenuItem->getNext());
 }
 
-void MenuSystem::setCurrentActionItem(ActionMenuItem *item) {
-  _currentActionItem=item;
-}
-
-ActionMenuItem* MenuSystem::getCurrentActionItem() {
-  return _currentActionItem;
-}
-
-void MenuSystem::setThrottles(Throttle** throttles) {
-  _throttles=throttles;
-}
-
-Throttle** MenuSystem::getThrottles() {
-  return _throttles;
-}
-
-void MenuSystem::setCurrentThrottle(int throttle) {
-  _currentThrottle=throttle;
-}
-
-int MenuSystem::getCurrentThrottle() {
-  return _currentThrottle;
-}
-
-bool MenuSystem::isHome() {
-  if (_currentItem==_home) return true;
-  return false;
+void MenuSystem::_displayPowerState() {
+  if (_currentItem==_home) {
+    displayPowerState(_powerState);
+  }
 }

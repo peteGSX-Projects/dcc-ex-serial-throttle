@@ -18,6 +18,7 @@
 */
 
 #include "DisplayFunctions.h"
+#include "StaticMenus.h"
 
 /***********************************************************************************
 Set up OLED libraries and object
@@ -59,6 +60,23 @@ void displayConnectionError() {
   display.clear();
   display.setFont(DEFAULT_FONT);
   display.drawStr(30, 10, "Connection error");
+  display.sendBuffer();
+}
+
+void displayHome(TrackPower state) {
+  display.clear();
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
+    displayThrottleDirection(i, throttles[i]->getDirection());
+    displayThrottleAddress(i, throttles[i]->getLocoAddress(), false, false);
+  }
+  display.drawHLine(0, 55, 128);
+  display.setFont(MENU_ITEM_FONT);
+  display.setCursor(0, 63);
+  display.print("* Menu");
+  display.setCursor(60, 63);
+  display.print("Trk Power: ");
+  displayPowerState(state);
   display.sendBuffer();
 }
 
@@ -129,4 +147,129 @@ void displayThrottleEStop(int throttle) {
   );
   display.print("ESTOP");
   display.sendBuffer();
+}
+
+void displayPowerState(TrackPower state) {
+  display.setFont(MENU_ITEM_FONT);
+  display.setCursor(113, 63);
+  display.print("   ");
+  display.setCursor(113, 63);
+  if (state==PowerOn) {
+    display.print("On");
+  } else if (state==PowerOff) {
+    display.print("Off");
+  } else {
+    display.print("?");
+  }
+  display.sendBuffer();
+}
+
+void displayEntryMenuItem(char* label, const char* instruction) {
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  display.setCursor(0, 17);
+  display.print(instruction);
+  display.setCursor(0, 26);
+  display.print("#####");
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  display.setCursor(70, 63);
+  display.print("# Confirm");
+  display.sendBuffer();
+}
+
+void displayEntryError(const char* error) {
+  display.setCursor(0, 26);
+  display.print("#####");
+  display.setCursor(0, 35);
+  display.print(error);
+  display.sendBuffer();
+}
+
+void displayEntryKey(char key, int column) {
+  display.setCursor(column, 26);
+  display.print(" ");
+  display.setCursor(column, 26);
+  display.print(key);
+  display.sendBuffer();
+}
+
+void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * itemList[]) {
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  int X=0;
+  int Y=17;
+  display.setFont(MENU_ITEM_FONT);
+  for (int i=0; i<itemsPerPage; i++) {
+    if (itemList[i]) {
+      display.setCursor(X, Y);
+      display.print(i);
+      display.print(" ");
+      if (strlen(itemList[i])>10 && itemCount>5) {
+        itemList[i][10]='\0';
+      }
+      display.print(itemList[i]);
+      Y+=8;
+      if (i==4) {
+        X=64;
+        Y=17;
+      }
+    }
+  }
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  if (itemCount>itemsPerPage) {
+    display.setCursor(70, 63);
+    display.print("# Page ");
+    int nextPage=(currentPage+1)%((int)ceil(itemCount/(float)itemsPerPage))+1;
+    display.print(nextPage);
+  }
+  display.sendBuffer();
+  displayTurnoutStates();
+}
+
+void displayTurnoutStates() {
+  // int index=_currentPage*_itemsPerPage+i;
+  //   MenuItemBase* item=getItemAtIndex(index);
+  //   if (item) {
+  //     itemList[i]=item->getLabel();
+  //   } else {
+  //     itemList[i]=nullptr;
+  //   }
+  Menu* tMenu=static_cast<Menu*>(menuSystem.getCurrentItem());
+  if (tMenu && strcmp(tMenu->getLabel(), "Turnouts")==0) {
+    int page=tMenu->getCurrentPage();
+    int count=tMenu->getItemCount();
+    int ppage=tMenu->getItemsPerPage();
+    int X=6;
+    int Y=16;
+    display.setFont(STATUS_FONT);
+    for (int i=0; i<ppage; i++) {
+      int index=page*ppage+i;
+      char tThrown=' ';
+      ActionMenuItem* item=static_cast<ActionMenuItem*>(tMenu->getItemAtIndex(index));
+      if (item) {
+        Turnout* t=static_cast<Turnout*>(item->getObjectPointer());
+        tThrown=(t->getThrown()) ? 'T' : 'C';
+      }
+      display.setCursor(X, Y);
+      display.print(" ");
+      display.setCursor(X, Y);
+      display.print(tThrown);
+      Y+=8;
+      if (i==4) {
+        X=70;
+        Y=16;
+      }
+    }
+    display.sendBuffer();
+  }
 }

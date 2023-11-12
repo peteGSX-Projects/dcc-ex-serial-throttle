@@ -17,28 +17,14 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DCCEXOBJECTS_H
-#define DCCEXOBJECTS_H
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
-#include <Arduino.h>
-#include <DCCEXProtocol.h>
-#include "DCCEXCallbacks.h"
+#include "defines.h"
+#include "Throttle.h"
 
-extern DCCEXProtocol dccexProtocol;
-extern DCCEXCallbacks dccexCallbacks;
-
-void getDCCEXObjects();
-void updateRoster();
-void updateRoutes();
-void updateTurnouts();
-void updateTurntables();
-void toggleTurnout();
-void closeTurnout();
-void throwTurnout();
-void rotateTurntable();
-void trackPowerOn();
-void trackPowerOff();
-// void setJoinTracks();
-bool setLocoAddress(int throttle, int address);
+extern OLED display;
+// Array to hold all throttle objects to process
+extern Throttle* throttles[NUM_THROTTLES];
 
 #endif

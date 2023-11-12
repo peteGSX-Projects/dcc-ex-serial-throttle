@@ -20,7 +20,8 @@
 #include <Arduino.h>
 #include "StaticMenus.h"
 
-MenuSystem menuSystem(display);
+// MenuSystem menuSystem(display);
+MenuSystem menuSystem;
 
 void createMenus() {
   ThrottleScreen* throttle=new ThrottleScreen();
@@ -53,12 +54,12 @@ void createMenus() {
   Menu* trackManager=new Menu("TrackManager");
   tracksMenu->addMenuItem(trackManager);
   // Temporary turnouts for menu testing
-  Menu* turnouts=menuSystem.findMenuByLabel("Turnouts");
-  if (turnouts) {
-    for (uint8_t i=0; i<18; i++) {
-      char label[12];
-      sprintf(label, "Turnout %02d", i);
-      turnouts->addMenuItem(new ActionMenuItem(label, nullptr));
-    }
-  }
+  // Menu* turnouts=menuSystem.findMenuByLabel("Turnouts");
+  // if (turnouts) {
+  //   for (uint8_t i=0; i<18; i++) {
+  //     char label[12];
+  //     sprintf(label, "Turnout %02d", i);
+  //     turnouts->addMenuItem(new ActionMenuItem(label, nullptr));
+  //   }
+  // }
 }

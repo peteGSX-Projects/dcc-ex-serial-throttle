@@ -23,18 +23,10 @@ Include the required libraries
 ***********************************************************************************/
 #include <Arduino.h>
 #include "defines.h"
-
 #include "DisplayFunctions.h"
 #include "KeypadFunctions.h"
-#include "StaticMenus.h"
-// #include "SerialFunctions.h"
+#include "SerialFunctions.h"
 #include "DCCEXObjects.h"
-#include "Throttle.h"
-#include "ThrottleSetup.h"
-#include "MenuSystem.h"
-
-// Array to hold all throttle objects to process
-Throttle* throttles[NUM_THROTTLES];
 
 /***********************************************************************************
 Main setup function
@@ -52,12 +44,11 @@ void setup() {
   delay(2000);
   setupKeypad();
   setupThrottles();
-  menuSystem.setThrottles(throttles);
+  createMenus();
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  createMenus();
-  menuSystem.goHome();
+  // menuSystem.goHome();
 }
 
 /***********************************************************************************
@@ -65,22 +56,15 @@ Main loop
 ***********************************************************************************/
 void loop() {
   dccexProtocol.check();
-  validateConnection();
-  if (connected) {
-    dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
-  }
+  getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {
     throttles[i]->process();
-    if (throttles[i]->speedChanged()) {
-      throttles[i]->displaySpeed(menuSystem.isHome());
+    if (throttles[i]->speedChanged() && menuSystem.isHome()) {
+      displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
     }
   }
   keypad.getKey();
-  // getSerialInput();
+  getSerialInput();
 }
 
 // Disabling JTAG is required to avoid pin conflicts on Bluepill
@@ -93,10 +77,3 @@ void disableJTAG() {
   // AFIO->MAPR2 &= ~(AFIO_MAPR2_SWJ_CFG);
 }
 #endif
-
-// Setup the correct number of throttles as defined
-void setupThrottles() {
-  for (int i=0; i<NUM_THROTTLES; i++) {
-    throttles[i]=new Throttle(i, throttleSetup[i].potPin, nullptr, display);
-  }
-}

@@ -22,6 +22,8 @@
 
 #include <Arduino.h>
 #include "defines.h"
+#include "globals.h"
+#include "Keypad.h"
 
 struct DisplayAttributes {
   int X;
@@ -36,5 +38,8 @@ struct ThrottleSetup {
 };
 
 extern ThrottleSetup throttleSetup[NUM_THROTTLES];
+
+void setupThrottles();
+void handleThrottleKeys(char key, KeyState keyState);
 
 #endif

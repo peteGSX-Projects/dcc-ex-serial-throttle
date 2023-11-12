@@ -26,9 +26,9 @@
 DCCEXProtocol dccexProtocol(NUM_THROTTLES);
 DCCEXCallbacks dccexCallbacks;
 
-bool connectionRequested=false;
-bool connected=false;
+bool retrievalDisplayed=false;
 bool errorDisplayed=false;
+bool homeDisplayed=false;
 uint8_t connectionRetries=CONNECT_RETRIES;
 unsigned long retryDelay=1000;
 unsigned long lastRetry=0;
@@ -39,21 +39,15 @@ bool gotTurntables=false;
 int progressX=0;
 int progressY=30;
 
-// Function to validate a connection to the CS has been made
-void validateConnection() {
-  if (!connected) {
-    if (!connectionRequested) {
-      connectionRequested = true;
-      dccexProtocol.sendServerDetailsRequest();
+void getDCCEXObjects() {
+  if (!dccexProtocol.isAllListsReceived() && connectionRetries>0) {
+    if (!retrievalDisplayed) {
       display.clear();
       display.setFont(DEFAULT_FONT);
-      display.drawStr(0, 10, "Connecting to DCC-EX...");
+      display.drawStr(0, 10, "Retrieving DCC-EX object lists");
       display.sendBuffer();
-    } else if (dccexProtocol.isServerDetailsReceived()) {
-      connected = true;
-      menuSystem.display();
-    } else if (millis() - lastRetry > retryDelay && connectionRetries > 0) {
-      dccexProtocol.sendServerDetailsRequest();
+      retrievalDisplayed=true;
+    } else if (!dccexProtocol.isAllListsReceived() && millis()-lastRetry>retryDelay && connectionRetries > 0) {
       lastRetry = millis();
       connectionRetries--;
       display.setFont(DEFAULT_FONT);
@@ -65,10 +59,18 @@ void validateConnection() {
         progressY+=8;
         progressX=0;
       }
-    } else if (connectionRetries == 0 && !errorDisplayed) {
-      errorDisplayed = true;
-      displayConnectionError();
     }
+    dccexProtocol.getLists(true, true, true, true);
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
+  }  else if (!dccexProtocol.isAllListsReceived() && connectionRetries==0 && !errorDisplayed) {
+    errorDisplayed = true;
+    displayConnectionError();
+  }  else if (dccexProtocol.isAllListsReceived() && !homeDisplayed) {
+    homeDisplayed=true;
+    menuSystem.goHome();
   }
 }
 
@@ -119,12 +121,10 @@ void updateTurntables() {
     if (!ttMenu) return;
     for (Turntable* tt=dccexProtocol.turntables->getFirst(); tt; tt=tt->getNext()) {
       char* ttName=tt->getName();
-      CONSOLE.println(ttName);
       Menu* newTTMenu=new Menu(ttName);
       ttMenu->addMenuItem(newTTMenu);
-      for (TurntableIndex* idx=tt->getFirstIndex(); idx; idx=idx->getNext()) {
+      for (TurntableIndex* idx=tt->getFirstIndex(); idx; idx=idx->getNextIndex()) {
         char* idxName=idx->getName();
-        CONSOLE.println(idxName);
         newTTMenu->addMenuItem(new ActionMenuItem(idxName, rotateTurntable, idx));
       }
     }
@@ -177,10 +177,12 @@ void rotateTurntable() {
 // Function to turn track power on or off
 void trackPowerOn() {
   dccexProtocol.sendTrackPower(PowerOn);
+  menuSystem.goHome();
 }
 
 void trackPowerOff() {
   dccexProtocol.sendTrackPower(PowerOff);
+  menuSystem.goHome();
 }
 
 // Function to join or unjoin tracks
@@ -193,4 +195,14 @@ void setJoinTracks() {
   //     CONSOLE.println("Would unjoin but not implemented yet");
   //   }
   // }
+}
+
+bool setLocoAddress(int throttle, int address) {
+  bool inUse=false;
+  for (int i=0; i<NUM_THROTTLES; i++) {
+    if (throttles[i]->addressInUse(address)) inUse=true;
+  }
+  if (inUse) return false;
+  throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
+  return true;
 }

@@ -21,11 +21,12 @@
 #define DISPLAYFUNCTIONS_H
 
 #include <Arduino.h>
+#include <DCCEXProtocol.h>
 #include "defines.h"
-#include "version.h"
-#include "Throttle.h"
-#include "Keypad.h"
 #include "ThrottleSetup.h"
+#include "globals.h"
+#include "version.h"
+#include "Keypad.h"
 
 // Fonts in use
 #define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tr
@@ -35,12 +36,14 @@
 #define DIRECTION_FONT u8g2_font_6x10_mr
 #define ADDRESS_FONT u8g2_font_6x10_mr
 #define ESTOP_FONT u8g2_font_6x12_mr
-
-extern OLED display;
+#define STATUS_FONT u8g2_font_micro_mr
 
 void displayStartupInfo();
 void displayKey(char key, KeyState keyState);
 void displayConnectionError();
+
+/// @brief Display the home throttle screen
+void displayHome(TrackPower state);
 
 /// @brief Display speed for the specified throttle
 /// @param throttle 
@@ -62,5 +65,33 @@ void displayThrottleAddress(int throttle, int address, bool isOverridden, bool i
 /// @brief Display EStop for the specified throttle
 /// @param throttle 
 void displayThrottleEStop(int throttle);
+
+/// @brief Update the track power display on the home screen
+/// @param state 
+void displayPowerState(TrackPower state);
+
+/// @brief Display for an entry menu item type
+/// @param label 
+/// @param instruction 
+void displayEntryMenuItem(char* label, const char* instruction);
+
+/// @brief Display an error for an entry menu item type
+/// @param error 
+void displayEntryError(const char* error);
+
+/// @brief Display key presses for an entry menu item type
+/// @param key 
+/// @param column 
+void displayEntryKey(char key, int column);
+
+/// @brief Display menu items in 2 columns of 5
+/// @param label 
+/// @param currentPage 
+/// @param itemsPerPage 
+/// @param itemCount 
+/// @param items 
+void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * items[]);
+
+void displayTurnoutStates();
 
 #endif

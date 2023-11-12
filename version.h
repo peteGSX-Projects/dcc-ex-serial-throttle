@@ -1,7 +1,9 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.10"
+#define VERSION "0.0.11"
+// 0.0.11 - Dynamic updates to display from callback events
+//        - Improved DCC-EX connection validation
 // 0.0.10 - Convert to u8g2 library for neater display
 // 0.0.9  - Menu system improvements to handle dynamic menus and items
 // 0.0.8  - Fixed bug where direction was reversed
