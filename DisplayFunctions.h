@@ -96,6 +96,6 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
 void displayTurnoutStates();
 
 /// @brief Display which index of a turntable is currently selected
-void displayTurntableIndex(int id=0);
+void displayTurntableIndex();
 
 #endif

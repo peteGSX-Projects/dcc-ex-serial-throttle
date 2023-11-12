@@ -163,14 +163,11 @@ void throwTurnout() {
 // Function to rotate a turntable
 void rotateTurntable() {
   if (!menuSystem.getCurrentActionItem()) return;
-  CONSOLE.println(F("Got action item"));
   void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
   TurntableIndex* index=static_cast<TurntableIndex*>(object);
   if (!index) return;
-  CONSOLE.println(F("Got index"));
   int ttId=index->getTTId();
   int indexId=index->getId();
-  CONSOLE.println(indexId);
   dccexProtocol.sendTurntableAction(ttId, indexId, 0);
 }
 

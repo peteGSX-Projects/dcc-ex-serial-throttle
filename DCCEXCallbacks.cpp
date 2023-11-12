@@ -57,7 +57,7 @@ void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
 }
 
 void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool moving){ 
-  displayTurntableIndex(turntableId);
+  displayTurntableIndex();
 }
 
 void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
