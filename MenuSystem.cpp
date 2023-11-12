@@ -256,6 +256,18 @@ MenuItemBase* Menu::getItemList() {
   return _itemList;
 }
 
+int Menu::getItemCount() {
+  return _itemCount;
+}
+  
+int Menu::getCurrentPage() {
+  return _currentPage;
+}
+
+int Menu::getItemsPerPage() {
+  return _itemsPerPage;
+}
+
 ThrottleMenu::ThrottleMenu(const char* label, int throttleNumber)
   : Menu(label) {
   _throttleNumber=throttleNumber;
@@ -364,6 +376,10 @@ bool MenuSystem::isHome() {
 void MenuSystem::updatePowerState(TrackPower state) {
   _powerState=state;
   _displayPowerState();
+}
+
+MenuItemBase* MenuSystem::getCurrentItem() {
+  return _currentItem;
 }
 
 Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {

@@ -36,6 +36,7 @@
 #define DIRECTION_FONT u8g2_font_6x10_mr
 #define ADDRESS_FONT u8g2_font_6x10_mr
 #define ESTOP_FONT u8g2_font_6x12_mr
+#define STATUS_FONT u8g2_font_micro_mr
 
 void displayStartupInfo();
 void displayKey(char key, KeyState keyState);
@@ -90,5 +91,7 @@ void displayEntryKey(char key, int column);
 /// @param itemCount 
 /// @param items 
 void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * items[]);
+
+void displayTurnoutStates();
 
 #endif

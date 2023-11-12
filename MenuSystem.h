@@ -199,6 +199,12 @@ public:
   /// @return 
   MenuItemBase* getItemList();
 
+  int getItemCount();
+  
+  int getCurrentPage();
+
+  int getItemsPerPage();
+
 private:
   MenuItemBase* _itemList;
   int _itemCount;
@@ -296,6 +302,10 @@ public:
   /// @brief Update the current track power state
   /// @param state 
   void updatePowerState(TrackPower state);
+
+  /// @brief Get the current item
+  /// @return 
+  MenuItemBase* getCurrentItem();
 
 private:
   // OLED& _oled;

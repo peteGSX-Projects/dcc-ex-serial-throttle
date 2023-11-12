@@ -53,10 +53,7 @@ void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) {
 }
 
 void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {
-  CONSOLE.print("Received turnout action: ");
-  CONSOLE.print(turnoutId);
-  CONSOLE.print(" thrown: ");
-  CONSOLE.println(thrown);
+  displayTurnoutStates();
 }
 
 void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool moving){ 

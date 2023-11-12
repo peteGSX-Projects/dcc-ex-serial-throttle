@@ -18,6 +18,7 @@
 */
 
 #include "DisplayFunctions.h"
+#include "StaticMenus.h"
 
 /***********************************************************************************
 Set up OLED libraries and object
@@ -203,7 +204,6 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
   display.setCursor(0, 6);
   display.print(label);
   display.drawHLine(0, 7, 128);
-  // int i=0;
   int X=0;
   int Y=17;
   display.setFont(MENU_ITEM_FONT);
@@ -211,7 +211,7 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
     if (itemList[i]) {
       display.setCursor(X, Y);
       display.print(i);
-      display.setCursor(X+8, Y);
+      display.print(" ");
       if (strlen(itemList[i])>10 && itemCount>5) {
         itemList[i][10]='\0';
       }
@@ -233,4 +233,43 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
     display.print(nextPage);
   }
   display.sendBuffer();
+  displayTurnoutStates();
+}
+
+void displayTurnoutStates() {
+  // int index=_currentPage*_itemsPerPage+i;
+  //   MenuItemBase* item=getItemAtIndex(index);
+  //   if (item) {
+  //     itemList[i]=item->getLabel();
+  //   } else {
+  //     itemList[i]=nullptr;
+  //   }
+  Menu* tMenu=static_cast<Menu*>(menuSystem.getCurrentItem());
+  if (tMenu && strcmp(tMenu->getLabel(), "Turnouts")==0) {
+    int page=tMenu->getCurrentPage();
+    int count=tMenu->getItemCount();
+    int ppage=tMenu->getItemsPerPage();
+    int X=6;
+    int Y=16;
+    display.setFont(STATUS_FONT);
+    for (int i=0; i<ppage; i++) {
+      int index=page*ppage+i;
+      char tThrown=' ';
+      ActionMenuItem* item=static_cast<ActionMenuItem*>(tMenu->getItemAtIndex(index));
+      if (item) {
+        Turnout* t=static_cast<Turnout*>(item->getObjectPointer());
+        tThrown=(t->getThrown()) ? 'T' : 'C';
+      }
+      display.setCursor(X, Y);
+      display.print(" ");
+      display.setCursor(X, Y);
+      display.print(tThrown);
+      Y+=8;
+      if (i==4) {
+        X=70;
+        Y=16;
+      }
+    }
+    display.sendBuffer();
+  }
 }
