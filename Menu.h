@@ -33,11 +33,11 @@ item plus space between.
 #ifndef MENU_H
 #define MENU_H
 
-#include <Arduino.h>
-#include "defines.h"
-#include "DisplayFunctions.h"
-#include "Throttle.h"
-#include "Keypad.h"
+// #include <Arduino.h>
+// #include "defines.h"
+// #include "DisplayFunctions.h"
+// #include "Throttle.h"
+// #include "Keypad.h"
 
 /*
 enum MenuItemType {

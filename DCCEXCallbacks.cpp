@@ -20,6 +20,8 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXCallbacks.h"
+#include "DisplayFunctions.h"
+#include "StaticMenus.h"
 
 void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.print(uc);
@@ -67,6 +69,5 @@ void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool
 }
 
 void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
-  CONSOLE.print("Received track power state: ");
-  CONSOLE.println(state);
+  menuSystem.updatePowerState(state);
 }

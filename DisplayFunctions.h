@@ -21,12 +21,12 @@
 #define DISPLAYFUNCTIONS_H
 
 #include <Arduino.h>
+#include <DCCEXProtocol.h>
 #include "defines.h"
 #include "ThrottleSetup.h"
 #include "globals.h"
 #include "version.h"
 #include "Keypad.h"
-#include "DCCEXProtocol.h"
 
 // Fonts in use
 #define DEFAULT_FONT u8g2_font_NokiaSmallPlain_tr

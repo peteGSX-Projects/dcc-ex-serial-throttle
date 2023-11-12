@@ -177,10 +177,12 @@ void rotateTurntable() {
 // Function to turn track power on or off
 void trackPowerOn() {
   dccexProtocol.sendTrackPower(PowerOn);
+  menuSystem.goHome();
 }
 
 void trackPowerOff() {
   dccexProtocol.sendTrackPower(PowerOff);
+  menuSystem.goHome();
 }
 
 // Function to join or unjoin tracks
