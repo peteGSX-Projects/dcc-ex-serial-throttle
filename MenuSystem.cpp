@@ -63,14 +63,6 @@ void MenuItemBase::setParent(MenuItemBase* parent) {
   _parent=parent;
 }
 
-MenuItemBase::ObjectType MenuItemBase::getObjectType() {
-  return _objectType;
-}
-
-int MenuItemBase::getObjectId() {
-  return _objectId;
-}
-
 // class ActionMenuItem
 ActionMenuItem::ActionMenuItem(const char* label, Action action, void* objectPointer)
   : MenuItemBase(label, MenuItemBase::Action) {
