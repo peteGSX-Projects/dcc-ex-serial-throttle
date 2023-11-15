@@ -2,8 +2,7 @@
 #define VERSION_H
 
 #define VERSION "0.0.12"
-// 0.0.12 - Implement loco and consist address management fully
-//        - Add read loco option to set address
+// 0.0.12 - Add read loco option to set address
 // 0.0.11 - Dynamic updates to display from callback events:
 //        - Track power state updates
 //        - Turnout state updates
