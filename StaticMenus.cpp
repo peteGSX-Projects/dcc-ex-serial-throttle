@@ -30,16 +30,21 @@ void createMenus() {
   throttle->setMenu(mainMenu);
   Menu* throttleList=new Menu("Throttles");
   mainMenu->addMenuItem(throttleList);
-  char label[11];
+  char label[20];
   for (int i=0; i<NUM_THROTTLES; i++) {
     sprintf(label, "Throttle %d", i+1);
     Menu* throttleMenu=new ThrottleMenu(label, i);
     throttleList->addMenuItem(throttleMenu);
     throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Remove loco", nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Display consist", nullptr));
-    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Read address", readLocoAddress));
+    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco", nullptr));
+    sprintf(label, "Throttle %d consist", i+1);
+    Menu* consistMenu=new ThrottleMenu(label, i);
+    throttleMenu->addMenuItem(consistMenu);
+    consistMenu->addMenuItem(new ActionMenuItem("Add from roster", nullptr));
+    consistMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
+    consistMenu->addMenuItem(new ActionMenuItem("Read address", nullptr));
   }
   mainMenu->addMenuItem(new Menu("Turnouts"));
   mainMenu->addMenuItem(new Menu("Routes"));

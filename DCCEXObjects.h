@@ -40,5 +40,6 @@ void trackPowerOn();
 void trackPowerOff();
 // void setJoinTracks();
 bool setLocoAddress(int throttle, int address);
+void readLocoAddress();
 
 #endif

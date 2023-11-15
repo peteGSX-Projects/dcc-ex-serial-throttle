@@ -203,3 +203,7 @@ bool setLocoAddress(int throttle, int address) {
   throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
   return true;
 }
+
+void readLocoAddress() {
+  dccexProtocol.sendReadLoco();
+}

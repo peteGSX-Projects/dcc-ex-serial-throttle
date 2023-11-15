@@ -63,3 +63,8 @@ void DCCEXCallbacks::receivedTurntableAction(int turntableId, int position, bool
 void DCCEXCallbacks::receivedTrackPower(TrackPower state) {
   menuSystem.updatePowerState(state);
 }
+
+void DCCEXCallbacks::receivedReadLoco(int address) {
+  CONSOLE.print("Received read loco response: ");
+  CONSOLE.println(address);
+}
