@@ -1,7 +1,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.12"
+#define VERSION "0.0.13"
+// 0.0.13 - Change throttle method from pots to encoders with buttons
 // 0.0.12 - Add read loco option to set address
 // 0.0.11 - Dynamic updates to display from callback events:
 //        - Track power state updates

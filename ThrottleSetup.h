@@ -34,7 +34,9 @@ struct ThrottleSetup {
   DisplayAttributes speed;
   DisplayAttributes direction;
   DisplayAttributes address;
-  int potPin;
+  int dtPin;
+  int clkPin;
+  int swPin;
 };
 
 extern ThrottleSetup throttleSetup[NUM_THROTTLES];

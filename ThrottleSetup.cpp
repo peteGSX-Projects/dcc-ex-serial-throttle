@@ -28,26 +28,38 @@ ThrottleSetup throttleSetup[NUM_THROTTLES]={
     {4, 20},
     {10, 35},
     {0, 50},
-    PA0,  // Pot pin
+    ENC1_DT,
+    ENC1_CLK,
+    BUTTON1,
   },
   { // Throttle 1
     {46, 20},
     {52, 35},
     {43, 50},
-    PA1,
+    ENC2_DT,
+    ENC2_CLK,
+    BUTTON2,
   },
   { // Throttle 2
     {88, 20},
     {94, 35},
     {87, 50},
-    PA2,
+    ENC3_DT,
+    ENC3_CLK,
+    BUTTON3,
   },
 };
 
 // Setup the correct number of throttles as defined
 void setupThrottles() {
   for (int i=0; i<NUM_THROTTLES; i++) {
-    throttles[i]=new Throttle(i, throttleSetup[i].potPin, nullptr);
+    throttles[i]=new Throttle(i, nullptr,
+                              throttleSetup[i].dtPin,
+                              throttleSetup[i].clkPin,
+                              throttleSetup[i].swPin,
+                              nullptr,
+                              nullptr,
+                              nullptr);
   }
 }
 

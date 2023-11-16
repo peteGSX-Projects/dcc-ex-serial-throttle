@@ -23,11 +23,15 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "DCCEXObjects.h"
+#include "avdweb_Switch.h"
+#include "Rotary.h"
 
 struct LocoNode {
   Loco* loco;
   LocoNode* next;
 };
+
+typedef void (*ThrottleCallback_t)(int throttleNumber);
 
 class Throttle {
 public:
@@ -39,7 +43,10 @@ public:
   /// @param throttleNumber 
   /// @param potPin 
   /// @param initialLocoList 
-  Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList);
+  Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int clkPin, int swPin,
+            ThrottleCallback_t singleClickCallback,
+            ThrottleCallback_t doubleClickCallback,
+            ThrottleCallback_t longPressCallback);
 
   /// @brief Process analogue input for speed
   void process();
@@ -81,29 +88,30 @@ public:
   /// @return 
   Direction getDirection();
   
-  /// @brief Check if another throttle has overridden the speed/direction
-  /// @return 
-  bool isOverridden();
-  
   /// @brief Check if the specified address is in use by this throttle
   /// @param address 
   /// @return 
   bool addressInUse(int address);
 
 private:
-  int _potPin;  // pin the potentiometer is on for this throttle
-  int _currentIndex = 0;
-  int _valueCount = 0;
-  int _sum = 0;
-  int _values[SLIDER_SAMPLES];
+  Rotary _encoder;
+  Switch _button;
   int _speed = 0;
-  int _rollingAverage = 0;
   bool _speedChanged = false;
   int _locoAddress = 0;
   int _throttleNumber;
   Direction _direction = Forward;  // Default to forward
-  bool _isOverridden = false;
   LocoNode* _locoList = nullptr;  // Linked list containing Locos
+  ThrottleCallback_t _singleClickCallback;
+  ThrottleCallback_t _doubleClickCallback;
+  ThrottleCallback_t _longPressCallback;
+
+  static void _buttonSingleClickCallback(void* param);
+  void _handleSingleClick();
+  static void _buttonDoubleClickCallback(void* param);
+  void _handleDoubleClick();
+  static void _buttonLongPressCallback(void* param);
+  void _handleLongPress();
 
 };
 
