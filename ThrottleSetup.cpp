@@ -19,6 +19,7 @@
 
 #include "ThrottleSetup.h"
 #include "DisplayFunctions.h"
+#include "InputFunctions.h"
 
 // Array to hold all throttle objects to process
 Throttle* throttles[NUM_THROTTLES];
@@ -57,7 +58,7 @@ void setupThrottles() {
                               throttleSetup[i].dtPin,
                               throttleSetup[i].clkPin,
                               throttleSetup[i].swPin,
-                              nullptr,
+                              singleClick,
                               nullptr,
                               nullptr);
   }

@@ -17,8 +17,8 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef KEYPADFUNCTIONS_H
-#define KEYPADFUNCTIONS_H
+#ifndef INPUTFUNCTIONS_H
+#define INPUTFUNCTIONS_H
 
 #include <Arduino.h>
 #include "Keypad.h"
@@ -31,6 +31,8 @@ extern Keypad keypad;
 
 void setupKeypad();
 void keypadEvent(KeypadEvent key);
-
+void singleClick(int throttleNumber);
+void doubleClick(int throttleNumber);
+void longPress(int throttleNumber);
 
 #endif

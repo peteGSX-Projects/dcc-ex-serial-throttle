@@ -18,7 +18,6 @@
 */
 
 #include "Throttle.h"
-// #include "defines.h"
 
 // Constructor, set input mode on construction
 Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int clkPin, int swPin,
