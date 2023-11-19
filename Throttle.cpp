@@ -24,13 +24,17 @@ Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int
             ThrottleCallback_t singleClickCallback,
             ThrottleCallback_t doubleClickCallback,
             ThrottleCallback_t longPressCallback)
-  : _encoder(dtPin, clkPin), _button(swPin), _throttleNumber(throttleNumber),
+  : _encoder(dtPin, clkPin), _button(swPin), //_throttleNumber(throttleNumber),
     _singleClickCallback(singleClickCallback),
     _doubleClickCallback(doubleClickCallback),
     _longPressCallback(longPressCallback) {
   _locoList=initialLocoList;
+  _throttleNumber=throttleNumber;
 
-  _button.setSingleClickCallback(_buttonSingleClickCallback, this);
+  _button.setSingleClickCallback([](void* param) {
+    Throttle* th=static_cast<Throttle*>(param);
+    th->_handleSingleClick();
+  });
   _button.setDoubleClickCallback(_buttonDoubleClickCallback, this);
   _button.setLongPressCallback(_buttonLongPressCallback, this);
 }
@@ -44,7 +48,7 @@ void Throttle::process() {
   if (result==DIR_CW && _speed<126) {
     _speed++;
     _speedChanged=true;
-  } else if (result==DIR_CCW && _speed>-126) {
+  } else if (result==DIR_CCW && _speed>0) {
     _speed--;
     _speedChanged=true;
   } else {
@@ -171,6 +175,8 @@ void Throttle::_buttonSingleClickCallback(void* param) {
 }
 
 void Throttle::_handleSingleClick() {
+  CONSOLE.print("Callback for single click for throttle ");
+  CONSOLE.println(_throttleNumber);
   if (_singleClickCallback) {
     _singleClickCallback(_throttleNumber);
   }

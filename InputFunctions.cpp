@@ -81,6 +81,8 @@ void keypadEvent(KeypadEvent key) {
 }
 
 void singleClick(int throttleNumber) {
+  CONSOLE.print("Single click for throttle ");
+  CONSOLE.println(throttleNumber);
   auto th=throttles[throttleNumber];
   int speed=th->getSpeed();
   int address=th->getLocoAddress();
