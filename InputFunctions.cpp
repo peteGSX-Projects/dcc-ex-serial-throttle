@@ -81,14 +81,12 @@ void keypadEvent(KeypadEvent key) {
 }
 
 void singleClick(int throttleNumber) {
-  CONSOLE.print("Single click for throttle ");
-  CONSOLE.println(throttleNumber);
   auto th=throttles[throttleNumber];
   int speed=th->getSpeed();
   int address=th->getLocoAddress();
   if (speed==0 && address!=0) {
     th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
-    displayThrottleDirection(0, th->getDirection());
+    displayThrottleDirection(throttleNumber, th->getDirection());
   }
 }
 

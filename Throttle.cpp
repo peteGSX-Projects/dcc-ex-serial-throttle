@@ -31,10 +31,7 @@ Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int
   _locoList=initialLocoList;
   _throttleNumber=throttleNumber;
 
-  _button.setSingleClickCallback([](void* param) {
-    Throttle* th=static_cast<Throttle*>(param);
-    th->_handleSingleClick();
-  });
+  _button.setSingleClickCallback(_buttonSingleClickCallback, this);
   _button.setDoubleClickCallback(_buttonDoubleClickCallback, this);
   _button.setLongPressCallback(_buttonLongPressCallback, this);
 }
@@ -175,8 +172,6 @@ void Throttle::_buttonSingleClickCallback(void* param) {
 }
 
 void Throttle::_handleSingleClick() {
-  CONSOLE.print("Callback for single click for throttle ");
-  CONSOLE.println(_throttleNumber);
   if (_singleClickCallback) {
     _singleClickCallback(_throttleNumber);
   }
