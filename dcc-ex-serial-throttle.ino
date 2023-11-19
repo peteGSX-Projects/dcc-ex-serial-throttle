@@ -24,7 +24,7 @@ Include the required libraries
 #include <Arduino.h>
 #include "defines.h"
 #include "DisplayFunctions.h"
-#include "KeypadFunctions.h"
+#include "InputFunctions.h"
 #include "SerialFunctions.h"
 #include "DCCEXObjects.h"
 

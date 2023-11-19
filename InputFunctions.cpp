@@ -17,7 +17,7 @@
  *  along with this code.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "KeypadFunctions.h"
+#include "InputFunctions.h"
 
 bool keyPress = false;                    // Flag for when a key is pressed rather than held
 
@@ -78,4 +78,22 @@ void keypadEvent(KeypadEvent key) {
     default:
       break;
   }
+}
+
+void singleClick(int throttleNumber) {
+  auto th=throttles[throttleNumber];
+  int speed=th->getSpeed();
+  int address=th->getLocoAddress();
+  if (speed==0 && address!=0) {
+    th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
+    displayThrottleDirection(throttleNumber, th->getDirection());
+  }
+}
+
+void doubleClick(int throttleNumber) {
+
+}
+
+void longPress(int throttleNumber) {
+
 }

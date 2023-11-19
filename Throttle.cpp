@@ -18,14 +18,22 @@
 */
 
 #include "Throttle.h"
-// #include "defines.h"
 
 // Constructor, set input mode on construction
-Throttle::Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList) {
-  _potPin=potPin;
-  pinMode(_potPin, INPUT);
-  _throttleNumber=throttleNumber;
+Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int clkPin, int swPin,
+            ThrottleCallback_t singleClickCallback,
+            ThrottleCallback_t doubleClickCallback,
+            ThrottleCallback_t longPressCallback)
+  : _encoder(dtPin, clkPin), _button(swPin), //_throttleNumber(throttleNumber),
+    _singleClickCallback(singleClickCallback),
+    _doubleClickCallback(doubleClickCallback),
+    _longPressCallback(longPressCallback) {
   _locoList=initialLocoList;
+  _throttleNumber=throttleNumber;
+
+  _button.setSingleClickCallback(_buttonSingleClickCallback, this);
+  _button.setDoubleClickCallback(_buttonDoubleClickCallback, this);
+  _button.setLongPressCallback(_buttonLongPressCallback, this);
 }
 
 // Process throttle object:
@@ -33,21 +41,21 @@ Throttle::Throttle(int throttleNumber, int potPin, LocoNode* initialLocoList) {
 // - If average has changed, update display and loco speed
 void Throttle::process() {
   if (_locoAddress == 0) return;
-  int _instantValue = analogRead(_potPin);
-  _sum += _instantValue;
-  if (_valueCount == SLIDER_SAMPLES) _sum -= _values[_currentIndex];
-  _values[_currentIndex] = _instantValue;
-  if (++_currentIndex >= SLIDER_SAMPLES) _currentIndex = 0;
-  if (_valueCount < SLIDER_SAMPLES) _valueCount += 1;
-  _rollingAverage = _sum/_valueCount;
-  _speedChanged = false;
-  if (_speed != map(_rollingAverage, POT_MIN, POT_MAX, 0, 126)) {
-    _speed = map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
-    _speedChanged = true;
-    if (dccexProtocol.throttle[_throttleNumber].getLocoCount() > 0) {
-      dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
-    }
+  unsigned char result=_encoder.process();
+  if (result==DIR_CW && _speed<126) {
+    _speed++;
+    _speedChanged=true;
+  } else if (result==DIR_CCW && _speed>0) {
+    _speed--;
+    _speedChanged=true;
+  } else {
+    _speedChanged=false;
   }
+  if (_speedChanged==true) {
+    dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+  }
+  _button.poll();
+
 }
 
 // Return this throttle's number (for display purposes)
@@ -100,7 +108,7 @@ bool Throttle::speedChanged() {
 
 // Returns the current speed
 int Throttle::getSpeed() {
-  return map(_rollingAverage, POT_MIN, POT_MAX, 0, 126);
+  return _speed;
 }
 
 // Forgets the acquired loco
@@ -143,11 +151,6 @@ Direction Throttle::getDirection() {
   return _direction;
 }
 
-// True if throttle speed and/or direction has been overridden by another throttle
-bool Throttle::isOverridden() {
-  return _isOverridden;
-}
-
 // Function to check if the specified address is in use by this throttle
 // By design, checks consists as well
 bool Throttle::addressInUse(int address) {
@@ -159,4 +162,43 @@ bool Throttle::addressInUse(int address) {
     currentNode=currentNode->next;
   }
   return false;
+}
+
+void Throttle::_buttonSingleClickCallback(void* param) {
+  if (param) {
+    Throttle* th=static_cast<Throttle*>(param);
+    th->_handleSingleClick();
+  }
+}
+
+void Throttle::_handleSingleClick() {
+  if (_singleClickCallback) {
+    _singleClickCallback(_throttleNumber);
+  }
+}
+
+void Throttle::_buttonDoubleClickCallback(void* param) {
+  if (param) {
+    Throttle* th=static_cast<Throttle*>(param);
+    th->_handleDoubleClick();
+  }
+}
+
+void Throttle::_handleDoubleClick() {
+  if (_doubleClickCallback) {
+    _doubleClickCallback(_throttleNumber);
+  }
+}
+
+void Throttle::_buttonLongPressCallback(void* param) {
+  if (param) {
+    Throttle* th=static_cast<Throttle*>(param);
+    th->_handleLongPress();
+  }
+}
+
+void Throttle::_handleLongPress() {
+  if (_longPressCallback) {
+    _longPressCallback(_throttleNumber);
+  }
 }
