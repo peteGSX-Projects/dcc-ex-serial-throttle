@@ -52,7 +52,7 @@ void Throttle::process() {
     _speedChanged=false;
   }
   if (_speedChanged==true) {
-    dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+    dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
   }
   _button.poll();
 
@@ -87,7 +87,7 @@ void Throttle::setLocoAddress(int address, LocoSource source) {
     currentNode->next = newNode;
   }
   dccexProtocol.throttle[_throttleNumber].addFromEntry(_locoAddress, FacingForward);
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+  dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
 }
 
 // Return the current loco address
@@ -141,7 +141,7 @@ void Throttle::forgetLoco(int address) {
 void Throttle::setDirection(Direction direction){
   if (_speed > 0) return;
   _direction = direction;
-  dccexProtocol.sendThrottleAction(_throttleNumber, _speed, _direction);
+  dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
 }
 
 // Get current throttle direction
