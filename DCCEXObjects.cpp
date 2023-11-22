@@ -205,5 +205,5 @@ bool setLocoAddress(int throttle, int address) {
 }
 
 void readLocoAddress() {
-  dccexProtocol.sendReadLoco();
+  dccexProtocol.readLoco();
 }
