@@ -77,7 +77,7 @@ void getDCCEXObjects() {
 // Function to update roster entries from the CS
 // To trigger after startup, simply set requestedRoster to false
 void updateRoster() {
-  if (dccexProtocol.isRosterFullyReceived() && !gotRoster) {
+  if (dccexProtocol.rosterReceived() && !gotRoster) {
     gotRoster = true;
     Menu* rMenu=menuSystem.findMenuByLabel("Roster");
     if (!rMenu) return;
@@ -103,7 +103,7 @@ void updateRoutes() {
 // Function to update turnout entries from the CS
 // To trigger after startup, simply set requestedTurnouts to false
 void updateTurnouts() {
-  if (dccexProtocol.isTurnoutListFullyReceived() && !gotTurnouts) {
+  if (dccexProtocol.turnoutListReceived() && !gotTurnouts) {
     gotTurnouts=true;
     Menu* tMenu=menuSystem.findMenuByLabel("Turnouts");
     for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
