@@ -40,14 +40,14 @@ int progressX=0;
 int progressY=30;
 
 void getDCCEXObjects() {
-  if (!dccexProtocol.isAllListsReceived() && connectionRetries>0) {
+  if (!dccexProtocol.receivedLists() && connectionRetries>0) {
     if (!retrievalDisplayed) {
       display.clear();
       display.setFont(DEFAULT_FONT);
       display.drawStr(0, 10, "Retrieving DCC-EX object lists");
       display.sendBuffer();
       retrievalDisplayed=true;
-    } else if (!dccexProtocol.isAllListsReceived() && millis()-lastRetry>retryDelay && connectionRetries > 0) {
+    } else if (!dccexProtocol.receivedLists() && millis()-lastRetry>retryDelay && connectionRetries > 0) {
       lastRetry = millis();
       connectionRetries--;
       display.setFont(DEFAULT_FONT);
@@ -65,10 +65,10 @@ void getDCCEXObjects() {
     updateRoutes();
     updateTurnouts();
     updateTurntables();
-  }  else if (!dccexProtocol.isAllListsReceived() && connectionRetries==0 && !errorDisplayed) {
+  }  else if (!dccexProtocol.receivedLists() && connectionRetries==0 && !errorDisplayed) {
     errorDisplayed = true;
     displayConnectionError();
-  }  else if (dccexProtocol.isAllListsReceived() && !homeDisplayed) {
+  }  else if (dccexProtocol.receivedLists() && !homeDisplayed) {
     homeDisplayed=true;
     menuSystem.goHome();
   }
@@ -77,7 +77,7 @@ void getDCCEXObjects() {
 // Function to update roster entries from the CS
 // To trigger after startup, simply set requestedRoster to false
 void updateRoster() {
-  if (dccexProtocol.rosterReceived() && !gotRoster) {
+  if (dccexProtocol.receivedRoster() && !gotRoster) {
     gotRoster = true;
     Menu* rMenu=menuSystem.findMenuByLabel("Roster");
     if (!rMenu) return;
@@ -90,7 +90,7 @@ void updateRoster() {
 // Function to update route entries from the CS
 // To trigger after startup, simply set requestedRoutes to false
 void updateRoutes() {
-  if (dccexProtocol.isRouteListFullyReceived() && !gotRoutes) {
+  if (dccexProtocol.receivedRouteList() && !gotRoutes) {
     gotRoutes = true;
     Menu* rtMenu=menuSystem.findMenuByLabel("Routes");
     if (!rtMenu) return;
@@ -103,7 +103,7 @@ void updateRoutes() {
 // Function to update turnout entries from the CS
 // To trigger after startup, simply set requestedTurnouts to false
 void updateTurnouts() {
-  if (dccexProtocol.turnoutListReceived() && !gotTurnouts) {
+  if (dccexProtocol.receivedTurnoutList() && !gotTurnouts) {
     gotTurnouts=true;
     Menu* tMenu=menuSystem.findMenuByLabel("Turnouts");
     for (Turnout* t=dccexProtocol.turnouts->getFirst(); t; t=t->getNext()) {
@@ -115,7 +115,7 @@ void updateTurnouts() {
 // Function to update turntable entries from the CS
 // To trigger after startup, simply set requestedTurntables to false
 void updateTurntables() {
-  if (dccexProtocol.isTurntableListFullyReceived() && !gotTurntables) {
+  if (dccexProtocol.receivedTurntableList() && !gotTurntables) {
     gotTurntables=true;
     Menu* ttMenu=menuSystem.findMenuByLabel("Turntables");
     if (!ttMenu) return;
@@ -168,17 +168,17 @@ void rotateTurntable() {
   if (!index) return;
   int ttId=index->getTTId();
   int indexId=index->getId();
-  dccexProtocol.sendTurntableAction(ttId, indexId, 0);
+  dccexProtocol.rotateTurntable(ttId, indexId, 0);
 }
 
 // Function to turn track power on or off
 void trackPowerOn() {
-  dccexProtocol.sendTrackPower(PowerOn);
+  dccexProtocol.powerOn();
   menuSystem.goHome();
 }
 
 void trackPowerOff() {
-  dccexProtocol.sendTrackPower(PowerOff);
+  dccexProtocol.powerOff();
   menuSystem.goHome();
 }
 
