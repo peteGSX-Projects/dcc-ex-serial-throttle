@@ -138,7 +138,7 @@ int Throttle::getSpeed() {
 
 // Forgets the acquired loco
 // This needs to delete any Loco or Consist objects in use
-void Throttle::forgetLoco(int address) {
+void Throttle::forgetLoco() {
   /*
   LocoNode* previousNode = nullptr;
   LocoNode* currentNode = _locoList;

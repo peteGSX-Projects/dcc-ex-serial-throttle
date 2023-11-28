@@ -39,7 +39,9 @@ void rotateTurntable();
 void trackPowerOn();
 void trackPowerOff();
 // void setJoinTracks();
+void setRosterLoco();
 bool setLocoAddress(int throttle, int address);
 void readLocoAddress();
+void forgetLoco();
 
 #endif

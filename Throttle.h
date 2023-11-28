@@ -80,8 +80,7 @@ public:
   // bool isConsist();
   
   /// @brief Forget the loco associated with this throttle
-  /// @param address 
-  void forgetLoco(int address);
+  void forgetLoco();
   
   /// @brief Set the direction for this throttle
   /// @param direction 

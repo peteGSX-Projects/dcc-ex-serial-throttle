@@ -194,6 +194,16 @@ void setJoinTracks() {
   // }
 }
 
+void setRosterLoco() {
+  if (!menuSystem.getCurrentActionItem()) return;
+  int throttle=menuSystem.getCurrentThrottle();
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  Loco* loco=static_cast<Loco*>(object);
+  if (loco) return;
+  throttles[throttle]->setLoco(loco);
+  menuSystem.goHome();
+}
+
 bool setLocoAddress(int throttle, int address) {
   bool inUse=false;
   for (int i=0; i<NUM_THROTTLES; i++) {
@@ -208,4 +218,10 @@ bool setLocoAddress(int throttle, int address) {
 
 void readLocoAddress() {
   dccexProtocol.readLoco();
+}
+
+void forgetLoco() {
+  int throttle=menuSystem.getCurrentThrottle();
+  throttles[throttle]->forgetLoco();
+  menuSystem.goHome();
 }

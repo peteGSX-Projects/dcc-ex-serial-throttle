@@ -38,7 +38,7 @@ void createMenus() {
     throttleMenu->addMenuItem(new ActionMenuItem("Select from roster", nullptr));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
     throttleMenu->addMenuItem(new ActionMenuItem("Read address", readLocoAddress));
-    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco", nullptr));
+    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco", forgetLoco));
     sprintf(label, "Throttle %d consist", i+1);
     Menu* consistMenu=new ThrottleMenu(label, i);
     throttleMenu->addMenuItem(consistMenu);
@@ -58,13 +58,4 @@ void createMenus() {
   tracksMenu->addMenuItem(new ActionMenuItem("Unjoin", nullptr));
   Menu* trackManager=new Menu("TrackManager");
   tracksMenu->addMenuItem(trackManager);
-  // Temporary turnouts for menu testing
-  // Menu* turnouts=menuSystem.findMenuByLabel("Turnouts");
-  // if (turnouts) {
-  //   for (uint8_t i=0; i<18; i++) {
-  //     char label[12];
-  //     sprintf(label, "Turnout %02d", i);
-  //     turnouts->addMenuItem(new ActionMenuItem(label, nullptr));
-  //   }
-  // }
 }
