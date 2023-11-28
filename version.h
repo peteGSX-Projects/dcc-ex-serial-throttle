@@ -1,7 +1,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.13"
+#define VERSION "0.0.14"
+// 0.0.14 - Updates to coincide with DCCEXProtocol library release readiness
 // 0.0.13 - Change throttle method from pots to encoders with buttons
 // 0.0.12 - Add read loco option to set address
 // 0.0.11 - Dynamic updates to display from callback events:

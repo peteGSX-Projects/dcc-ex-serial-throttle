@@ -20,7 +20,7 @@
 #include "Throttle.h"
 
 // Constructor, set input mode on construction
-Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int clkPin, int swPin,
+Throttle::Throttle(int throttleNumber, /*LocoNode* initialLocoList*/ Loco* loco, int dtPin, int clkPin, int swPin,
             ThrottleCallback_t singleClickCallback,
             ThrottleCallback_t doubleClickCallback,
             ThrottleCallback_t longPressCallback)
@@ -28,7 +28,8 @@ Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int
     _singleClickCallback(singleClickCallback),
     _doubleClickCallback(doubleClickCallback),
     _longPressCallback(longPressCallback) {
-  _locoList=initialLocoList;
+  // _locoList=initialLocoList;
+  _loco=nullptr;
   _throttleNumber=throttleNumber;
 
   _button.setSingleClickCallback(_buttonSingleClickCallback, this);
@@ -40,19 +41,26 @@ Throttle::Throttle(int throttleNumber, LocoNode* initialLocoList, int dtPin, int
 // - Average potentiometer input over samples
 // - If average has changed, update display and loco speed
 void Throttle::process() {
-  if (_locoAddress == 0) return;
+  // if (_locoAddress == 0) return;
+  if (!_loco) return;
+  int speed=_loco->getSpeed();
   unsigned char result=_encoder.process();
-  if (result==DIR_CW && _speed<126) {
-    _speed++;
+  // if (result==DIR_CW && _speed<126) {
+  if (result==DIR_CW && speed<126) {
+    // _speed++;
+    speed++;
     _speedChanged=true;
-  } else if (result==DIR_CCW && _speed>0) {
-    _speed--;
+  // } else if (result==DIR_CCW && _speed>0) {
+  } else if (result==DIR_CCW && speed>0) {
+    // _speed--;
+    speed--;
     _speedChanged=true;
   } else {
     _speedChanged=false;
   }
   if (_speedChanged==true) {
-    dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
+    // dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
+    dccexProtocol.setThrottle(_loco, speed, _loco->getDirection());
   }
   _button.poll();
 
@@ -63,6 +71,7 @@ int Throttle::getThrottleNumber() {
   return _throttleNumber;
 }
 
+/*
 // Associate a loco object with this throttle
 // Sends the initial speed and direction to the CS also
 void Throttle::setLocoAddress(int address, LocoSource source) {
@@ -89,16 +98,28 @@ void Throttle::setLocoAddress(int address, LocoSource source) {
   dccexProtocol.throttle[_throttleNumber].addFromEntry(_locoAddress, FacingForward);
   dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
 }
+*/
+
+void Throttle::setLoco(Loco* loco) {
+  if (_loco && _loco->getSource()==LocoSource::LocoSourceEntry) {
+    delete _loco;
+  }
+  _loco=loco;
+}
 
 // Return the current loco address
 int Throttle::getLocoAddress() {
-  return _locoAddress;
+  // return _locoAddress;
+  if (!_loco) return 0;
+  return _loco->getAddress();
 }
 
+/*
 // Flag if throttle is a consist or not
 bool Throttle::isConsist() {
   return (dccexProtocol.throttle[_throttleNumber].getLocoCount()>1) ? true : false;
 }
+*/
 
 // Function to flag if the speed has changed
 // Sends new speed to the CS also
@@ -106,14 +127,21 @@ bool Throttle::speedChanged() {
   return _speedChanged;
 }
 
+void Throttle::setSpeedChanged() {
+  _speedChanged=true;
+}
+
 // Returns the current speed
 int Throttle::getSpeed() {
-  return _speed;
+  // return _speed;
+  if (!_loco) return 0;
+  return _loco->getSpeed();
 }
 
 // Forgets the acquired loco
 // This needs to delete any Loco or Consist objects in use
 void Throttle::forgetLoco(int address) {
+  /*
   LocoNode* previousNode = nullptr;
   LocoNode* currentNode = _locoList;
 
@@ -132,6 +160,11 @@ void Throttle::forgetLoco(int address) {
     previousNode = currentNode;
     currentNode = currentNode->next;
   }
+  */
+  if (_loco && _loco->getSource()==LocoSource::LocoSourceEntry) {
+    delete _loco;
+  }
+  _loco=nullptr;
 }
 
 // Sets the direction if speed = 0
@@ -139,21 +172,26 @@ void Throttle::forgetLoco(int address) {
 // 0 = forward
 // Sends the change to the CS also
 void Throttle::setDirection(Direction direction){
-  if (_speed > 0) return;
-  _direction = direction;
-  dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
+  // if (_speed > 0) return;
+  // _direction = direction;
+  // dccexProtocol.setThrottle(_throttleNumber, _speed, _direction);
+  if (!_loco || _loco->getSpeed()>0) return;
+  dccexProtocol.setThrottle(_loco, _loco->getSpeed(), direction);
 }
 
 // Get current throttle direction
 // 1 = reverse
 // 0 = forward
 Direction Throttle::getDirection() {
-  return _direction;
+  // return _direction;
+  if (!_loco) return Direction::Forward;
+  return _loco->getDirection();
 }
 
 // Function to check if the specified address is in use by this throttle
 // By design, checks consists as well
 bool Throttle::addressInUse(int address) {
+  /*
   LocoNode* currentNode=_locoList;
   while (currentNode!=nullptr) {
     if (currentNode->loco->getAddress()==address) {
@@ -162,6 +200,18 @@ bool Throttle::addressInUse(int address) {
     currentNode=currentNode->next;
   }
   return false;
+  */
+  if (!_loco || _loco->getAddress()!=address) return false;
+  return true;
+}
+
+Throttle* Throttle::findThrottleByLoco(Throttle** throttleArray, int numThrottles, Loco* loco) {
+  for (int i=0; i<numThrottles; ++i) {
+    if (throttleArray[i]!=nullptr && throttleArray[i]->_loco == loco) {
+      return throttleArray[i];
+    }
+  }
+  return nullptr;
 }
 
 void Throttle::_buttonSingleClickCallback(void* param) {

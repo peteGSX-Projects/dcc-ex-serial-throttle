@@ -29,6 +29,7 @@ void DCCEXCallbacks::receivedServerDescription(String uc, String version) {
   CONSOLE.println(version);
 }
 
+/*
 void DCCEXCallbacks::receivedSpeed(int throttleNo, int speed) { 
   CONSOLE.print("Received Throttle Speed: ");
   CONSOLE.print(throttleNo);
@@ -50,6 +51,16 @@ void DCCEXCallbacks::receivedFunction(int throttleNo, int func, bool state) {
   CONSOLE.print(func);
   CONSOLE.print(" state: ");
   CONSOLE.println(state);
+}
+*/
+
+void DCCEXCallbacks::receivedLocoUpdate(Loco* loco) {
+  // Need to find which throttle instance has the loco (if any)
+  // Need to flag speed/direction/function change for that throttle
+  Throttle* throttle=Throttle::findThrottleByLoco(throttles, NUM_THROTTLES, loco);
+  if (throttle) {
+    throttle->setSpeedChanged();
+  }
 }
 
 void DCCEXCallbacks::receivedTurnoutAction(int turnoutId, bool thrown) {

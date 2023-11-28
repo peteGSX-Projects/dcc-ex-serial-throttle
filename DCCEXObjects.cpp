@@ -23,7 +23,7 @@
 #include "DCCEXObjects.h"
 #include "StaticMenus.h"
 
-DCCEXProtocol dccexProtocol(NUM_THROTTLES);
+DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
 
 bool retrievalDisplayed=false;
@@ -200,7 +200,9 @@ bool setLocoAddress(int throttle, int address) {
     if (throttles[i]->addressInUse(address)) inUse=true;
   }
   if (inUse) return false;
-  throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
+  // throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
+  Loco* newLoco=new Loco(address, LocoSource::LocoSourceEntry);
+  throttles[throttle]->setLoco(newLoco);
   return true;
 }
 
