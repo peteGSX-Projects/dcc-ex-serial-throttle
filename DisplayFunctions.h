@@ -53,7 +53,7 @@ void displayThrottleSpeed(int throttle, int speed, bool isHome);
 /// @brief Display direction for the specified throttle
 /// @param throttle 
 /// @param direction 
-void displayThrottleDirection(int throttle, Direction direction);
+void displayThrottleDirection(int throttle, Direction direction, bool isHome);
 
 /// @brief Dislay address for the specified throttle
 /// @param throttle 

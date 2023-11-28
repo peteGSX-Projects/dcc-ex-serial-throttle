@@ -67,7 +67,7 @@ void displayHome(TrackPower state) {
   display.clear();
   for (int i=0; i<NUM_THROTTLES; i++) {
     displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
-    displayThrottleDirection(i, throttles[i]->getDirection());
+    displayThrottleDirection(i, throttles[i]->getDirection(), true);
     displayThrottleAddress(i, throttles[i]->getLocoAddress(), false, false);
   }
   display.drawHLine(0, 55, 128);
@@ -97,23 +97,25 @@ void displayThrottleSpeed(int throttle, int speed, bool isHome) {
   }
 }
 
-void displayThrottleDirection(int throttle, Direction direction) {
-  display.setFont(DIRECTION_FONT);
-  display.setCursor(
-    throttleSetup[throttle].direction.X,
-    throttleSetup[throttle].direction.Y
-  );
-  display.print("   ");
-  display.setCursor(
-    throttleSetup[throttle].direction.X,
-    throttleSetup[throttle].direction.Y
-  );
-  if (direction==Forward) {
-    display.print("Fwd");
-  } else {
-    display.print("Rev");
+void displayThrottleDirection(int throttle, Direction direction, bool isHome) {
+  if (isHome) {
+    display.setFont(DIRECTION_FONT);
+    display.setCursor(
+      throttleSetup[throttle].direction.X,
+      throttleSetup[throttle].direction.Y
+    );
+    display.print("   ");
+    display.setCursor(
+      throttleSetup[throttle].direction.X,
+      throttleSetup[throttle].direction.Y
+    );
+    if (direction==Forward) {
+      display.print("Fwd");
+    } else {
+      display.print("Rev");
+    }
+    display.sendBuffer();
   }
-  display.sendBuffer();
 }
 
 void displayThrottleAddress(int throttle, int address, bool isOverridden, bool isConsist) {

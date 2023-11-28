@@ -72,7 +72,7 @@ void handleThrottleKeys(char key, KeyState keyState) {
           int address=th->getLocoAddress();
           if (speed==0 && address!=0) {
             th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
-            displayThrottleDirection(0, th->getDirection());
+            displayThrottleDirection(0, th->getDirection(), menuSystem.isHome());
           }
           break;
         }
@@ -84,7 +84,7 @@ void handleThrottleKeys(char key, KeyState keyState) {
             int address=th->getLocoAddress();
             if (speed==0 && address!=0) {
               th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
-              displayThrottleDirection(1, th->getDirection());
+              displayThrottleDirection(1, th->getDirection(), menuSystem.isHome());
             }
             break;
           }
@@ -103,7 +103,7 @@ void handleThrottleKeys(char key, KeyState keyState) {
             int address=th->getLocoAddress();
             if (speed==0 && address!=0) {
               th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
-              displayThrottleDirection(2, th->getDirection());
+              displayThrottleDirection(2, th->getDirection(), menuSystem.isHome());
             }
             break;
           }

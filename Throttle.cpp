@@ -38,8 +38,6 @@ Throttle::Throttle(int throttleNumber, /*LocoNode* initialLocoList*/ Loco* loco,
 }
 
 // Process throttle object:
-// - Average potentiometer input over samples
-// - If average has changed, update display and loco speed
 void Throttle::process() {
   // if (_locoAddress == 0) return;
   if (!_loco) return;
@@ -186,6 +184,14 @@ Direction Throttle::getDirection() {
   // return _direction;
   if (!_loco) return Direction::Forward;
   return _loco->getDirection();
+}
+
+void Throttle::setDirectionChanged() {
+  _directionChanged=true;
+}
+
+bool Throttle::directionChanged() {
+  return _directionChanged;
 }
 
 // Function to check if the specified address is in use by this throttle

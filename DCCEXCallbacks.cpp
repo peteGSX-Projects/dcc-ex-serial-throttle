@@ -59,7 +59,10 @@ void DCCEXCallbacks::receivedLocoUpdate(Loco* loco) {
   // Need to flag speed/direction/function change for that throttle
   Throttle* throttle=Throttle::findThrottleByLoco(throttles, NUM_THROTTLES, loco);
   if (throttle) {
-    throttle->setSpeedChanged();
+    // throttle->setSpeedChanged();
+    // throttle->setDirectionChanged();
+    displayThrottleSpeed(throttle->getThrottleNumber(), loco->getSpeed(), menuSystem.isHome());
+    displayThrottleDirection(throttle->getThrottleNumber(), loco->getDirection(), menuSystem.isHome());
   }
 }
 

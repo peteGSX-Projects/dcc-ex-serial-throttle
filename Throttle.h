@@ -90,6 +90,10 @@ public:
   /// @brief Get the current direction for this throttle
   /// @return 
   Direction getDirection();
+
+  void setDirectionChanged();
+
+  bool directionChanged();
   
   /// @brief Check if the specified address is in use by any throttle
   /// @param address 
@@ -102,7 +106,8 @@ private:
   Rotary _encoder;
   Switch _button;
   // int _speed = 0;
-  bool _speedChanged = false;
+  bool _speedChanged=false;
+  bool _directionChanged=false;
   // int _locoAddress = 0;
   int _throttleNumber;
   // Direction _direction = Forward;  // Default to forward

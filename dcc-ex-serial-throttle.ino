@@ -58,10 +58,13 @@ void loop() {
   dccexProtocol.check();
   getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {
-    throttles[i]->process();
-    if (throttles[i]->speedChanged() && menuSystem.isHome()) {
-      displayThrottleSpeed(i, throttles[i]->getSpeed(), true);
+    if (throttles[i]->speedChanged()) {
+      displayThrottleSpeed(i, throttles[i]->getSpeed(), menuSystem.isHome());
     }
+    if (throttles[i]->directionChanged()) {
+      displayThrottleDirection(i, throttles[i]->getDirection(), menuSystem.isHome());
+    }
+    throttles[i]->process();
   }
   keypad.getKey();
   getSerialInput();
