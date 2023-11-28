@@ -196,7 +196,8 @@ bool Throttle::directionChanged() {
 
 // Function to check if the specified address is in use by this throttle
 // By design, checks consists as well
-bool Throttle::addressInUse(int address) {
+// bool Throttle::addressInUse(int address) {
+bool Throttle::addressInUse(Throttle** throttleArray, int numThrottles, int address) {
   /*
   LocoNode* currentNode=_locoList;
   while (currentNode!=nullptr) {
@@ -207,8 +208,12 @@ bool Throttle::addressInUse(int address) {
   }
   return false;
   */
-  if (!_loco || _loco->getAddress()!=address) return false;
-  return true;
+  // if (!_loco || _loco->getAddress()!=address) return false;
+  for (int i=0; i<numThrottles; i++) {
+    if (!throttleArray[i]) continue;
+    if (throttleArray[i]->getLocoAddress()==address) return true;
+  }
+  return false;
 }
 
 Throttle* Throttle::findThrottleByLoco(Throttle** throttleArray, int numThrottles, Loco* loco) {

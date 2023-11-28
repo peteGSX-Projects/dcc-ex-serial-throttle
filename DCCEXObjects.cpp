@@ -22,6 +22,7 @@
 #include "DisplayFunctions.h"
 #include "DCCEXObjects.h"
 #include "StaticMenus.h"
+#include "Throttle.h"
 
 DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
@@ -79,10 +80,18 @@ void getDCCEXObjects() {
 void updateRoster() {
   if (dccexProtocol.receivedRoster() && !gotRoster) {
     gotRoster = true;
+    char label[25];
     Menu* rMenu=menuSystem.findMenuByLabel("Roster");
     if (!rMenu) return;
     for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
       rMenu->addMenuItem(new ActionMenuItem(loco->getName(), nullptr));
+      for (int i=0; i<NUM_THROTTLES; i++) {
+        sprintf(label, "Select %d from roster", i+1);
+        Menu* selectM=menuSystem.findMenuByLabel(label);
+        if (!selectM) continue;
+        CONSOLE.println(F("Found it"));
+        selectM->addMenuItem(new ActionMenuItem(loco->getName(), setRosterLoco, loco));
+      }
     }
   }
 }
@@ -199,17 +208,14 @@ void setRosterLoco() {
   int throttle=menuSystem.getCurrentThrottle();
   void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
   Loco* loco=static_cast<Loco*>(object);
-  if (loco) return;
+  if (!loco) return;
+  if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) return;
   throttles[throttle]->setLoco(loco);
   menuSystem.goHome();
 }
 
 bool setLocoAddress(int throttle, int address) {
-  bool inUse=false;
-  for (int i=0; i<NUM_THROTTLES; i++) {
-    if (throttles[i]->addressInUse(address)) inUse=true;
-  }
-  if (inUse) return false;
+  if (Throttle::addressInUse(throttles, NUM_THROTTLES, address)) return false;
   // throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
   Loco* newLoco=new Loco(address, LocoSource::LocoSourceEntry);
   throttles[throttle]->setLoco(newLoco);

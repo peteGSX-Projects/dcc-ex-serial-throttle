@@ -97,7 +97,8 @@ public:
   /// @brief Check if the specified address is in use by any throttle
   /// @param address 
   /// @return 
-  bool addressInUse(int address);
+  // bool addressInUse(int address);
+  static bool addressInUse(Throttle** throttleArray, int numThrottles, int address);
 
   static Throttle* findThrottleByLoco(Throttle** throttleArray, int numThrottles, Loco* loco);
 
