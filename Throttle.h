@@ -26,24 +26,15 @@
 #include "avdweb_Switch.h"
 #include "Rotary.h"
 
-// struct LocoNode {
-//   Loco* loco;
-//   LocoNode* next;
-// };
-
 typedef void (*ThrottleCallback_t)(int throttleNumber);
 
 class Throttle {
 public:
-  // struct ThrottleAddressList {
-  //   LocoNode* addressList;
-  // };
-  
   /// @brief Constructor
   /// @param throttleNumber 
   /// @param potPin 
   /// @param initialLocoList 
-  Throttle(int throttleNumber, /*LocoNode* initialLocoList*/ Loco* loco, int dtPin, int clkPin, int swPin,
+  Throttle(int throttleNumber, Loco* loco, int dtPin, int clkPin, int swPin,
             ThrottleCallback_t singleClickCallback,
             ThrottleCallback_t doubleClickCallback,
             ThrottleCallback_t longPressCallback);
@@ -56,10 +47,10 @@ public:
   int getThrottleNumber();
   
   /// @brief Set the loco address and source for this throttle
-  /// @param address 
-  /// @param source 
-  // void setLocoAddress(int address, LocoSource source);
+  /// @param loco Pointer to the loco object
   void setLoco(Loco* loco);
+
+  void setConsist(Consist* consist);
   
   /// @brief Get the loco address for this throttle
   /// @return 
@@ -70,14 +61,12 @@ public:
   bool speedChanged();
 
   void setSpeedChanged();
+
+  void setSpeed(int speed);
   
   /// @brief Get the current speed of this throttle
   /// @return 
   int getSpeed();
-  
-  /// @brief Check if this throttle controls a consist
-  /// @return 
-  // bool isConsist();
   
   /// @brief Forget the loco associated with this throttle
   void forgetLoco();
@@ -95,9 +84,10 @@ public:
   bool directionChanged();
   
   /// @brief Check if the specified address is in use by any throttle
-  /// @param address 
+  /// @param throttleArray Pointer to the throttle array containing all throttle instances
+  /// @param numThrottles Number of defined throttles (size of array)
+  /// @param address DCC address to check for
   /// @return 
-  // bool addressInUse(int address);
   static bool addressInUse(Throttle** throttleArray, int numThrottles, int address);
 
   static Throttle* findThrottleByLoco(Throttle** throttleArray, int numThrottles, Loco* loco);
@@ -105,14 +95,11 @@ public:
 private:
   Rotary _encoder;
   Switch _button;
-  // int _speed = 0;
   bool _speedChanged=false;
   bool _directionChanged=false;
-  // int _locoAddress = 0;
   int _throttleNumber;
-  // Direction _direction = Forward;  // Default to forward
-  // LocoNode* _locoList = nullptr;  // Linked list containing Locos
   Loco* _loco;
+  Consist* _consist;
   ThrottleCallback_t _singleClickCallback;
   ThrottleCallback_t _doubleClickCallback;
   ThrottleCallback_t _longPressCallback;

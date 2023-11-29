@@ -39,13 +39,14 @@ void createMenus() {
     throttleMenu->addMenuItem(new Menu(label));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
     throttleMenu->addMenuItem(new ActionMenuItem("Read address", readLocoAddress));
-    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco", forgetLoco));
+    throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", forgetLoco));
     sprintf(label, "Throttle %d consist", i+1);
     Menu* consistMenu=new ThrottleMenu(label, i);
     throttleMenu->addMenuItem(consistMenu);
     consistMenu->addMenuItem(new ActionMenuItem("Add from roster", nullptr));
     consistMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
     consistMenu->addMenuItem(new ActionMenuItem("Read address", nullptr));
+    consistMenu->addMenuItem(new ActionMenuItem("Display members", nullptr));
   }
   mainMenu->addMenuItem(new Menu("Turnouts"));
   mainMenu->addMenuItem(new Menu("Routes"));

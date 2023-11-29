@@ -87,6 +87,8 @@ void singleClick(int throttleNumber) {
   if (speed==0 && address!=0) {
     th->setDirection((th->getDirection()==Direction::Reverse) ? Direction::Forward : Direction::Reverse);
     displayThrottleDirection(throttleNumber, th->getDirection(), menuSystem.isHome());
+  } else if (speed>0 && address!=0) {
+    th->setSpeed(0);
   }
 }
 
