@@ -27,6 +27,7 @@ Include the required libraries
 #include "InputFunctions.h"
 #include "SerialFunctions.h"
 #include "DCCEXObjects.h"
+#include "DeviceFunctions.h"
 
 /***********************************************************************************
 Main setup function
@@ -48,7 +49,6 @@ void setup() {
   dccexProtocol.setLogStream(&CONSOLE);
   dccexProtocol.setDelegate(&dccexCallbacks);
   dccexProtocol.connect(&CLIENT);
-  // menuSystem.goHome();
 }
 
 /***********************************************************************************
@@ -69,14 +69,3 @@ void loop() {
   keypad.getKey();
   getSerialInput();
 }
-
-// Disabling JTAG is required to avoid pin conflicts on Bluepill
-#if defined(ARDUINO_BLUEPILL_F103C8)
-void disableJTAG() {
-  // Disable JTAG and enable SWD by clearing the SWJ_CFG bits
-  // Assuming the register is named AFIO_MAPR or AFIO_MAPR2
-  AFIO->MAPR &= ~(AFIO_MAPR_SWJ_CFG);
-  // or
-  // AFIO->MAPR2 &= ~(AFIO_MAPR2_SWJ_CFG);
-}
-#endif
