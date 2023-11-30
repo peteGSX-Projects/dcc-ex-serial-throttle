@@ -19,6 +19,7 @@
 
 #include "DisplayFunctions.h"
 #include "StaticMenus.h"
+#include "DeviceFunctions.h"
 
 /***********************************************************************************
 Set up OLED libraries and object
@@ -301,4 +302,34 @@ void displayTurntableIndex() {
       }
     }
   }
+}
+
+void displayInfoScreen(char* label) {
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  display.setCursor(0, 17);
+  display.print("DCC-EX Serial Throttle");
+  display.setCursor(0, 26);
+  display.print("Version: ");
+  display.print(VERSION);
+  display.setCursor(0, 35);
+  display.print("Free RAM: ");
+  display.print(getFreeMemory());
+  display.print(" bytes");
+  display.setCursor(0, 44);
+  display.print("EX-CommandStation");
+  display.setCursor(0, 53);
+  display.print("Version: ");
+  display.print(dccexProtocol.getMajorVersion());
+  display.print(".");
+  display.print(dccexProtocol.getMinorVersion());
+  display.print(".");
+  display.print(dccexProtocol.getPatchVersion());
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  display.sendBuffer();
 }

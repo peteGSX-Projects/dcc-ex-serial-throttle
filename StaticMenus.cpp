@@ -30,19 +30,13 @@ void createMenus() {
   throttle->setMenu(mainMenu);
   Menu* throttleList=new Menu("Throttles");
   mainMenu->addMenuItem(throttleList);
-  mainMenu->addMenuItem(new Menu("Turnouts"));
-  mainMenu->addMenuItem(new Menu("Routes"));
-  mainMenu->addMenuItem(new Menu("Turntables"));
-  mainMenu->addMenuItem(new Menu("Roster"));
-  Menu* tracksMenu=new Menu("Tracks");
-  mainMenu->addMenuItem(tracksMenu);
+  Menu* rosterMenu=new RosterMenu("Roster");
   char label[25];
   for (int i=0; i<NUM_THROTTLES; i++) {
     sprintf(label, "Throttle %d", i+1);
     Menu* throttleMenu=new ThrottleMenu(label, i);
     throttleList->addMenuItem(throttleMenu);
-    sprintf(label, "Add to %d from roster", i+1);
-    throttleMenu->addMenuItem(new Menu(label));
+    throttleMenu->addMenuItem(rosterMenu);
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
     throttleMenu->addMenuItem(new ActionMenuItem("Read address", readLocoAddress));
     throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", forgetLoco));
@@ -60,6 +54,13 @@ void createMenus() {
     // consistMenu->addMenuItem(new ActionMenuItem("Loco >", nullptr));
     // consistMenu->addMenuItem(new ActionMenuItem("Loco Rev", nullptr));
   }
+  mainMenu->addMenuItem(new Menu("Turnouts"));
+  mainMenu->addMenuItem(new Menu("Routes"));
+  mainMenu->addMenuItem(new Menu("Turntables"));
+  mainMenu->addMenuItem(rosterMenu);
+  Menu* tracksMenu=new Menu("Tracks");
+  mainMenu->addMenuItem(tracksMenu);
+  mainMenu->addMenuItem(new InfoScreen());
   tracksMenu->addMenuItem(new ActionMenuItem("Power On", trackPowerOn));
   tracksMenu->addMenuItem(new ActionMenuItem("Power Off", trackPowerOff));
   tracksMenu->addMenuItem(new ActionMenuItem("Join", nullptr));

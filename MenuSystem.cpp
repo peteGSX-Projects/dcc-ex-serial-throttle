@@ -259,15 +259,26 @@ int Menu::getItemsPerPage() {
   return _itemsPerPage;
 }
 
+// class ThrottleMenu
+
 ThrottleMenu::ThrottleMenu(const char* label, int throttleNumber)
   : Menu(label) {
   _throttleNumber=throttleNumber;
 }
 
 void ThrottleMenu::select() {
-  _menuSystem->setCurrentItem(this);
   _menuSystem->setCurrentThrottle(_throttleNumber);
-  this->display();
+  Menu::select();
+}
+
+// class RosterMenu
+
+RosterMenu::RosterMenu(const char* label)
+  : Menu(label) {}
+
+void RosterMenu::select() {
+  _parent=_menuSystem->getCurrentItem();
+  Menu::select();
 }
 
 // class ThrottleScreen
@@ -301,6 +312,36 @@ void ThrottleScreen::setMenu(MenuItemBase* menu) {
 
 MenuItemBase* ThrottleScreen::getMenu() {
   return _menu;
+}
+
+// class InfoScreen
+
+InfoScreen::InfoScreen()
+  : MenuItemBase("Information", ItemType::Info) {}
+
+void InfoScreen::select() {
+  _menuSystem->setCurrentItem(this);
+  this->display();
+}
+
+void InfoScreen::display() {
+  displayInfoScreen(_label);
+}
+
+void InfoScreen::handleKeys(char key, KeyState keyState) {
+  if (keyState==PRESSED) {
+    switch(key) {
+      case '*':
+      if (_parent) {
+        _menuSystem->setCurrentItem(_parent);
+        _parent->display();
+      }
+      break;
+      
+      default:
+        break;
+    }
+  }
 }
 
 // class MenuSystem

@@ -38,6 +38,7 @@ public:
     Entry,
     Menu,
     Throttle,
+    Info,
   };
 
   /// @brief Constructor
@@ -209,6 +210,14 @@ private:
 
 };
 
+class RosterMenu : public Menu {
+public:
+  RosterMenu(const char* label);
+
+  void select() override;
+
+};
+
 class ThrottleScreen : public MenuItemBase {
 public:
   /// @brief  Constructor for the throttle screen
@@ -232,6 +241,19 @@ public:
 
 private:
   MenuItemBase* _menu;
+
+};
+
+class InfoScreen : public MenuItemBase {
+public:
+  /// @brief Constructor for the info screen
+  InfoScreen();
+
+  void select() override;
+
+  void display() override;
+
+  void handleKeys(char key, KeyState keyState) override;
 
 };
 

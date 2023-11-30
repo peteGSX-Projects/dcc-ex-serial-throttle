@@ -98,4 +98,7 @@ void displayTurnoutStates();
 /// @brief Display which index of a turntable is currently selected
 void displayTurntableIndex();
 
+/// @brief Display system information
+void displayInfoScreen(char* label);
+
 #endif
