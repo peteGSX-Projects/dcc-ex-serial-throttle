@@ -50,7 +50,13 @@ public:
   /// @param loco Pointer to the loco object
   void setLoco(Loco* loco);
 
+  bool isLoco();
+
   void setConsist(Consist* consist);
+
+  Consist* getConsist();
+
+  bool isConsist();
   
   /// @brief Get the loco address for this throttle
   /// @return 

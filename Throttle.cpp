@@ -70,6 +70,24 @@ void Throttle::setLoco(Loco* loco) {
   _loco=loco;
 }
 
+bool Throttle::isLoco() {
+  if (_loco) return true;
+  return false;
+}
+
+void Throttle::setConsist(Consist* consist) {
+
+}
+
+Consist* Throttle::getConsist() {
+  return _consist;
+}
+
+bool Throttle::isConsist() {
+  if (_consist) return true;
+  return false;
+}
+
 // Return the current loco address
 int Throttle::getLocoAddress() {
   if (!_loco) return 0;
@@ -107,10 +125,8 @@ void Throttle::forgetLoco() {
     _loco=nullptr;
   }
   if (_consist) {
-    // Loop through consist locos here
-    // If loco from entry, delete it, then delete from list
-    // If loco from roster, delete from list
-    // When list empty, delete consist
+    Consist* consist=_consist;
+    consist->removeAllLocos();
     _consist=nullptr;
   }
 }

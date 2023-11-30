@@ -62,15 +62,15 @@ void getDCCEXObjects() {
       }
     }
     dccexProtocol.getLists(true, true, true, true);
-    updateRoster();
-    updateRoutes();
-    updateTurnouts();
-    updateTurntables();
   }  else if (!dccexProtocol.receivedLists() && connectionRetries==0 && !errorDisplayed) {
     errorDisplayed = true;
     displayConnectionError();
   }  else if (dccexProtocol.receivedLists() && !homeDisplayed) {
     homeDisplayed=true;
+    updateRoster();
+    updateRoutes();
+    updateTurnouts();
+    updateTurntables();
     menuSystem.goHome();
   }
 }
@@ -81,16 +81,15 @@ void updateRoster() {
   if (dccexProtocol.receivedRoster() && !gotRoster) {
     gotRoster = true;
     char label[25];
-    Menu* rMenu=menuSystem.findMenuByLabel("Roster");
-    if (!rMenu) return;
+    Menu* menu=menuSystem.findMenuByLabel("Roster");
+    if (!menu) return;
     for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
-      rMenu->addMenuItem(new ActionMenuItem(loco->getName(), nullptr));
+      menu->addMenuItem(new ActionMenuItem(loco->getName(), nullptr));
       for (int i=0; i<NUM_THROTTLES; i++) {
-        sprintf(label, "Select %d from roster", i+1);
-        Menu* selectM=menuSystem.findMenuByLabel(label);
-        if (!selectM) continue;
-        CONSOLE.println(F("Found it"));
-        selectM->addMenuItem(new ActionMenuItem(loco->getName(), setRosterLoco, loco));
+        sprintf(label, "Add to %d from roster", i+1);
+        menu=menuSystem.findMenuByLabel(label);
+        if (!menu) continue;
+        menu->addMenuItem(new ActionMenuItem(loco->getName(), setRosterLoco, loco));
       }
     }
   }
@@ -206,11 +205,30 @@ void setJoinTracks() {
 void setRosterLoco() {
   if (!menuSystem.getCurrentActionItem()) return;
   int throttle=menuSystem.getCurrentThrottle();
+  auto th=throttles[throttle];
+  if (th->isConsist()) return;
   void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
   Loco* loco=static_cast<Loco*>(object);
   if (!loco) return;
   if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) return;
-  throttles[throttle]->setLoco(loco);
+  th->setLoco(loco);
+  menuSystem.goHome();
+}
+
+void addConsistLoco() {
+  if (!menuSystem.getCurrentActionItem()) return;
+  int throttle=menuSystem.getCurrentThrottle();
+  auto th=throttles[throttle];
+  if (th->isLoco()) return;
+  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
+  Loco* loco=static_cast<Loco*>(object);
+  if (!loco) return;
+  if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) return;
+  Consist* consist=th->getConsist();
+  if (!consist) {
+    consist=new Consist();
+  }
+  consist->addLoco(loco, Facing::FacingForward);
   menuSystem.goHome();
 }
 
@@ -228,6 +246,7 @@ void readLocoAddress() {
 
 void forgetLoco() {
   int throttle=menuSystem.getCurrentThrottle();
+  if (throttles[throttle]->getSpeed()>0) return;
   throttles[throttle]->forgetLoco();
   menuSystem.goHome();
 }

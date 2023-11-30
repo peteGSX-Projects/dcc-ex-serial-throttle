@@ -71,10 +71,9 @@ ActionMenuItem::ActionMenuItem(const char* label, Action action, void* objectPoi
   }
 
 void ActionMenuItem::select() {
+  if (!_menuSystem || !_action) return;
   _menuSystem->setCurrentActionItem(this);
-  if (_action) {
-    _action();
-  }
+  _action();
 }
 
 void* ActionMenuItem::getObjectPointer() {
