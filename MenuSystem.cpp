@@ -317,7 +317,7 @@ MenuItemBase* ThrottleScreen::getMenu() {
 // class InfoScreen
 
 InfoScreen::InfoScreen()
-  : MenuItemBase("Information", ItemType::Info) {}
+  : MenuItemBase("Sys Info", ItemType::Info) {}
 
 void InfoScreen::select() {
   _menuSystem->setCurrentItem(this);

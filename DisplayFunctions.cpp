@@ -211,6 +211,9 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
   int Y=17;
   display.setFont(MENU_ITEM_FONT);
   for (int i=0; i<itemsPerPage; i++) {
+    CONSOLE.print("i|itemList[i]: ");
+    CONSOLE.print(i);
+    CONSOLE.print("|");
     if (itemList[i]) {
       display.setCursor(X, Y);
       display.print(i);
@@ -219,11 +222,14 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
         itemList[i][10]='\0';
       }
       display.print(itemList[i]);
+      CONSOLE.println(itemList[i]);
       Y+=8;
       if (i==4) {
         X=64;
         Y=17;
       }
+    } else {
+      CONSOLE.println("Not found");
     }
   }
   display.drawHLine(0, 54, 128);
