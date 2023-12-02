@@ -28,7 +28,6 @@ extern DCCEXProtocol dccexProtocol;
 extern DCCEXCallbacks dccexCallbacks;
 
 void getDCCEXObjects();
-void updateRoster();
 void updateRoutes();
 void updateTurnouts();
 void updateTurntables();
@@ -39,7 +38,7 @@ void rotateTurntable();
 void trackPowerOn();
 void trackPowerOff();
 // void setJoinTracks();
-void setRosterLoco();
+void setRosterLoco(int selectedLoco);
 void addConsistLoco();
 bool setLocoAddress(int throttle, int address);
 void readLocoAddress();

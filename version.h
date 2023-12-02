@@ -1,7 +1,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VERSION "0.0.14"
+#define VERSION "0.0.15"
+// 0.0.15 - Updated roster selection methods to work with locos
 // 0.0.14 - Updates to coincide with DCCEXProtocol library release readiness
 //        - Add information screen with versions and free RAM
 // 0.0.13 - Change throttle method from pots to encoders with buttons

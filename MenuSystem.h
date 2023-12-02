@@ -71,16 +71,16 @@ public:
   int getIndex() const;
   
   /// @brief What happens when the item is selected from a menu
-    virtual void select() {};
+  virtual void select() {};
   
   /// @brief Display method of this object
   /// @param oled 
-    virtual void display() {};
+  virtual void display() {};
   
   /// @brief Keypad input processing of this object
   /// @param key 
   /// @param keyState 
-    virtual void handleKeys(char key, KeyState keyState) {};
+  virtual void handleKeys(char key, KeyState keyState) {};
   
   /// @brief Sets the static attribute for referencing the menu system
   /// @param menuSystem 
@@ -210,14 +210,6 @@ private:
 
 };
 
-class RosterMenu : public Menu {
-public:
-  RosterMenu(const char* label);
-
-  void select() override;
-
-};
-
 class ThrottleScreen : public MenuItemBase {
 public:
   /// @brief  Constructor for the throttle screen
@@ -254,6 +246,25 @@ public:
   void display() override;
 
   void handleKeys(char key, KeyState keyState) override;
+
+};
+
+// class RosterMenuItem
+
+class RosterMenuItem : public MenuItemBase {
+public:
+  RosterMenuItem(const char* label, void (*selectFunction)(int)=nullptr);
+
+  void select() override;
+
+  void display() override;
+
+  void handleKeys(char key, KeyState keyState) override;
+
+private:
+  int _currentPage;
+  int _itemsPerPage;
+  void (*_selectFunction)(int);
 
 };
 
@@ -314,13 +325,17 @@ public:
   /// @return 
   MenuItemBase* getCurrentItem();
 
+  void setDCCEXProtocol(DCCEXProtocol* dccexProtocol);
+
+  DCCEXProtocol* getDCCEXProtocol();
+
 private:
-  // OLED& _oled;
   MenuItemBase* _currentItem;
   MenuItemBase* _home;
   ActionMenuItem* _currentActionItem;
   int _currentThrottle;
   TrackPower _powerState=PowerUnknown;
+  DCCEXProtocol* _dccexProtocol;
 
   Menu* _findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem);
   void _displayPowerState();

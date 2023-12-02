@@ -24,7 +24,7 @@
 #include "StaticMenus.h"
 #include "Throttle.h"
 
-DCCEXProtocol dccexProtocol(100);
+DCCEXProtocol dccexProtocol;
 DCCEXCallbacks dccexCallbacks;
 
 bool retrievalDisplayed=false;
@@ -34,7 +34,6 @@ bool requestedVersion=false;
 uint8_t connectionRetries=CONNECT_RETRIES;
 unsigned long retryDelay=1000;
 unsigned long lastRetry=0;
-bool gotRoster=false;
 bool gotRoutes=false;
 bool gotTurnouts=false;
 bool gotTurntables=false;
@@ -72,31 +71,10 @@ void getDCCEXObjects() {
     displayConnectionError();
   }  else if (dccexProtocol.receivedLists() && !homeDisplayed) {
     homeDisplayed=true;
-    updateRoster();
     updateRoutes();
     updateTurnouts();
     updateTurntables();
     menuSystem.goHome();
-  }
-}
-
-// Function to update roster entries from the CS
-// To trigger after startup, simply set requestedRoster to false
-void updateRoster() {
-  if (dccexProtocol.receivedRoster() && !gotRoster) {
-    gotRoster = true;
-    char label[25];
-    Menu* menu=menuSystem.findMenuByLabel("Roster");
-    if (!menu) return;
-    for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
-      menu->addMenuItem(new ActionMenuItem(loco->getName(), nullptr));
-      // for (int i=0; i<NUM_THROTTLES; i++) {
-      //   sprintf(label, "Add to %d from roster", i+1);
-      //   menu=menuSystem.findMenuByLabel(label);
-      //   if (!menu) continue;
-      //   menu->addMenuItem(new ActionMenuItem(loco->getName(), setRosterLoco, loco));
-      // }
-    }
   }
 }
 
@@ -207,16 +185,23 @@ void setJoinTracks() {
   // }
 }
 
-void setRosterLoco() {
-  if (!menuSystem.getCurrentActionItem()) return;
+void setRosterLoco(int selectedLoco) {
   int throttle=menuSystem.getCurrentThrottle();
   auto th=throttles[throttle];
   if (th->isConsist()) return;
-  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
-  Loco* loco=static_cast<Loco*>(object);
-  if (!loco) return;
-  if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) return;
-  th->setLoco(loco);
+  if (th->isLoco()) {
+    th->forgetLoco();
+  }
+  int i=0;
+  for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
+    if (i==selectedLoco) {
+      if (!Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) {
+        th->setLoco(loco);
+      }
+      break;
+    }
+    i++;
+  }
   menuSystem.goHome();
 }
 

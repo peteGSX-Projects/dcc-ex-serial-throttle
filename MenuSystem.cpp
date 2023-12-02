@@ -271,16 +271,6 @@ void ThrottleMenu::select() {
   Menu::select();
 }
 
-// class RosterMenu
-
-RosterMenu::RosterMenu(const char* label)
-  : Menu(label) {}
-
-void RosterMenu::select() {
-  _parent=_menuSystem->getCurrentItem();
-  Menu::select();
-}
-
 // class ThrottleScreen
 ThrottleScreen::ThrottleScreen()
   : MenuItemBase(nullptr, MenuItemBase::Throttle) {}
@@ -344,12 +334,77 @@ void InfoScreen::handleKeys(char key, KeyState keyState) {
   }
 }
 
+// class RosterMenuItem
+
+RosterMenuItem::RosterMenuItem(const char* label, void (*selectFunction)(int))
+  : MenuItemBase(label, ItemType::Normal) {
+    _selectFunction=selectFunction;
+    _itemsPerPage=10;
+    _currentPage=0;
+  }
+
+void RosterMenuItem::select() {
+  _menuSystem->setCurrentItem(this);
+  this->display();
+}
+
+void RosterMenuItem::display() {
+  displayRoster(_label, _currentPage, _itemsPerPage);
+}
+
+void RosterMenuItem::handleKeys(char key, KeyState keyState) {
+  auto dcc=_menuSystem->getDCCEXProtocol();
+  if (keyState==PRESSED) {
+    switch (key) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9': {
+        int itemIndex=key-'0';
+        itemIndex+=_currentPage*_itemsPerPage;       
+        if (!dcc) break;
+        int i=0;
+        for (Loco* loco=dcc->roster->getFirst(); loco; loco=loco->getNext()) {
+          if (i==itemIndex) {
+            _selectFunction(itemIndex);
+          }
+          i++;
+        }
+        break;
+      }
+
+      case '*':
+        if (this->_parent) {
+          _menuSystem->setCurrentItem(this->_parent);
+          _parent->select();
+        }
+        break;
+      
+      case '#':
+        if (!dcc) break;
+        _currentPage=(_currentPage+1) % ((int)ceil(dcc->getRosterCount()/(float)_itemsPerPage));
+        display();
+        break;
+      
+      default:
+        break;
+    }
+  }
+}
+
 // class MenuSystem
 MenuSystem::MenuSystem() {
     _currentItem=nullptr;
     _home=nullptr;
     _currentActionItem=nullptr;
     _currentThrottle=-1;
+    _dccexProtocol=nullptr;
   }
 
 void MenuSystem::display() {
@@ -412,6 +467,14 @@ void MenuSystem::updatePowerState(TrackPower state) {
 
 MenuItemBase* MenuSystem::getCurrentItem() {
   return _currentItem;
+}
+
+void MenuSystem::setDCCEXProtocol(DCCEXProtocol* dccexProtocol) {
+  _dccexProtocol=dccexProtocol;
+}
+
+DCCEXProtocol* MenuSystem::getDCCEXProtocol() {
+  return _dccexProtocol;
 }
 
 Menu* MenuSystem::_findMenuByLabelRecursive(const char* label, MenuItemBase* currentMenuItem) {

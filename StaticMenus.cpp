@@ -19,24 +19,24 @@
 
 #include <Arduino.h>
 #include "StaticMenus.h"
+#include "DCCEXObjects.h"
 
-// MenuSystem menuSystem(display);
 MenuSystem menuSystem;
 
 void createMenus() {
   ThrottleScreen* throttle=new ThrottleScreen();
+  menuSystem.setDCCEXProtocol(&dccexProtocol);
   menuSystem.setHome(throttle);
   Menu* mainMenu=new Menu("Main Menu");
   throttle->setMenu(mainMenu);
   Menu* throttleList=new Menu("Throttles");
   mainMenu->addMenuItem(throttleList);
-  Menu* rosterMenu=new RosterMenu("Roster");
   char label[25];
   for (int i=0; i<NUM_THROTTLES; i++) {
     sprintf(label, "Throttle %d", i+1);
     Menu* throttleMenu=new ThrottleMenu(label, i);
     throttleList->addMenuItem(throttleMenu);
-    throttleMenu->addMenuItem(rosterMenu);
+    throttleMenu->addMenuItem(new RosterMenuItem("Add from roster", &setRosterLoco));
     throttleMenu->addMenuItem(new EntryMenuItem("Enter address", "DCC address:", nullptr));
     throttleMenu->addMenuItem(new ActionMenuItem("Read address", readLocoAddress));
     throttleMenu->addMenuItem(new ActionMenuItem("Forget loco/consist", forgetLoco));
@@ -57,7 +57,7 @@ void createMenus() {
   mainMenu->addMenuItem(new Menu("Turnouts"));
   mainMenu->addMenuItem(new Menu("Routes"));
   mainMenu->addMenuItem(new Menu("Turntables"));
-  mainMenu->addMenuItem(rosterMenu);
+  mainMenu->addMenuItem(new RosterMenuItem("Roster", nullptr));
   Menu* tracksMenu=new Menu("Tracks");
   mainMenu->addMenuItem(tracksMenu);
   mainMenu->addMenuItem(new InfoScreen());

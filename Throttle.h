@@ -96,6 +96,11 @@ public:
   /// @return 
   static bool addressInUse(Throttle** throttleArray, int numThrottles, int address);
 
+  /// @brief Retrieve the throttle associated with the provided loco object
+  /// @param throttleArray 
+  /// @param numThrottles 
+  /// @param loco 
+  /// @return 
   static Throttle* findThrottleByLoco(Throttle** throttleArray, int numThrottles, Loco* loco);
 
 private:

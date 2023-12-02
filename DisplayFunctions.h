@@ -92,6 +92,12 @@ void displayEntryKey(char key, int column);
 /// @param items 
 void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, char * items[]);
 
+/// @brief Display roster items
+/// @param label 
+/// @param currentPage 
+/// @param itemsPerPage 
+void displayRoster(char* label, int currentPage, int itemsPerPage);
+
 /// @brief Display the state beside each turnout in the menu
 void displayTurnoutStates();
 

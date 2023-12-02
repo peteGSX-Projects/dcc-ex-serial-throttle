@@ -20,6 +20,7 @@
 #include "DisplayFunctions.h"
 #include "StaticMenus.h"
 #include "DeviceFunctions.h"
+#include "Throttle.h"
 
 /***********************************************************************************
 Set up OLED libraries and object
@@ -153,18 +154,20 @@ void displayThrottleEStop(int throttle) {
 }
 
 void displayPowerState(TrackPower state) {
-  display.setFont(MENU_ITEM_FONT);
-  display.setCursor(113, 63);
-  display.print("   ");
-  display.setCursor(113, 63);
-  if (state==PowerOn) {
-    display.print("On");
-  } else if (state==PowerOff) {
-    display.print("Off");
-  } else {
-    display.print("?");
+  if (menuSystem.isHome()) {
+    display.setFont(MENU_ITEM_FONT);
+    display.setCursor(113, 63);
+    display.print("   ");
+    display.setCursor(113, 63);
+    if (state==PowerOn) {
+      display.print("On");
+    } else if (state==PowerOff) {
+      display.print("Off");
+    } else {
+      display.print("?");
+    }
+    display.sendBuffer();
   }
-  display.sendBuffer();
 }
 
 void displayEntryMenuItem(char* label, const char* instruction) {
@@ -211,9 +214,6 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
   int Y=17;
   display.setFont(MENU_ITEM_FONT);
   for (int i=0; i<itemsPerPage; i++) {
-    CONSOLE.print("i|itemList[i]: ");
-    CONSOLE.print(i);
-    CONSOLE.print("|");
     if (itemList[i]) {
       display.setCursor(X, Y);
       display.print(i);
@@ -222,14 +222,11 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
         itemList[i][10]='\0';
       }
       display.print(itemList[i]);
-      CONSOLE.println(itemList[i]);
       Y+=8;
       if (i==4) {
         X=64;
         Y=17;
       }
-    } else {
-      CONSOLE.println("Not found");
     }
   }
   display.drawHLine(0, 54, 128);
@@ -244,6 +241,49 @@ void displayMenu(char* label, int currentPage, int itemsPerPage, int itemCount, 
   display.sendBuffer();
   displayTurnoutStates();
   displayTurntableIndex();
+}
+
+void displayRoster(char* label, int currentPage, int itemsPerPage) {
+  int count=dccexProtocol.getRosterCount();
+  auto r=dccexProtocol.roster;
+  display.clear();
+  display.setFont(MENU_TITLE_FONT);
+  display.setCursor(0, 6);
+  display.print(label);
+  display.drawHLine(0, 7, 128);
+  int X=0;
+  int Y=17;
+  display.setFont(MENU_ITEM_FONT);
+  int i=0;
+  for (Loco* loco=r->getFirst(); loco; loco=loco->getNext()) {
+    int index=currentPage*itemsPerPage+i;
+    if (index>=currentPage*itemsPerPage && index<(currentPage&itemsPerPage)+itemsPerPage) {
+      display.setCursor(X, Y);
+      display.print(i);
+      if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) {
+        display.print("-");
+      } else {
+        display.print(" ");
+      }
+      display.print(loco->getName());
+      Y+=8;
+      if (i==4) {
+        X=64;
+        Y=17;
+      }
+    }
+    i++;
+  }
+  display.drawHLine(0, 54, 128);
+  display.setCursor(0, 63);
+  display.print("* Back");
+  if (count>itemsPerPage) {
+    display.setCursor(70, 63);
+    display.print("# Page ");
+    int nextPage=(currentPage+1)%((int)ceil(count/(float)itemsPerPage))+1;
+    display.print(nextPage);
+  }
+  display.sendBuffer();
 }
 
 void displayTurnoutStates() {
