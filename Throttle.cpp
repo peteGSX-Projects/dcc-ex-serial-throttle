@@ -76,7 +76,7 @@ bool Throttle::isLoco() {
 }
 
 void Throttle::setConsist(Consist* consist) {
-
+  _consist=consist;
 }
 
 Consist* Throttle::getConsist() {
@@ -90,8 +90,13 @@ bool Throttle::isConsist() {
 
 // Return the current loco address
 int Throttle::getLocoAddress() {
-  if (!_loco) return 0;
-  return _loco->getAddress();
+  if (_loco) {
+    return _loco->getAddress();
+  } else if (_consist) {
+    return _consist->getFirst()->getLoco()->getAddress();
+  } else {
+    return 0;
+  }
 }
 
 // Function to flag if the speed has changed
@@ -111,8 +116,13 @@ void Throttle::setSpeed(int speed) {
 
 // Returns the current speed
 int Throttle::getSpeed() {
-  if (!_loco) return 0;
-  return _loco->getSpeed();
+  if (_loco) {
+    return _loco->getSpeed();
+  } else if (_consist) {
+    return _consist->getSpeed();
+  } else {
+    return 0;
+  }
 }
 
 // Forgets the acquired loco
@@ -138,8 +148,13 @@ void Throttle::setDirection(Direction direction){
 
 // Get current throttle direction
 Direction Throttle::getDirection() {
-  if (!_loco) return Direction::Forward;
-  return _loco->getDirection();
+  if (_loco) {
+    return _loco->getDirection();
+  } else if (_consist) {
+    return _consist->getDirection();
+  } else {
+    return Direction::Forward;
+  }
 }
 
 void Throttle::setDirectionChanged() {

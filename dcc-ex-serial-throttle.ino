@@ -29,6 +29,9 @@ Include the required libraries
 #include "DCCEXObjects.h"
 #include "DeviceFunctions.h"
 
+unsigned long ramDelay=5000;
+unsigned long lastRamDisplay=0;
+
 /***********************************************************************************
 Main setup function
 ***********************************************************************************/
@@ -55,6 +58,12 @@ void setup() {
 Main loop
 ***********************************************************************************/
 void loop() {
+  if (millis()-lastRamDisplay>ramDelay) {
+    lastRamDisplay=millis();
+    CONSOLE.print("Free RAM: ");
+    CONSOLE.print(getFreeMemory());
+    CONSOLE.println(" bytes");
+  }
   dccexProtocol.check();
   getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {

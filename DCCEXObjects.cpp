@@ -211,14 +211,20 @@ void addConsistLoco(int selectedLoco) {
   if (th->isLoco()) return;
   Consist* consist=th->getConsist();
   if (!consist) {
+    CONSOLE.println("Create new consist");
     consist=new Consist();
     th->setConsist(consist);
+  } else {
+    CONSOLE.println("Already a consist");
   }
   int i=0;
   for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
     if (i==selectedLoco) {
       if (!Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) {
         consist->addLoco(loco, Facing::FacingForward);
+        CONSOLE.print("Adding loco ");
+        CONSOLE.print(loco->getAddress());
+        CONSOLE.println(" to consist");
       }
       break;
     }
