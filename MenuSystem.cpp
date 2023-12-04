@@ -372,6 +372,7 @@ void RosterMenuItem::handleKeys(char key, KeyState keyState) {
         int i=0;
         for (Loco* loco=dcc->roster->getFirst(); loco; loco=loco->getNext()) {
           if (i==itemIndex) {
+            if (!_selectFunction) break;
             _selectFunction(itemIndex);
           }
           i++;

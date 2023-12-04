@@ -39,7 +39,7 @@ void trackPowerOn();
 void trackPowerOff();
 // void setJoinTracks();
 void setRosterLoco(int selectedLoco);
-void addConsistLoco();
+void addConsistLoco(int selectedLoco);
 bool setLocoAddress(int throttle, int address);
 void readLocoAddress();
 void forgetLoco();

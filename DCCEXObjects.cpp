@@ -205,26 +205,30 @@ void setRosterLoco(int selectedLoco) {
   menuSystem.goHome();
 }
 
-void addConsistLoco() {
-  if (!menuSystem.getCurrentActionItem()) return;
+void addConsistLoco(int selectedLoco) {
   int throttle=menuSystem.getCurrentThrottle();
   auto th=throttles[throttle];
   if (th->isLoco()) return;
-  void* object=menuSystem.getCurrentActionItem()->getObjectPointer();
-  Loco* loco=static_cast<Loco*>(object);
-  if (!loco) return;
-  if (Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) return;
   Consist* consist=th->getConsist();
   if (!consist) {
     consist=new Consist();
+    th->setConsist(consist);
   }
-  consist->addLoco(loco, Facing::FacingForward);
+  int i=0;
+  for (Loco* loco=dccexProtocol.roster->getFirst(); loco; loco=loco->getNext()) {
+    if (i==selectedLoco) {
+      if (!Throttle::addressInUse(throttles, NUM_THROTTLES, loco->getAddress())) {
+        consist->addLoco(loco, Facing::FacingForward);
+      }
+      break;
+    }
+    i++;
+  }
   menuSystem.goHome();
 }
 
 bool setLocoAddress(int throttle, int address) {
   if (Throttle::addressInUse(throttles, NUM_THROTTLES, address)) return false;
-  // throttles[throttle]->setLocoAddress(address, LocoSourceEntry);
   Loco* newLoco=new Loco(address, LocoSource::LocoSourceEntry);
   throttles[throttle]->setLoco(newLoco);
   return true;
