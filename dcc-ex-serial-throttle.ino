@@ -58,12 +58,12 @@ void setup() {
 Main loop
 ***********************************************************************************/
 void loop() {
-  if (millis()-lastRamDisplay>ramDelay) {
-    lastRamDisplay=millis();
-    CONSOLE.print("Free RAM: ");
-    CONSOLE.print(getFreeMemory());
-    CONSOLE.println(" bytes");
-  }
+  // if (millis()-lastRamDisplay>ramDelay) {
+  //   lastRamDisplay=millis();
+  //   CONSOLE.print("Free RAM: ");
+  //   CONSOLE.print(getFreeMemory());
+  //   CONSOLE.println(" bytes");
+  // }
   dccexProtocol.check();
   getDCCEXObjects();
   for (int i=0; i<NUM_THROTTLES; i++) {

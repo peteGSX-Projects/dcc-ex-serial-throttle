@@ -46,7 +46,7 @@ void createMenus() {
     consistMenu->addMenuItem(new RosterMenuItem("Roster +", &addConsistLoco));
     consistMenu->addMenuItem(new EntryMenuItem("Enter +", "DCC address:", nullptr));
     consistMenu->addMenuItem(new ActionMenuItem("Read", readLocoAddress));
-    consistMenu->addMenuItem(new ActionMenuItem("Members", nullptr));
+    consistMenu->addMenuItem(new ActionMenuItem("Members", showConsist));
     consistMenu->addMenuItem(new ActionMenuItem("Loco -", nullptr));
     consistMenu->addMenuItem(new ActionMenuItem("Forget", forgetLoco));
     consistMenu->addMenuItem(new ActionMenuItem("Loco Rev", nullptr));

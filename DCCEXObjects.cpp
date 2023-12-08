@@ -213,7 +213,7 @@ void addConsistLoco(int selectedLoco) {
   if (!consist) {
     CONSOLE.println("Create new consist");
     consist=new Consist();
-    th->setConsist(consist);
+    // th->setConsist(consist);
   } else {
     CONSOLE.println("Already a consist");
   }
@@ -229,6 +229,9 @@ void addConsistLoco(int selectedLoco) {
       break;
     }
     i++;
+  }
+  if (consist) {
+    th->setConsist(consist);
   }
   menuSystem.goHome();
 }
@@ -249,4 +252,21 @@ void forgetLoco() {
   if (throttles[throttle]->getSpeed()>0) return;
   throttles[throttle]->forgetLoco();
   menuSystem.goHome();
+}
+
+void showConsist() {
+  int throttle=menuSystem.getCurrentThrottle();
+  auto th=throttles[throttle];
+  Consist* consist=th->getConsist();
+  if (consist) {
+    for (ConsistLoco* cl=consist->getFirst(); cl; cl=cl->getNext()) {
+      CONSOLE.print(cl->getLoco()->getName());
+      CONSOLE.print(" - ");
+      if (cl->getFacing()==Facing::FacingReversed) {
+        CONSOLE.println("Rev");
+      } else {
+        CONSOLE.println("Fwd");
+      }
+    }
+  }
 }

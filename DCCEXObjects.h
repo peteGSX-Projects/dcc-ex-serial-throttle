@@ -43,5 +43,6 @@ void addConsistLoco(int selectedLoco);
 bool setLocoAddress(int throttle, int address);
 void readLocoAddress();
 void forgetLoco();
+void showConsist();
 
 #endif
