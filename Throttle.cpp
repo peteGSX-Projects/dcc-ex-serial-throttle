@@ -39,8 +39,14 @@ Throttle::Throttle(int throttleNumber, Loco* loco, int dtPin, int clkPin, int sw
 
 // Process throttle object:
 void Throttle::process() {
-  if (!_loco) return;
-  int speed=_loco->getSpeed();
+  int speed=0;
+  if (_loco) {
+    speed=_loco->getSpeed();
+  } else if (_consist) {
+    speed=_consist->getSpeed();
+  } else {
+    return;
+  }
   unsigned char result=_encoder.process();
   if (result==DIR_CW && speed<126) {
     speed++;
@@ -51,8 +57,10 @@ void Throttle::process() {
   } else {
     _speedChanged=false;
   }
-  if (_speedChanged==true) {
+  if (_speedChanged==true && _loco) {
     dccexProtocol.setThrottle(_loco, speed, _loco->getDirection());
+  } else if (_speedChanged && _consist) {
+    dccexProtocol.setThrottle(_consist, speed, _consist->getDirection());
   }
   _button.poll();
 
@@ -110,8 +118,13 @@ void Throttle::setSpeedChanged() {
 }
 
 void Throttle::setSpeed(int speed) {
-  if (!_loco) return;
-  dccexProtocol.setThrottle(_loco, speed, _loco->getDirection());
+  if (_loco) {
+    dccexProtocol.setThrottle(_loco, speed, _loco->getDirection());
+  } else if (_consist) {
+    dccexProtocol.setThrottle(_consist, speed, _consist->getDirection());
+  } else {
+    return;
+  }
 }
 
 // Returns the current speed
@@ -142,8 +155,13 @@ void Throttle::forgetLoco() {
 }
 
 void Throttle::setDirection(Direction direction){
-  if (!_loco || _loco->getSpeed()>0) return;
-  dccexProtocol.setThrottle(_loco, _loco->getSpeed(), direction);
+  if (_loco) {
+    dccexProtocol.setThrottle(_loco, _loco->getSpeed(), direction);
+  } else if (_consist) {
+    dccexProtocol.setThrottle(_consist, _consist->getSpeed(), direction);
+  } else {
+    return;
+  }
 }
 
 // Get current throttle direction
@@ -169,7 +187,13 @@ bool Throttle::directionChanged() {
 bool Throttle::addressInUse(Throttle** throttleArray, int numThrottles, int address) {
   for (int i=0; i<numThrottles; i++) {
     if (!throttleArray[i]) continue;
-    if (throttleArray[i]->getLocoAddress()==address) return true;
+    auto th=throttleArray[i];
+    if (th->getLocoAddress()==address) return true;
+    if (th->isConsist()) {
+      for (ConsistLoco* cl=th->getConsist()->getFirst(); cl; cl=cl->getNext()) {
+        if (cl->getLoco()->getAddress()==address) return true;
+      }
+    }
   }
   return false;
 }
